@@ -1,73 +1,127 @@
-# Welcome to your Lovable project
+# Cosmic Interface Portfolio
 
-## Project info
+A modern, interactive portfolio website for Laxmikant Nishad, an AI/ML Engineer specializing in multi-modal models, LLM fine-tuning, and computer vision.
 
-**URL**: https://lovable.dev/projects/1bf7c55c-fd97-49d9-9f3e-9252d2734f42
+## 🚀 Features
 
-## How can I edit this code?
+- **Interactive 3D Visualizations**: Skills and projects displayed with WebGL and Three.js
+- **Terminal Interface**: Command-line style navigation
+- **Real-time Analytics**: Track visitor interactions
+- **Responsive Design**: Optimized for all devices
+- **Dark/Light Theme**: Automatic theme switching
+- **SEO Optimized**: Meta tags and structured data
+- **Performance Monitoring**: Built-in analytics and error tracking
 
-There are several ways of editing your application.
+## 🛠️ Technologies Used
 
-**Use Lovable**
+- **Frontend Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS with shadcn/ui components
+- **3D Graphics**: Three.js with custom shaders
+- **State Management**: React Context
+- **Routing**: React Router
+- **Icons**: Lucide React
+- **Deployment**: Vercel/Netlify
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/1bf7c55c-fd97-49d9-9f3e-9252d2734f42) and start prompting.
+## 📋 Prerequisites
 
-Changes made via Lovable will be committed automatically to this repo.
+- Node.js (v18 or higher)
+- npm or yarn
 
-**Use your preferred IDE**
+## 🚀 Getting Started
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/lax-17/cosmic-portfolio.git
+   cd cosmic-portfolio
+   ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-Follow these steps:
+3. **Start development server**
+   ```bash
+   npm run dev
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+4. **Build for production**
+   ```bash
+   npm run build
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+5. **Preview production build**
+   ```bash
+   npm run preview
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 📁 Project Structure
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+src/
+├── components/          # Reusable UI components
+├── contexts/           # React context providers
+├── hooks/             # Custom React hooks
+├── lib/               # Utility functions
+├── pages/             # Page components
+├── shaders/           # WebGL shaders
+└── content/           # Content management
 ```
 
-**Edit a file directly in GitHub**
+## 🌐 Deployment
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Vercel (Recommended)
 
-**Use GitHub Codespaces**
+1. Connect your GitHub repository to Vercel
+2. Vercel will auto-detect Vite configuration
+3. Deploy automatically on push
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Netlify
 
-## What technologies are used for this project?
+1. Connect repository to Netlify
+2. Set build command: `npm run build`
+3. Set publish directory: `dist`
+4. Deploy
 
-This project is built with:
+### Manual Deployment
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. Build the project: `npm run build`
+2. Upload the `dist` folder to your hosting provider
 
-## How can I deploy this project?
+## 🔧 Configuration
 
-Simply open [Lovable](https://lovable.dev/projects/1bf7c55c-fd97-49d9-9f3e-9252d2734f42) and click on Share -> Publish.
+- **Environment Variables**: Copy `.env.example` to `.env` and configure
+- **Analytics**: Update tracking IDs in `src/contexts/AnalyticsContext.tsx`
+- **Content**: Modify content in `src/content/`
 
-## Can I connect a custom domain to my Lovable project?
+## 📊 Analytics & Monitoring
 
-Yes, you can!
+The portfolio includes built-in analytics for:
+- Page views and user interactions
+- Performance metrics
+- Error tracking
+- Custom events
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🤝 Contributing
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is private and proprietary.
+
+## 📞 Contact
+
+Laxmikant Nishad
+- Email: [Your Email]
+- LinkedIn: [Your LinkedIn]
+- GitHub: [Your GitHub]
+
+---
+
+Built with ❤️ using React, TypeScript, and modern web technologies.
