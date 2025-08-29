@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import CosmicLoader from "./components/CosmicLoader";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { PortfolioModeProvider, usePortfolioMode } from "./contexts/BackgroundModeContext";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 import { useEnhancedAnalytics } from "./hooks/useAnalytics";
 import { usePerformanceMonitoring } from "./hooks/usePerformanceMonitoring";
@@ -24,6 +25,9 @@ const DataContactPanel = lazy(() => import("./components/DataContactPanel"));
 const CommandLineNav = lazy(() => import("./components/CommandLineNav"));
 const LiveTerminal = lazy(() => import("./components/LiveTerminal"));
 const CosmicShaderBackground = lazy(() => import("./components/CosmicShaderBackground"));
+const NormalBackground = lazy(() => import("./components/NormalBackground"));
+const BackgroundRenderer = lazy(() => import("./components/BackgroundRenderer"));
+const BasicPortfolio = lazy(() => import("./components/BasicPortfolio"));
 const KeyboardShortcuts = lazy(() => import("./components/KeyboardShortcuts"));
 const PageTransition = lazy(() => import("./components/PageTransition"));
 const MobileNavigation = lazy(() => import("./components/MobileNavigation"));
@@ -183,30 +187,58 @@ const NeuralPortfolio = () => {
 );
 };
 
+// Basic Portfolio Component
+const BasicPortfolioWrapper = () => {
+  return (
+    <div className="relative">
+      <ErrorBoundary>
+        <Suspense fallback={<div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center"><div className="text-xl">Loading...</div></div>}>
+          <BasicPortfolio />
+        </Suspense>
+      </ErrorBoundary>
+    </div>
+  );
+};
+
+const PortfolioRenderer = () => {
+  const { portfolioMode } = usePortfolioMode();
+
+  switch (portfolioMode) {
+    case 'basic':
+      return <BasicPortfolioWrapper />;
+    case 'cosmic':
+    case 'normal-bg':
+    default:
+      return <NeuralPortfolio />;
+  }
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        {/* Global Cosmic Background mounted OUTSIDE page transitions to cover full viewport */}
-        <Suspense fallback={<div className="fixed inset-0 pointer-events-none z-0 cosmic-bg"></div>}>
-          <CosmicShaderBackground />
-        </Suspense>
-        <BrowserRouter>
-          <AnalyticsProvider>
-            <Suspense fallback={<CosmicLoader message="Loading page transition..." />}>
-              <PageTransition>
-                <Routes>
-                  <Route path="/" element={<NeuralPortfolio />} />
-                  <Route path="/analytics" element={<AnalyticsPage />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </PageTransition>
-            </Suspense>
-          </AnalyticsProvider>
-        </BrowserRouter>
-      </TooltipProvider>
+      <PortfolioModeProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          {/* Global Background mounted OUTSIDE page transitions to cover full viewport */}
+          <Suspense fallback={<div className="fixed inset-0 pointer-events-none z-0 cosmic-bg"></div>}>
+            <BackgroundRenderer />
+          </Suspense>
+          <BrowserRouter>
+            <AnalyticsProvider>
+              <Suspense fallback={<CosmicLoader message="Loading page transition..." />}>
+                <PageTransition>
+                  <Routes>
+                    <Route path="/" element={<PortfolioRenderer />} />
+                    <Route path="/analytics" element={<AnalyticsPage />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </PageTransition>
+              </Suspense>
+            </AnalyticsProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </PortfolioModeProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );

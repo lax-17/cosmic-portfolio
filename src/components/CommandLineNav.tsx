@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { ChevronRight, Terminal, Download } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+import BackgroundModeToggle from "./BackgroundModeToggle";
 
 const CommandLineNav = () => {
   const [currentSection, setCurrentSection] = useState("hero");
@@ -122,21 +123,24 @@ const CommandLineNav = () => {
         <span className="cursor text-primary" aria-hidden="true">█</span>
       </motion.div>
 
-      {/* Resume quick button (top-right) */}
-      <motion.a
-        href="/Laxmikant_Resume.pdf"
-        download="Laxmikant's Resume.pdf"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed top-4 right-4 z-50 px-3 py-2 rounded-lg text-xs font-mono text-primary bg-primary/10 hover:bg-primary/20 flex items-center gap-2"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.3 }}
-        aria-label="Download resume (PDF)"
-      >
-        <Download size={14} />
-        Resume
-      </motion.a>
+      {/* Top-right controls */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
+        <BackgroundModeToggle />
+        <motion.a
+          href="/Laxmikant_Resume.pdf"
+          download="Laxmikant's Resume.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-3 py-2 rounded-lg text-xs font-mono text-primary bg-primary/10 hover:bg-primary/20 flex items-center gap-2"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+          aria-label="Download resume (PDF)"
+        >
+          <Download size={14} />
+          Resume
+        </motion.a>
+      </div>
 
       {/* Navigation Terminal */}
       <motion.div

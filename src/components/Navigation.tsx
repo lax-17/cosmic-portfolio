@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Download } from "lucide-react";
+import BackgroundModeToggle from "./BackgroundModeToggle";
 
 const Navigation = () => {
   const [activeSection, setActiveSection] = useState("hero");
@@ -65,19 +66,22 @@ const Navigation = () => {
           ))}
         </div>
 
-        <motion.a
-          href="/Laxmikant_Resume.pdf"
-          download="Laxmikant's Resume.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 text-primary bg-primary/10 hover:bg-primary/20 flex items-center gap-2"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          aria-label="Download resume (PDF)"
-        >
-          <Download size={16} />
-          Resume
-        </motion.a>
+        <div className="flex items-center gap-4">
+          <BackgroundModeToggle />
+          <motion.a
+            href="/Laxmikant_Resume.pdf"
+            download="Laxmikant's Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 text-primary bg-primary/10 hover:bg-primary/20 flex items-center gap-2"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            aria-label="Download resume (PDF)"
+          >
+            <Download size={16} />
+            Resume
+          </motion.a>
+        </div>
       </div>
     </motion.nav>
   );

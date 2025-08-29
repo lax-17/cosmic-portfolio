@@ -350,13 +350,15 @@ const NeuralSkillsGraph = () => {
                   {viewMode === "2d" ? (
                     <svg
                       ref={svgRef}
-                      className="w-full h-full min-w-[720px]"
+                      className="w-full h-full"
                       viewBox={`-20 -20 ${Math.max(dimensions.width + 40, 720)} ${Math.max(dimensions.height + 40, 440)}`}
                       preserveAspectRatio="xMidYMid meet"
                       style={{
                         transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
                         transformOrigin: 'center',
-                        transition: isDragging ? 'none' : 'transform 0.2s ease-out'
+                        transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+                        maxWidth: '100%',
+                        overflow: 'hidden'
                       }}
                     >
                       {/* Connections */}

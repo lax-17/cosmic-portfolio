@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { Menu, X, Home, Briefcase, Brain, GitBranch, Mail } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+import BackgroundModeToggle from "./BackgroundModeToggle";
 
 const MobileNavigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -230,6 +231,14 @@ const MobileNavigation = () => {
                   <div className="text-xs text-muted-foreground mb-2">Theme</div>
                   <div className="flex justify-center">
                     <ThemeToggle />
+                  </div>
+                </div>
+
+                {/* Background Mode Toggle */}
+                <div className="mt-4 pt-4 border-t border-panel-border">
+                  <div className="text-xs text-muted-foreground mb-2">Background</div>
+                  <div className="flex justify-center">
+                    <BackgroundModeToggle />
                   </div>
                 </div>
               </div>
