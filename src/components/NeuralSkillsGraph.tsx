@@ -226,122 +226,134 @@ const NeuralSkillsGraph = () => {
           </div>
 
           {/* Controls Bar */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6 p-4 bg-muted/50 rounded-lg cosmic-border">
+          <div className="flex flex-col gap-3 mb-4 md:mb-6 p-3 md:p-4 bg-muted/50 rounded-lg cosmic-border overflow-hidden">
             {/* Search */}
-            <div className="relative flex-1">
+            <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search skills..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm min-w-0"
               />
             </div>
 
-            {/* Category Filter */}
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <select
-                value={selectedCategory || ""}
-                onChange={(e) => setSelectedCategory(e.target.value || null)}
-                className="pl-10 pr-8 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm appearance-none"
-              >
-                <option value="">All Categories</option>
-                <option value="ml">ML</option>
-                <option value="cv">CV</option>
-                <option value="nlp">NLP</option>
-                <option value="tools">Tools</option>
-              </select>
-            </div>
+            {/* Mobile: Category and Export in same row */}
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+              {/* Category Filter */}
+              <div className="relative flex-1 min-w-0">
+                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <select
+                  value={selectedCategory || ""}
+                  onChange={(e) => setSelectedCategory(e.target.value || null)}
+                  className="w-full pl-10 pr-8 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm appearance-none min-w-0"
+                >
+                  <option value="">All Categories</option>
+                  <option value="ml">ML</option>
+                  <option value="cv">CV</option>
+                  <option value="nlp">NLP</option>
+                  <option value="tools">Tools</option>
+                </select>
+              </div>
 
-            {/* Export Buttons */}
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => exportData('json')}
-                className="text-xs"
-              >
-                <Download className="w-4 h-4 mr-1" />
-                JSON
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => exportData('csv')}
-                className="text-xs"
-              >
-                <Download className="w-4 h-4 mr-1" />
-                CSV
-              </Button>
+              {/* Export Buttons */}
+              <div className="flex gap-2 flex-shrink-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => exportData('json')}
+                  className="text-xs px-2 py-1"
+                >
+                  <Download className="w-3 h-3 mr-1" />
+                  <span className="hidden xs:inline">JSON</span>
+                  <span className="xs:hidden">J</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => exportData('csv')}
+                  className="text-xs px-2 py-1"
+                >
+                  <Download className="w-3 h-3 mr-1" />
+                  <span className="hidden xs:inline">CSV</span>
+                  <span className="xs:hidden">C</span>
+                </Button>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
             {/* Network Visualization */}
-            <div className="lg:col-span-2">
-              <div className="code-panel h-[400px] sm:h-[500px] md:h-[540px] cosmic-border">
-                <div className="code-header flex justify-between items-center">
-                  <div>
+            <div className="lg:col-span-2 min-w-0">
+              <div className="code-panel h-[350px] sm:h-[400px] md:h-[500px] lg:h-[540px] cosmic-border overflow-hidden">
+                <div className="code-header flex justify-between items-center overflow-hidden">
+                  <div className="min-w-0 flex-1">
                     <span className="text-xs cosmic-text">
                       {viewMode === "2d" ? "neural_network.svg" : "neural_network_3d"}
                     </span>
-                    <span className="text-xs text-muted-foreground ml-2">
+                    <span className="text-xs text-muted-foreground ml-1 md:ml-2 hidden sm:inline">
                       {filteredNodes.length} nodes, {filteredConnections.length} connections
                       {searchTerm && ` (filtered from ${skillNodes.length})`}
                     </span>
                   </div>
-                  <div className="flex gap-2">
-                    {/* Zoom Controls */}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleZoom(0.1)}
-                      title="Zoom In"
-                    >
-                      <ZoomIn className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleZoom(-0.1)}
-                      title="Zoom Out"
-                    >
-                      <ZoomOut className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={resetView}
-                      title="Reset View"
-                    >
-                      <RotateCcw className="w-4 h-4" />
-                    </Button>
-                    <div className="w-px h-6 bg-border mx-1"></div>
+                  <div className="flex gap-1 md:gap-2 flex-shrink-0">
+                    {/* Zoom Controls - Hidden on mobile */}
+                    <div className="hidden md:flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleZoom(0.1)}
+                        title="Zoom In"
+                        className="px-2"
+                      >
+                        <ZoomIn className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleZoom(-0.1)}
+                        title="Zoom Out"
+                        className="px-2"
+                      >
+                        <ZoomOut className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={resetView}
+                        title="Reset View"
+                        className="px-2"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                      </Button>
+                      <div className="w-px h-6 bg-border mx-1"></div>
+                    </div>
+                    
+                    {/* View Mode Toggle */}
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setViewMode("2d")}
-                      className={viewMode === "2d" ? "bg-primary/20" : ""}
+                      className={`px-2 ${viewMode === "2d" ? "bg-primary/20" : ""}`}
                     >
-                      <Network className="w-4 h-4 mr-1" />
-                      2D
+                      <Network className="w-3 h-3 md:w-4 md:h-4 md:mr-1" />
+                      <span className="hidden md:inline">2D</span>
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setViewMode("3d")}
-                      className={viewMode === "3d" ? "bg-primary/20" : ""}
+                      className={`px-2 ${viewMode === "3d" ? "bg-primary/20" : ""}`}
                     >
-                      <Box className="w-4 h-4 mr-1" />
-                      3D
+                      <Box className="w-3 h-3 md:w-4 md:h-4 md:mr-1" />
+                      <span className="hidden md:inline">3D</span>
                     </Button>
                   </div>
                 </div>
 
                 <div
-                  className="relative h-full p-2 sm:p-3 md:p-4 overflow-hidden cursor-move"
+                  className="relative h-full p-1 sm:p-2 md:p-3 lg:p-4 overflow-hidden cursor-move"
                   onMouseDown={handleMouseDown}
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
@@ -351,14 +363,15 @@ const NeuralSkillsGraph = () => {
                     <svg
                       ref={svgRef}
                       className="w-full h-full"
-                      viewBox={`-20 -20 ${Math.max(dimensions.width + 40, 720)} ${Math.max(dimensions.height + 40, 440)}`}
+                      viewBox={`0 0 ${Math.max(dimensions.width, 320)} ${Math.max(dimensions.height, 240)}`}
                       preserveAspectRatio="xMidYMid meet"
                       style={{
                         transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
                         transformOrigin: 'center',
                         transition: isDragging ? 'none' : 'transform 0.2s ease-out',
                         maxWidth: '100%',
-                        overflow: 'hidden'
+                        maxHeight: '100%',
+                        overflow: 'visible'
                       }}
                     >
                       {/* Connections */}
@@ -457,27 +470,29 @@ const NeuralSkillsGraph = () => {
                               }}
                             />
 
-                            {/* Node Label */}
+                            {/* Node Label - Responsive font size */}
                             <text
                               x={node.x}
                               y={node.y - 18}
                               textAnchor="middle"
                               fill="hsl(var(--foreground))"
-                              fontSize="10"
+                              fontSize={dimensions.width < 480 ? "8" : "10"}
                               fontFamily="JetBrains Mono"
                               className="pointer-events-none"
                               opacity={isHighlighted || hoveredNode === null ? 1 : 0.6}
                             >
-                              {node.name}
+                              {dimensions.width < 480 && node.name.length > 8
+                                ? node.name.substring(0, 8) + '...'
+                                : node.name}
                             </text>
 
-                            {/* Skill Level */}
+                            {/* Skill Level - Responsive font size */}
                             <text
                               x={node.x}
                               y={node.y + 20}
                               textAnchor="middle"
                               fill="hsl(var(--muted-foreground))"
-                              fontSize="8"
+                              fontSize={dimensions.width < 480 ? "7" : "8"}
                               fontFamily="JetBrains Mono"
                               className="pointer-events-none"
                               opacity={isHighlighted ? 1 : 0}
@@ -500,13 +515,13 @@ const NeuralSkillsGraph = () => {
             </div>
 
             {/* Side Panel */}
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3 min-w-0">
               {/* Legend */}
               <div className="code-panel cosmic-border">
                 <div className="code-header">
                   <span className="text-xs cosmic-text">legend.json</span>
                 </div>
-                <div className="p-3 space-y-2">
+                <div className="p-2 md:p-3 space-y-1 md:space-y-2">
                   {Object.entries(categoryColors).map(([category, color]) => (
                     <motion.div
                       key={category}
@@ -539,7 +554,7 @@ const NeuralSkillsGraph = () => {
                 <div className="terminal-header">
                   <span className="text-xs text-terminal-text cosmic-text">network.stats</span>
                 </div>
-                <div className="terminal-content text-xs space-y-1">
+                <div className="p-2 md:p-3 text-xs space-y-1">
                   <div className="text-muted-foreground">// Analysis</div>
                   <div><span className="syntax-keyword">nodes</span>: <span className="syntax-number">{filteredNodes.length}</span>{searchTerm && <span className="text-muted-foreground">/{skillNodes.length}</span>}</div>
                   <div><span className="syntax-keyword">connections</span>: <span className="syntax-number">{filteredConnections.length}</span>{searchTerm && <span className="text-muted-foreground">/{connections.length}</span>}</div>
@@ -571,7 +586,7 @@ const NeuralSkillsGraph = () => {
                         ×
                       </Button>
                     </div>
-                    <div className="p-3 text-xs">
+                    <div className="p-2 md:p-3 text-xs">
                       {(() => {
                         const node = filteredNodes.find(n => n.id === selectedNode);
                         if (!node) return null;
@@ -614,7 +629,7 @@ const NeuralSkillsGraph = () => {
                 <div className="code-header">
                   <span className="text-xs cosmic-text">actions.sh</span>
                 </div>
-                <div className="p-3 space-y-2">
+                <div className="p-2 md:p-3 space-y-1 md:space-y-2">
                   <Button
                     variant="ghost"
                     size="sm"

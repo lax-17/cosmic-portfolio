@@ -22,14 +22,20 @@ const MobileNavigation = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show mobile nav after scrolling past hero section
+      // Show mobile nav after scrolling past hero section or immediately if no hero
       const heroSection = document.getElementById('hero');
       if (heroSection) {
         const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
         setIsVisible(window.scrollY > heroBottom - 100);
+      } else {
+        // If no hero section found, show nav after minimal scroll
+        setIsVisible(window.scrollY > 50);
       }
     };
 
+    // Check initial state
+    handleScroll();
+    
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -63,9 +69,30 @@ const MobileNavigation = () => {
   };
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
+    // Handle different section IDs that might exist
+    let element = document.getElementById(sectionId);
+    
+    // Fallback mappings for different portfolio modes
+    if (!element) {
+      const fallbackMappings: { [key: string]: string } = {
+        'hero': 'main-content',
+        'projects': 'projects',
+        'skills': 'skills',
+        'experience': 'experience',
+        'contact': 'contact'
+      };
+      
+      const fallbackId = fallbackMappings[sectionId];
+      if (fallbackId) {
+        element = document.getElementById(fallbackId);
+      }
+    }
+    
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
+      setIsOpen(false);
+    } else {
+      // If no element found, just close the menu
       setIsOpen(false);
     }
   };
@@ -104,19 +131,20 @@ const MobileNavigation = () => {
     <>
       {/* Mobile Menu Button */}
       <motion.button
-        className="fixed bottom-6 right-6 z-40 md:hidden p-4 rounded-full bg-primary text-primary-foreground shadow-lg"
+        className="fixed bottom-4 right-4 z-40 md:hidden p-3 rounded-full bg-primary text-primary-foreground shadow-lg touch-manipulation"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1 }}
+        transition={{ delay: 0.5 }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
         aria-expanded={isOpen}
         role="button"
+        style={{ minHeight: '48px', minWidth: '48px' }}
       >
         <AnimatePresence mode="wait">
           {isOpen ? (
@@ -161,7 +189,7 @@ const MobileNavigation = () => {
 
             {/* Menu */}
             <motion.div
-              className="fixed bottom-24 right-6 z-40 md:hidden"
+              className="fixed bottom-20 right-4 z-40 md:hidden max-w-[280px] w-[calc(100vw-2rem)]"
               variants={menuVariants}
               initial="closed"
               animate="open"
@@ -170,7 +198,7 @@ const MobileNavigation = () => {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              <div className="bg-panel border border-panel-border rounded-lg shadow-2xl p-4 min-w-[200px]">
+              <div className="bg-panel border border-panel-border rounded-lg shadow-2xl p-3 min-w-[200px]">
                 <div className="space-y-2">
                   {navItems.map((item, index) => (
                     <motion.button
@@ -181,21 +209,22 @@ const MobileNavigation = () => {
                       exit="closed"
                       transition={{ delay: index * 0.1 }}
                       onClick={() => scrollToSection(item.id)}
-                      className="w-full flex items-center gap-3 p-4 rounded border border-panel-border/50 hover:border-panel-border hover:bg-muted/50 transition-all duration-200 text-left"
+                      className="w-full flex items-center gap-3 p-3 rounded border border-panel-border/50 hover:border-panel-border hover:bg-muted/50 transition-all duration-200 text-left touch-manipulation"
                       aria-label={`Navigate to ${item.label} section`}
                       role="menuitem"
+                      style={{ minHeight: '48px' }}
                     >
-                      <item.icon size={18} className="text-primary" />
-                      <div>
-                        <div className="text-foreground font-medium">{item.label}</div>
-                        <div className="text-xs text-muted-foreground font-mono">{item.command}</div>
+                      <item.icon size={16} className="text-primary flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-foreground truncate">{item.label}</div>
+                        <div className="text-xs text-muted-foreground font-mono truncate">{item.command}</div>
                       </div>
                     </motion.button>
                   ))}
                 </div>
 
                 {/* Quick Actions */}
-                <div className="mt-4 pt-4 border-t border-panel-border">
+                <div className="mt-3 pt-3 border-t border-panel-border">
                   <div className="text-xs text-muted-foreground mb-2">Quick Actions</div>
                   <div className="flex gap-2">
                     <button
@@ -204,9 +233,10 @@ const MobileNavigation = () => {
                         if (terminal) (terminal as HTMLElement).click();
                         setIsOpen(false);
                       }}
-                      className="flex-1 px-4 py-3 text-xs bg-primary/10 text-primary rounded border border-primary/20 hover:bg-primary/20 transition-colors"
+                      className="flex-1 px-3 py-2 text-xs bg-primary/10 text-primary rounded border border-primary/20 hover:bg-primary/20 transition-colors touch-manipulation"
                       aria-label="Open terminal"
                       role="menuitem"
+                      style={{ minHeight: '40px' }}
                     >
                       Terminal
                     </button>
@@ -217,9 +247,10 @@ const MobileNavigation = () => {
                         if (helpBtn) (helpBtn as HTMLElement).click();
                         setIsOpen(false);
                       }}
-                      className="flex-1 px-4 py-3 text-xs bg-secondary/10 text-secondary rounded border border-secondary/20 hover:bg-secondary/20 transition-colors"
+                      className="flex-1 px-3 py-2 text-xs bg-secondary/10 text-secondary rounded border border-secondary/20 hover:bg-secondary/20 transition-colors touch-manipulation"
                       aria-label="Open help"
                       role="menuitem"
+                      style={{ minHeight: '40px' }}
                     >
                       Help
                     </button>
@@ -227,7 +258,7 @@ const MobileNavigation = () => {
                 </div>
 
                 {/* Theme Toggle */}
-                <div className="mt-4 pt-4 border-t border-panel-border">
+                <div className="mt-3 pt-3 border-t border-panel-border">
                   <div className="text-xs text-muted-foreground mb-2">Theme</div>
                   <div className="flex justify-center">
                     <ThemeToggle />
@@ -235,7 +266,7 @@ const MobileNavigation = () => {
                 </div>
 
                 {/* Background Mode Toggle */}
-                <div className="mt-4 pt-4 border-t border-panel-border">
+                <div className="mt-3 pt-3 border-t border-panel-border">
                   <div className="text-xs text-muted-foreground mb-2">Background</div>
                   <div className="flex justify-center">
                     <BackgroundModeToggle />
@@ -247,23 +278,26 @@ const MobileNavigation = () => {
         )}
       </AnimatePresence>
 
-      {/* Mobile Status Bar */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 z-30 md:hidden bg-panel/80 backdrop-blur-sm border-b border-panel-border"
-        initial={{ y: -100 }}
-        animate={{ y: isVisible ? 0 : -100 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="flex items-center justify-between px-4 py-2">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-xs font-mono text-muted-foreground">neural-interface</span>
+      {/* Mobile Status Bar - Only show when needed */}
+      {isVisible && (
+        <motion.div
+          className="fixed top-0 left-0 right-0 z-30 md:hidden bg-panel/90 backdrop-blur-sm border-b border-panel-border"
+          initial={{ y: -100 }}
+          animate={{ y: 0 }}
+          exit={{ y: -100 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex items-center justify-between px-3 py-2">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-xs font-mono text-muted-foreground truncate">neural-interface</span>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </div>
           </div>
-          <div className="text-xs text-muted-foreground">
-            {new Date().toLocaleTimeString()}
-          </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      )}
     </>
   );
 };

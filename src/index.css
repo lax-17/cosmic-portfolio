@@ -302,6 +302,11 @@
     .asymmetric-layout {
       grid-template-columns: 1fr;
     }
+    
+    .data-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
   }
 
   /* Syntax Highlighting */
@@ -325,10 +330,54 @@
     @apply font-mono text-xs text-muted-foreground;
   }
 
-  /* Navigation Command Line */
+  /* Navigation Command Line - Mobile responsive */
   .nav-terminal {
     @apply fixed bottom-4 left-4 right-4 z-50;
-    @apply terminal-panel px-4 py-2;
+    @apply terminal-panel px-3 py-2 md:px-4 md:py-2;
+  }
+  
+  /* Mobile-specific improvements */
+  @media (max-width: 768px) {
+    .nav-terminal {
+      @apply bottom-2 left-2 right-2;
+    }
+    
+    /* Ensure mobile touch targets are large enough */
+    button, a, input, textarea, select {
+      min-height: 44px;
+    }
+    
+    /* Improve mobile text readability */
+    body {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+    
+    /* Prevent horizontal scroll on mobile */
+    html, body {
+      overflow-x: hidden;
+    }
+    
+    /* Mobile-friendly scrolling */
+    * {
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+  
+  /* Extra small mobile devices */
+  @media (max-width: 480px) {
+    .nav-terminal {
+      @apply bottom-1 left-1 right-1 px-2 py-1;
+    }
+    
+    /* Smaller text on very small screens */
+    .text-terminal-lg {
+      @apply text-base;
+    }
+    
+    .text-terminal-xl {
+      @apply text-lg;
+    }
   }
 
   /* Loading Indicators */

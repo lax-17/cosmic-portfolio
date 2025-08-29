@@ -103,9 +103,9 @@ const CommandLineNav = () => {
 
   return (
     <>
-      {/* Current Location Indicator */}
+      {/* Current Location Indicator - Hidden on mobile */}
       <motion.div
-        className="fixed top-4 left-4 z-50 flex items-center gap-2 text-xs font-mono"
+        className="fixed top-4 left-4 z-50 hidden md:flex items-center gap-2 text-xs font-mono"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
@@ -123,28 +123,29 @@ const CommandLineNav = () => {
         <span className="cursor text-primary" aria-hidden="true">█</span>
       </motion.div>
 
-      {/* Top-right controls */}
-      <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
+      {/* Top-right controls - Responsive */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2 md:gap-3">
         <BackgroundModeToggle />
         <motion.a
           href="/Laxmikant_Resume.pdf"
           download="Laxmikant's Resume.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          className="px-3 py-2 rounded-lg text-xs font-mono text-primary bg-primary/10 hover:bg-primary/20 flex items-center gap-2"
+          className="px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs font-mono text-primary bg-primary/10 hover:bg-primary/20 flex items-center gap-1 md:gap-2"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
           aria-label="Download resume (PDF)"
         >
-          <Download size={14} />
-          Resume
+          <Download size={12} className="md:hidden" />
+          <Download size={14} className="hidden md:block" />
+          <span className="hidden sm:inline">Resume</span>
         </motion.a>
       </div>
 
-      {/* Navigation Terminal */}
+      {/* Navigation Terminal - Mobile responsive */}
       <motion.div
-        className={`nav-terminal ${showNav ? 'block' : 'hidden'}`}
+        className={`fixed bottom-4 left-4 right-4 md:left-4 md:right-4 z-50 terminal-panel px-3 py-2 md:px-4 md:py-2 ${showNav ? 'block' : 'hidden'}`}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: showNav ? 1 : 0, y: showNav ? 0 : 20 }}
         transition={{ duration: 0.2 }}
@@ -169,7 +170,7 @@ const CommandLineNav = () => {
             onChange={(e) => setCommand(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Type command or section name..."
-            className="flex-1 bg-transparent outline-none text-terminal-text font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+            className="flex-1 bg-transparent outline-none text-terminal-text font-mono text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
             autoFocus={showNav}
             aria-label="Navigation command input"
             aria-describedby="nav-instructions"
@@ -207,15 +208,16 @@ const CommandLineNav = () => {
           </motion.div>
         )}
 
-        {/* Quick Commands */}
-        <div id="nav-instructions" className="mt-3 text-xs text-muted-foreground" aria-label="Keyboard shortcuts">
-          <div>Tab: autocomplete | Enter: execute | Esc: close</div>
+        {/* Quick Commands - Responsive text */}
+        <div id="nav-instructions" className="mt-2 md:mt-3 text-xs text-muted-foreground" aria-label="Keyboard shortcuts">
+          <div className="hidden md:block">Tab: autocomplete | Enter: execute | Esc: close</div>
+          <div className="md:hidden">Enter: go | Esc: close</div>
         </div>
       </motion.div>
 
-      {/* Section Quick Links */}
+      {/* Section Quick Links - Hidden on mobile and tablet */}
       <motion.nav
-        className="fixed right-4 top-1/2 transform -translate-y-1/2 z-40 hidden lg:block"
+        className="fixed right-4 top-1/2 transform -translate-y-1/2 z-40 hidden xl:block"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.5 }}
