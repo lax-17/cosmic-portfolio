@@ -103,8 +103,8 @@ const TerminalHero = () => {
                      ./contact --info
                    </button>
                    <a
-                     href="/Updated_Resume%20AI%20ready%20A16.pdf"
-                     download="Laxmikant_Nishad_Resume.pdf"
+                     href="/Laxmikant_Resume.pdf"
+                     download="Laxmikant_Resume.pdf"
                      target="_blank"
                      rel="noopener noreferrer"
                      className="px-4 py-2 border border-terminal-border text-terminal-text hover:bg-terminal transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"

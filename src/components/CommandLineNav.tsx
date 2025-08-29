@@ -124,8 +124,8 @@ const CommandLineNav = () => {
 
       {/* Resume quick button (top-right) */}
       <motion.a
-        href="/Updated_Resume%20AI%20ready%20A16.pdf"
-        download="Laxmikant_Nishad_Resume.pdf"
+        href="/Laxmikant_Resume.pdf"
+        download="Laxmikant_Resume.pdf"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed top-4 right-4 z-50 px-3 py-2 rounded-lg text-xs font-mono text-primary bg-primary/10 hover:bg-primary/20 flex items-center gap-2"

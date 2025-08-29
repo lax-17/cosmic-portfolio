@@ -122,8 +122,8 @@ const ContactSection = () => {
                   </motion.a>
 
                   <motion.a
-                    href="/Updated_Resume%20AI%20ready%20A16.pdf"
-                    download="Laxmikant_Nishad_Resume.pdf"
+                    href="/Laxmikant_Resume.pdf"
+                    download="Laxmikant_Resume.pdf"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-3 glass-card px-6 py-3 text-cosmic font-semibold hover:scale-105 transition-all duration-300"
