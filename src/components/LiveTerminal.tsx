@@ -302,9 +302,7 @@ const LiveTerminal = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className={`fixed bottom-24 right-6 z-50 w-96 border border-terminal-border shadow-2xl cosmic-glow ${
-              isMinimized ? 'h-12' : 'h-80'
-            }`}
+            className="fixed bottom-24 right-6 z-50"
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
@@ -314,144 +312,115 @@ const LiveTerminal = () => {
             aria-labelledby="terminal-title"
             aria-describedby="terminal-description"
           >
-            {/* Terminal Header */}
-            <header className="flex items-center justify-between px-3 py-2 border-b border-terminal-border bg-panel">
-              <div className="flex items-center gap-2">
-                <div className="flex gap-1" aria-label="Terminal window controls">
-                  <div className="w-3 h-3 rounded-full bg-red-500" aria-label="Close terminal"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-500" aria-label="Minimize terminal"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-500" aria-label="Maximize terminal"></div>
+            <div className={`w-96 border border-terminal-border shadow-2xl cosmic-glow ${isMinimized ? 'h-12' : 'h-80'}`}>
+              {/* Terminal Header */}
+              <header className="flex items-center justify-between px-3 py-2 border-b border-terminal-border bg-panel">
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1" aria-label="Terminal window controls">
+                    <div className="w-3 h-3 rounded-full bg-red-500" aria-label="Close terminal"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500" aria-label="Minimize terminal"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500" aria-label="Maximize terminal"></div>
+                  </div>
+                  <h2 id="terminal-title" className="text-xs text-muted-foreground font-mono sr-only">
+                    Neural Terminal
+                  </h2>
+                  <span className="text-xs text-muted-foreground font-mono" aria-hidden="true">
+                    neural-terminal
+                  </span>
                 </div>
-                <h2 id="terminal-title" className="text-xs text-muted-foreground font-mono sr-only">
-                  Neural Terminal
-                </h2>
-                <span className="text-xs text-muted-foreground font-mono" aria-hidden="true">
-                  neural-terminal
-                </span>
-              </div>
-              <div className="flex items-center gap-1" role="group" aria-label="Terminal controls">
-                <button
-                  onClick={() => setIsMinimized(!isMinimized)}
-                  className="p-1 hover:bg-muted/50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-                  aria-label={isMinimized ? "Maximize terminal" : "Minimize terminal"}
-                >
-                  {isMinimized ? <Maximize2 size={12} aria-hidden="true" /> : <Minimize2 size={12} aria-hidden="true" />}
-                </button>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="p-1 hover:bg-muted/50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-                  aria-label="Close terminal"
-                >
-                  <X size={12} aria-hidden="true" />
-                </button>
-              </div>
-            </header>
+                <div className="flex items-center gap-1" role="group" aria-label="Terminal controls">
+                  <button
+                    onClick={() => setIsMinimized(!isMinimized)}
+                    className="p-1 hover:bg-muted/50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                    aria-label={isMinimized ? "Maximize terminal" : "Minimize terminal"}
+                  >
+                    {isMinimized ? <Maximize2 size={12} aria-hidden="true" /> : <Minimize2 size={12} aria-hidden="true" />}
+                  </button>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="p-1 hover:bg-muted/50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                    aria-label="Close terminal"
+                  >
+                    <X size={12} aria-hidden="true" />
+                  </button>
+                </div>
+              </header>
 
-            {/* Terminal Content */}
-            {!isMinimized && (
-              <div className="h-full flex flex-col">
-                {/* Output Area */}
-                <div
-                  ref={terminalRef}
-                  className="flex-1 p-3 font-mono text-sm overflow-y-auto bg-terminal min-h-0"
-                  role="log"
-                  aria-live="polite"
-                  aria-label="Terminal output"
-                  aria-describedby="terminal-description"
-                >
-                  {/* Welcome Message */}
-                  <div id="terminal-description" className="text-muted-foreground mb-2 cosmic-text">
-                    Neural Interface Terminal v2.1.0
-                  </div>
-                  <div className="text-muted-foreground mb-4">
-                    Type 'help' for available commands.
-                  </div>
-
-                  {/* Command History */}
-                  {commandHistory.map((cmd, index) => (
-                    <div key={index} className="mb-2">
-                      {cmd.input && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-primary cosmic-text">$</span>
-                          <span className="text-terminal-text">{cmd.input}</span>
-                        </div>
-                      )}
-                      {cmd.output.map((line, lineIndex) => (
-                        <div key={lineIndex} className="text-terminal-text ml-4">
-                          {line}
-                        </div>
-                      ))}
+              {/* Terminal Content */}
+              {!isMinimized && (
+                <div className="h-full flex flex-col">
+                  {/* Output Area */}
+                  <div
+                    ref={terminalRef}
+                    className="flex-1 p-3 font-mono text-sm overflow-y-auto bg-terminal min-h-0"
+                    role="log"
+                    aria-live="polite"
+                    aria-label="Terminal output"
+                    aria-describedby="terminal-description"
+                  >
+                    {/* Welcome Message */}
+                    <div id="terminal-description" className="text-muted-foreground mb-2 cosmic-text">
+                      Neural Interface Terminal v2.1.0
                     </div>
-                  ))}
+                    <div className="text-muted-foreground mb-4">
+                      Type 'help' for available commands.
+                    </div>
 
-                  {/* Current Input */}
-                  <div className="flex items-center gap-2" role="group" aria-label="Terminal command input">
-                    <span className="text-primary cosmic-text" aria-hidden="true">$</span>
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      value={currentInput}
-                      onChange={(e) => setCurrentInput(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      className="flex-1 bg-transparent outline-none text-terminal-text font-mono focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-                      placeholder="Type a command..."
-                      disabled={isTyping}
-                      aria-label="Terminal command input"
-                      aria-describedby="terminal-instructions"
-                    />
-                    {isTyping && (
-                      <motion.span
-                        className="text-primary cosmic-glow"
-                        animate={{ opacity: [1, 0] }}
-                        transition={{ duration: 0.5, repeat: Infinity }}
-                        aria-label="Processing command"
-                      >
-                        ▶
-                      </motion.span>
-                    )}
+                    {/* Command History */}
+                    {commandHistory.map((cmd, index) => (
+                      <div key={index} className="mb-2">
+                        {cmd.input && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-primary cosmic-text">$</span>
+                            <span className="text-terminal-text">{cmd.input}</span>
+                          </div>
+                        )}
+                        {cmd.output.map((line, lineIndex) => (
+                          <div key={lineIndex} className="text-terminal-text ml-4">
+                            {line}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+
+                    {/* Current Input */}
+                    <div className="flex items-center gap-2" role="group" aria-label="Terminal command input">
+                      <span className="text-primary cosmic-text" aria-hidden="true">$</span>
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={currentInput}
+                        onChange={(e) => setCurrentInput(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        className="flex-1 bg-transparent outline-none text-terminal-text font-mono focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                        placeholder="Type a command..."
+                        disabled={isTyping}
+                        aria-label="Terminal command input"
+                        aria-describedby="terminal-instructions"
+                      />
+                      {isTyping && (
+                        <motion.span
+                          className="text-primary cosmic-glow"
+                          animate={{ opacity: [1, 0] }}
+                          transition={{ duration: 0.5, repeat: Infinity }}
+                          aria-label="Processing command"
+                        >
+                          ▶
+                        </motion.span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Status Bar */}
+                  <div className="px-3 py-1 border-t border-terminal-border bg-panel text-xs text-muted-foreground font-mono" role="status" aria-live="polite" aria-label="Terminal status">
+                    <div className="flex justify-between">
+                      <span>Status: Connected</span>
+                      <span>Commands: {Object.keys(availableCommands).length}</span>
+                    </div>
                   </div>
                 </div>
-
-                {/* Resize Handle */}
-                <div className="h-1 bg-terminal-border cursor-row-resize hover:bg-primary/50 transition-colors"
-                     onMouseDown={(e) => {
-                       e.preventDefault();
-                       const startY = e.clientY;
-                       const terminal = e.currentTarget.parentElement;
-                       if (!terminal) return;
-
-                       const outputArea = terminal.children[0] as HTMLElement;
-                       const statusBar = terminal.children[2] as HTMLElement;
-
-                       const handleMouseMove = (moveEvent: MouseEvent) => {
-                         const deltaY = moveEvent.clientY - startY;
-                         const newOutputHeight = Math.max(100, outputArea.offsetHeight + deltaY);
-                         const totalHeight = terminal.clientHeight;
-                         const newStatusHeight = Math.max(40, totalHeight - newOutputHeight);
-
-                         outputArea.style.height = `${newOutputHeight}px`;
-                         statusBar.style.height = `${newStatusHeight}px`;
-                       };
-
-                       const handleMouseUp = () => {
-                         document.removeEventListener('mousemove', handleMouseMove);
-                         document.removeEventListener('mouseup', handleMouseUp);
-                       };
-
-                       document.addEventListener('mousemove', handleMouseMove);
-                       document.addEventListener('mouseup', handleMouseUp);
-                     }}>
-                </div>
-
-                {/* Status Bar */}
-                <div className="px-3 py-1 border-t border-terminal-border bg-panel text-xs text-muted-foreground font-mono" role="status" aria-live="polite" aria-label="Terminal status">
-                  <div className="flex justify-between">
-                    <span>Status: Connected</span>
-                    <span>Commands: {Object.keys(availableCommands).length}</span>
-                  </div>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

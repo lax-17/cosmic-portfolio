@@ -63,13 +63,15 @@ const KeyboardShortcuts = () => {
     <>
       {/* Help Button */}
       <motion.button
-        className="fixed bottom-6 left-6 z-50 p-3 rounded-full bg-secondary text-secondary-foreground shadow-lg hover:shadow-xl transition-all duration-200"
+        className="fixed bottom-6 left-6 z-[100] p-3 rounded-full bg-secondary text-secondary-foreground shadow-2xl hover:shadow-3xl transition-all duration-200 border-2 border-secondary-foreground/20"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 1.5 }}
+        aria-label="Open keyboard shortcuts help"
+        title="Keyboard Shortcuts (Press ? or Shift+/)"
       >
         <HelpCircle size={20} />
       </motion.button>
@@ -89,13 +91,19 @@ const KeyboardShortcuts = () => {
 
             {/* Modal */}
             <motion.div
-              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-2xl max-h-[80vh] overflow-hidden"
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="fixed inset-0 flex items-center justify-center z-50 p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="bg-panel border border-panel-border rounded-lg shadow-2xl">
+              <motion.div
+                className="w-full max-w-2xl max-h-[80vh] overflow-hidden bg-panel border border-panel-border rounded-lg shadow-2xl"
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 20 }}
+                transition={{ duration: 0.2 }}
+              >
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-panel-border">
                   <div className="flex items-center gap-3">
@@ -153,7 +161,7 @@ const KeyboardShortcuts = () => {
                     <span>Press <kbd className="px-2 py-1 bg-muted rounded text-xs">Esc</kbd> to close</span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           </>
         )}
