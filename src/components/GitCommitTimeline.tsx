@@ -193,7 +193,7 @@ const GitCommitTimeline = () => {
             </div>
 
             {/* Git Statistics */}
-            <div className="space-y-4">
+            <div className="space-y-4 sticky top-4">
               {/* Commit Stats */}
               <div className="code-panel">
                 <div className="code-header">

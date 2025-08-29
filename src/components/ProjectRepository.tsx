@@ -288,56 +288,56 @@ class UNetReconstructor(nn.Module):
     return colors[projectId as keyof typeof colors] || "text-primary";
   };
 
-  // Safe HTML escape to prevent injection and syntax issues
-  const escapeHtml = (str: string) => {
-    return str
+  const highlightContent = (content: string, type: string): string => {
+    if (type === 'python') {
+      // Escape HTML first
+      let result = content
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+      
+      // Apply syntax highlighting - order matters!
+      result = result
+        // Python keywords
+        .replace(/\b(import|from|class|def|return|if|elif|else|for|while|in|as|with|try|except|raise|pass|yield|True|False|None|self)\b/g, '<span class="syntax-keyword">$1</span>')
+        // Function names (word followed by opening parenthesis)
+        .replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\s*(?=\()/g, '<span class="syntax-function">$1</span>')
+        // String literals (escaped quotes)
+        .replace(/&quot;([^&]|&(?!quot;))*&quot;/g, '<span class="syntax-string">$&</span>')
+        .replace(/&#39;([^&]|&(?!#39;))*&#39;/g, '<span class="syntax-string">$&</span>')
+        // Numbers
+        .replace(/\b\d+(?:\.\d+)?\b/g, '<span class="syntax-number">$&</span>')
+        // Comments last (to avoid conflicts with other patterns)
+        .replace(/^(#.*)$/gm, '<span class="syntax-comment">$1</span>');
+      
+      return result;
+    }
+
+    if (type === 'markdown') {
+      let result = content
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+        
+      result = result
+        .replace(/^# (.*)$/gm, '<span class="syntax-function">$1</span>')
+        .replace(/^## (.*)$/gm, '<span class="syntax-keyword">$1</span>')
+        .replace(/^\*\*(.+?)\*\*$/gm, '<span class="syntax-keyword">$1</span>')
+        .replace(/^- (.*)$/gm, '<span class="syntax-string">$1</span>');
+      return result;
+    }
+
+    // Default: just escape HTML
+    return content
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
-  };
-
-  const highlightContent = (content: string, type: string): string => {
-    if (type === 'python') {
-      // First escape HTML, then apply syntax highlighting
-      let highlighted = escapeHtml(content);
-      
-      // Comments first (to avoid conflicts with other patterns)
-      highlighted = highlighted.replace(/^#.*$/gm, '<span class="syntax-comment">$&</span>');
-      
-      // Python keywords
-      highlighted = highlighted.replace(/\b(import|from|class|def|return|if|elif|else|for|while|in|as|with|try|except|raise|pass|yield|True|False|None|self)\b/g, '<span class="syntax-keyword">$1</span>');
-      
-      // Function definitions and calls
-      highlighted = highlighted.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\s*(?=\()/g, '<span class="syntax-function">$1</span>');
-      
-      // String literals (double quotes) - handle escaped quotes
-      highlighted = highlighted.replace(/&quot;([^&]|&(?!quot;))*&quot;/g, '<span class="syntax-string">$&</span>');
-      
-      // String literals (single quotes) - handle escaped quotes
-      highlighted = highlighted.replace(/&#39;([^&]|&(?!#39;))*&#39;/g, '<span class="syntax-string">$&</span>');
-      
-      // Numbers
-      highlighted = highlighted.replace(/\b\d+(?:\.\d+)?\b/g, '<span class="syntax-number">$&</span>');
-      
-      return highlighted;
-    }
-
-    if (type === 'markdown') {
-      let highlighted = escapeHtml(content);
-      highlighted = highlighted.replace(/^# (.*)$/gm, '<span class="syntax-function">$1</span>');
-      highlighted = highlighted.replace(/^## (.*)$/gm, '<span class="syntax-keyword">$1</span>');
-      highlighted = highlighted.replace(/^\*\*(.+?)\*\*$/gm, '<span class="syntax-keyword">$1</span>');
-      highlighted = highlighted.replace(/^- (.*)$/gm, '<span class="syntax-string">$1</span>');
-      return highlighted;
-    }
-
-    if (type === 'text') {
-      return escapeHtml(content);
-    }
-
-    return escapeHtml(content);
   };
 
   return (
@@ -527,7 +527,7 @@ class UNetReconstructor(nn.Module):
               
               {/* Code Content */}
               <div className="relative">
-                <div className="p-6 md:p-8 font-mono text-base md:text-lg leading-relaxed overflow-auto max-h-[680px] min-h-[480px] bg-terminal/30">
+                <div className="p-6 md:p-8 font-mono text-sm md:text-base leading-relaxed overflow-auto max-h-[680px] min-h-[480px] bg-terminal/30">
                   {selectedFileContent && (
                     <motion.pre
                       initial={{ opacity: 0 }}
