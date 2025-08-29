@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useState } from "react";
 import { Mail, Github, Linkedin, Phone, Copy, ExternalLink, Terminal, Database } from "lucide-react";
+import ContactForm from "@/components/ContactForm";
 
 const DataContactPanel = () => {
   const { ref, inView } = useInView({
@@ -21,7 +22,7 @@ const DataContactPanel = () => {
     status: "available",
     timezone: "GMT+0",
     languages: ["English", "Hindi"],
-    response_time: "< 24hrs"
+    response_time: "24hrs"
   };
 
   const queries = [
@@ -59,7 +60,7 @@ const DataContactPanel = () => {
   };
 
   return (
-    <section id="contact" className="min-h-screen p-8">
+    <section id="contact" className="min-h-screen p-8" aria-labelledby="contact-heading">
       <div className="max-w-7xl mx-auto">
         <motion.div
           ref={ref}
@@ -67,25 +68,27 @@ const DataContactPanel = () => {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.3 }}
         >
-          <div className="text-data-header mb-8">
+          <h2 id="contact-heading" className="sr-only">Contact Information</h2>
+          <div className="text-data-header mb-8" aria-hidden="true">
             ~/contact $ mysql -u laxmikant -p portfolio_db
           </div>
 
           <div className="asymmetric-layout">
             {/* Database Query Interface */}
             <div>
-              <div className="terminal-panel">
-                <div className="terminal-header">
-                  <div className="flex gap-2">
-                    <div className="terminal-dot bg-red-500"></div>
-                    <div className="terminal-dot bg-yellow-500"></div>
-                    <div className="terminal-dot bg-green-500"></div>
+              <div className="terminal-panel" role="region" aria-labelledby="database-query-title">
+                <header className="terminal-header">
+                  <div className="flex gap-2" aria-label="Terminal window controls">
+                    <div className="terminal-dot bg-red-500" aria-label="Close terminal"></div>
+                    <div className="terminal-dot bg-yellow-500" aria-label="Minimize terminal"></div>
+                    <div className="terminal-dot bg-green-500" aria-label="Maximize terminal"></div>
                   </div>
                   <div className="flex items-center gap-2 text-xs">
-                    <Database size={12} />
-                    <span>portfolio_db</span>
+                    <Database size={12} aria-hidden="true" />
+                    <h3 id="database-query-title" className="sr-only">Database Query Interface</h3>
+                    <span aria-hidden="true">portfolio_db</span>
                   </div>
-                </div>
+                </header>
 
                 <div className="terminal-content">
                   <div className="text-muted-foreground mb-4 text-sm">
@@ -108,7 +111,7 @@ const DataContactPanel = () => {
                           onClick={() => executeQuery(q.query, q.id)}
                           className="block w-full text-left p-3 border border-muted/20 hover:border-primary/50 transition-colors font-mono text-sm"
                         >
-                          <span className="syntax-keyword">mysql&gt;</span> {q.query}
+                          <span className="syntax-keyword">mysql&#62;</span> {q.query}
                         </button>
                         
                         {activeQuery === q.id && (
@@ -192,6 +195,11 @@ const DataContactPanel = () => {
                   </motion.div>
                 </div>
               </div>
+
+              {/* Contact Form */}
+              <div className="mt-8">
+                <ContactForm />
+              </div>
             </div>
 
             {/* Connection Status & Info Panels */}
@@ -216,7 +224,7 @@ const DataContactPanel = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-neural-pink rounded-full"></div>
-                    <span>Response: <span className="text-secondary">&lt; 24hrs</span></span>
+                    <span>Response: {"<"} <span className="text-secondary">{contactData.response_time}</span></span>
                   </div>
                 </div>
               </div>

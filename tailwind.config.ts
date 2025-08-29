@@ -17,6 +17,16 @@ export default {
 				'2xl': '1400px'
 			}
 		},
+		screens: {
+			'sm': '640px',
+			'md': '768px',
+			'lg': '1024px',
+			'xl': '1280px',
+			'2xl': '1536px',
+			// Mobile-specific breakpoints
+			'xs': '480px',
+			'2xs': '320px'
+		},
 		extend: {
 			colors: {
 				border: 'hsl(var(--border))',

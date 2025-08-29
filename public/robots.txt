@@ -1,14 +1,33 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+
 User-agent: Googlebot
 Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
 
 User-agent: Twitterbot
 Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
 
 User-agent: facebookexternalhit
 Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
 
-User-agent: *
-Allow: /
+Sitemap: https://laxmikant-nishad.dev/sitemap.xml
+
+Host: laxmikant-nishad.dev

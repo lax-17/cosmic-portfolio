@@ -341,7 +341,7 @@ class UNetReconstructor(nn.Module):
   };
 
   return (
-    <section id="projects" className="min-h-screen p-8">
+    <section id="projects" className="min-h-screen p-4 sm:p-6 md:p-8">
       <div className="max-w-7xl mx-auto">
         <motion.div
           ref={ref}
@@ -349,11 +349,11 @@ class UNetReconstructor(nn.Module):
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.3 }}
         >
-          <div className="text-data-header mb-8">
+          <div className="text-data-header mb-6">
             ~/projects $ ls -la
           </div>
 
-          <div className="grid items-start gap-6 md:grid-cols-[1fr_2fr]">
+          <div className="grid items-start gap-4 sm:gap-6 md:grid-cols-[1fr_2fr]">
             {/* Enhanced Project Cards */}
             <div className="space-y-4">
               <div className="text-data-header mb-6">
@@ -382,30 +382,57 @@ class UNetReconstructor(nn.Module):
                     }}
                     onMouseEnter={() => setHoveredProject(project.id)}
                     onMouseLeave={() => setHoveredProject(null)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    onTouchStart={() => setHoveredProject(project.id)}
+                    onTouchEnd={() => setHoveredProject(null)}
+                    whileHover={{
+                      scale: 1.02,
+                      transition: { duration: 0.2, ease: "easeOut" }
+                    }}
+                    whileTap={{
+                      scale: 0.98,
+                      transition: { duration: 0.1, ease: "easeOut" }
+                    }}
+                    style={{
+                      willChange: "transform"
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`View details for ${project.name.replace('/', '')} project`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleProject(project.id);
+                        setSelectedFile(project.id);
+                      }
+                    }}
                   >
                     {/* Animated background gradient */}
                     <motion.div
                       className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-secondary/10"
                       initial={{ x: '-100%' }}
                       animate={isHovered ? { x: '100%' } : { x: '-100%' }}
-                      transition={{ duration: 0.6 }}
+                      transition={{
+                        duration: 0.6,
+                        ease: "easeInOut"
+                      }}
+                      style={{
+                        willChange: "transform"
+                      }}
                     />
 
-                    <div className="relative p-6">
+                    <div className="relative p-4 sm:p-6">
                       {/* Project Header */}
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-between mb-3 sm:mb-4">
+                        <div className="flex items-center gap-2 sm:gap-3">
                           <motion.div
                             animate={isHovered ? { rotate: 360 } : { rotate: 0 }}
                             transition={{ duration: 0.5 }}
                           >
-                            <ProjectIcon size={24} className={getProjectColor(project.id)} />
+                            <ProjectIcon size={20} className={`sm:w-6 sm:h-6 ${getProjectColor(project.id)}`} />
                           </motion.div>
                           <div>
-                            <h3 className="font-semibold text-foreground">{project.name.replace('/', '')}</h3>
-                            <p className="text-sm text-muted-foreground">{project.description}</p>
+                            <h3 className="font-semibold text-foreground text-sm sm:text-base">{project.name.replace('/', '')}</h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground">{project.description}</p>
                           </div>
                         </div>
 
@@ -421,11 +448,11 @@ class UNetReconstructor(nn.Module):
                       </div>
 
                       {/* Tech Stack */}
-                      <div className="flex flex-wrap gap-2 mb-4">
+                      <div className="flex flex-wrap gap-1 sm:gap-2 mb-3 sm:mb-4">
                         {project.tech.map((tech, techIndex) => (
                           <motion.span
                             key={techIndex}
-                            className="px-3 py-1 text-xs bg-muted/30 text-muted-foreground rounded-full border border-panel-border/50"
+                            className="px-2 py-1 sm:px-3 sm:py-1 text-[10px] sm:text-xs bg-muted/30 text-muted-foreground rounded-full border border-panel-border/50"
                             whileHover={{ scale: 1.05, backgroundColor: 'hsl(var(--primary) / 0.1)' }}
                           >
                             {tech}
@@ -461,7 +488,17 @@ class UNetReconstructor(nn.Module):
                                   initial={{ opacity: 0, x: -10 }}
                                   animate={{ opacity: 1, x: 0 }}
                                   transition={{ delay: fileIndex * 0.1 }}
-                                  className="flex items-center gap-2 p-2 rounded border border-panel-border/30 hover:bg-muted/20 transition-colors"
+                                  className="flex items-center gap-2 p-3 rounded border border-panel-border/30 hover:bg-muted/20 transition-colors"
+                                  onTouchStart={() => {}}
+                                  role="button"
+                                  tabIndex={0}
+                                  aria-label={`View ${file.name} file`}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                      e.preventDefault();
+                                      // Add file selection logic here if needed
+                                    }
+                                  }}
                                 >
                                   <File size={14} className="text-muted-foreground" />
                                   <span className="text-sm font-mono">{file.name}</span>
@@ -501,7 +538,7 @@ class UNetReconstructor(nn.Module):
                   <motion.button
                     onClick={runCodeSimulation}
                     disabled={isRunningCode}
-                    className="flex items-center gap-2 px-3 py-1 text-xs bg-primary/10 text-primary rounded border border-primary/20 hover:bg-primary/20 transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 text-xs bg-primary/10 text-primary rounded border border-primary/20 hover:bg-primary/20 transition-colors disabled:opacity-50"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >

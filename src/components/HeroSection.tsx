@@ -22,12 +22,12 @@ const HeroSection = () => {
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <ParticleBackground />
       
-      <div className="container mx-auto px-6 text-center relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="space-y-8"
+          className="space-y-6 sm:space-y-8"
         >
           {/* Animated Name */}
           <div className="relative inline-block">
@@ -66,7 +66,7 @@ const HeroSection = () => {
           >
             <motion.button
               onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-              className="glass-card px-8 py-4 text-lg font-semibold text-cosmic hover:scale-105 transition-all duration-300"
+              className="glass-card px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold text-cosmic hover:scale-105 transition-all duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -75,7 +75,7 @@ const HeroSection = () => {
             
             <motion.a
               href="#projects"
-              className="glass-card px-8 py-4 text-lg font-semibold text-foreground hover:scale-105 transition-all duration-300"
+              className="glass-card px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold text-foreground hover:scale-105 transition-all duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >

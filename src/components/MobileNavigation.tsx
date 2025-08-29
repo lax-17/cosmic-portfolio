@@ -1,10 +1,15 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, X, Home, Briefcase, Brain, GitBranch, Mail } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 const MobileNavigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const touchStartY = useRef(0);
+  const touchEndY = useRef(0);
 
   const navItems = [
     { id: "hero", label: "Home", icon: Home, command: "./" },
@@ -27,6 +32,34 @@ const MobileNavigation = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+    touchEndY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = () => {
+    const swipeThreshold = 50;
+    const deltaX = touchStartX.current - touchEndX.current;
+    const deltaY = touchStartY.current - touchEndY.current;
+
+    // Check if it's a horizontal swipe
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      // Right swipe - open menu
+      if (deltaX < -swipeThreshold && !isOpen) {
+        setIsOpen(true);
+      }
+      // Left swipe - close menu
+      else if (deltaX > swipeThreshold && isOpen) {
+        setIsOpen(false);
+      }
+    }
+  };
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -77,6 +110,12 @@ const MobileNavigation = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1 }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+        aria-expanded={isOpen}
+        role="button"
       >
         <AnimatePresence mode="wait">
           {isOpen ? (
@@ -114,6 +153,9 @@ const MobileNavigation = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             />
 
             {/* Menu */}
@@ -123,6 +165,9 @@ const MobileNavigation = () => {
               initial="closed"
               animate="open"
               exit="closed"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
               <div className="bg-panel border border-panel-border rounded-lg shadow-2xl p-4 min-w-[200px]">
                 <div className="space-y-2">
@@ -135,7 +180,9 @@ const MobileNavigation = () => {
                       exit="closed"
                       transition={{ delay: index * 0.1 }}
                       onClick={() => scrollToSection(item.id)}
-                      className="w-full flex items-center gap-3 p-3 rounded border border-panel-border/50 hover:border-panel-border hover:bg-muted/50 transition-all duration-200 text-left"
+                      className="w-full flex items-center gap-3 p-4 rounded border border-panel-border/50 hover:border-panel-border hover:bg-muted/50 transition-all duration-200 text-left"
+                      aria-label={`Navigate to ${item.label} section`}
+                      role="menuitem"
                     >
                       <item.icon size={18} className="text-primary" />
                       <div>
@@ -156,7 +203,9 @@ const MobileNavigation = () => {
                         if (terminal) (terminal as HTMLElement).click();
                         setIsOpen(false);
                       }}
-                      className="flex-1 px-3 py-2 text-xs bg-primary/10 text-primary rounded border border-primary/20 hover:bg-primary/20 transition-colors"
+                      className="flex-1 px-4 py-3 text-xs bg-primary/10 text-primary rounded border border-primary/20 hover:bg-primary/20 transition-colors"
+                      aria-label="Open terminal"
+                      role="menuitem"
                     >
                       Terminal
                     </button>
@@ -167,10 +216,20 @@ const MobileNavigation = () => {
                         if (helpBtn) (helpBtn as HTMLElement).click();
                         setIsOpen(false);
                       }}
-                      className="flex-1 px-3 py-2 text-xs bg-secondary/10 text-secondary rounded border border-secondary/20 hover:bg-secondary/20 transition-colors"
+                      className="flex-1 px-4 py-3 text-xs bg-secondary/10 text-secondary rounded border border-secondary/20 hover:bg-secondary/20 transition-colors"
+                      aria-label="Open help"
+                      role="menuitem"
                     >
                       Help
                     </button>
+                  </div>
+                </div>
+
+                {/* Theme Toggle */}
+                <div className="mt-4 pt-4 border-t border-panel-border">
+                  <div className="text-xs text-muted-foreground mb-2">Theme</div>
+                  <div className="flex justify-center">
+                    <ThemeToggle />
                   </div>
                 </div>
               </div>

@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { Terminal, X, Maximize2, Minimize2 } from "lucide-react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import { useEnhancedAnalytics } from "@/hooks/useAnalytics";
 
 interface Command {
   input: string;
@@ -18,6 +19,7 @@ const LiveTerminal = () => {
   const [isTyping, setIsTyping] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const { trackTerminalCommand } = useEnhancedAnalytics();
 
   const availableCommands = {
     help: {
@@ -215,6 +217,9 @@ const LiveTerminal = () => {
       timestamp: new Date()
     };
 
+    // Track terminal command usage
+    trackTerminalCommand(command);
+
     setCommandHistory(prev => [...prev, newCommand]);
     setIsTyping(false);
   };
@@ -223,12 +228,9 @@ const LiveTerminal = () => {
     if (e.key === 'Enter') {
       if (currentInput.trim()) {
         executeCommand(currentInput);
-        setCommandHistory(prev => [...prev, {
-          input: currentInput,
-          output: [],
-          timestamp: new Date()
-        }]);
       } else {
+        // Track empty command
+        trackTerminalCommand('');
         setCommandHistory(prev => [...prev, {
           input: '',
           output: [],
@@ -283,15 +285,17 @@ const LiveTerminal = () => {
     <>
       {/* Terminal Toggle Button */}
       <motion.button
-        className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200"
+        className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1 }}
+        aria-label={isOpen ? "Close interactive terminal" : "Open interactive terminal"}
+        aria-expanded={isOpen}
       >
-        <Terminal size={20} />
+        <Terminal size={20} aria-hidden="true" />
       </motion.button>
 
       {/* Terminal Window */}
@@ -305,34 +309,43 @@ const LiveTerminal = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ duration: 0.2 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="terminal-title"
+            aria-describedby="terminal-description"
           >
             {/* Terminal Header */}
-            <div className="flex items-center justify-between px-3 py-2 border-b border-terminal-border bg-panel">
+            <header className="flex items-center justify-between px-3 py-2 border-b border-terminal-border bg-panel">
               <div className="flex items-center gap-2">
-                <div className="flex gap-1">
-                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <div className="flex gap-1" aria-label="Terminal window controls">
+                  <div className="w-3 h-3 rounded-full bg-red-500" aria-label="Close terminal"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500" aria-label="Minimize terminal"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500" aria-label="Maximize terminal"></div>
                 </div>
-                <span className="text-xs text-muted-foreground font-mono">
+                <h2 id="terminal-title" className="text-xs text-muted-foreground font-mono sr-only">
+                  Neural Terminal
+                </h2>
+                <span className="text-xs text-muted-foreground font-mono" aria-hidden="true">
                   neural-terminal
                 </span>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1" role="group" aria-label="Terminal controls">
                 <button
                   onClick={() => setIsMinimized(!isMinimized)}
-                  className="p-1 hover:bg-muted/50 rounded transition-colors"
+                  className="p-1 hover:bg-muted/50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                  aria-label={isMinimized ? "Maximize terminal" : "Minimize terminal"}
                 >
-                  {isMinimized ? <Maximize2 size={12} /> : <Minimize2 size={12} />}
+                  {isMinimized ? <Maximize2 size={12} aria-hidden="true" /> : <Minimize2 size={12} aria-hidden="true" />}
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1 hover:bg-muted/50 rounded transition-colors"
+                  className="p-1 hover:bg-muted/50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                  aria-label="Close terminal"
                 >
-                  <X size={12} />
+                  <X size={12} aria-hidden="true" />
                 </button>
               </div>
-            </div>
+            </header>
 
             {/* Terminal Content */}
             {!isMinimized && (
@@ -341,9 +354,13 @@ const LiveTerminal = () => {
                 <div
                   ref={terminalRef}
                   className="flex-1 p-3 font-mono text-sm overflow-y-auto bg-terminal min-h-0"
+                  role="log"
+                  aria-live="polite"
+                  aria-label="Terminal output"
+                  aria-describedby="terminal-description"
                 >
                   {/* Welcome Message */}
-                  <div className="text-muted-foreground mb-2 cosmic-text">
+                  <div id="terminal-description" className="text-muted-foreground mb-2 cosmic-text">
                     Neural Interface Terminal v2.1.0
                   </div>
                   <div className="text-muted-foreground mb-4">
@@ -368,23 +385,26 @@ const LiveTerminal = () => {
                   ))}
 
                   {/* Current Input */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-primary cosmic-text">$</span>
+                  <div className="flex items-center gap-2" role="group" aria-label="Terminal command input">
+                    <span className="text-primary cosmic-text" aria-hidden="true">$</span>
                     <input
                       ref={inputRef}
                       type="text"
                       value={currentInput}
                       onChange={(e) => setCurrentInput(e.target.value)}
                       onKeyDown={handleKeyDown}
-                      className="flex-1 bg-transparent outline-none text-terminal-text font-mono"
+                      className="flex-1 bg-transparent outline-none text-terminal-text font-mono focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
                       placeholder="Type a command..."
                       disabled={isTyping}
+                      aria-label="Terminal command input"
+                      aria-describedby="terminal-instructions"
                     />
                     {isTyping && (
                       <motion.span
                         className="text-primary cosmic-glow"
                         animate={{ opacity: [1, 0] }}
                         transition={{ duration: 0.5, repeat: Infinity }}
+                        aria-label="Processing command"
                       >
                         ▶
                       </motion.span>
@@ -424,7 +444,7 @@ const LiveTerminal = () => {
                 </div>
 
                 {/* Status Bar */}
-                <div className="px-3 py-1 border-t border-terminal-border bg-panel text-xs text-muted-foreground font-mono">
+                <div className="px-3 py-1 border-t border-terminal-border bg-panel text-xs text-muted-foreground font-mono" role="status" aria-live="polite" aria-label="Terminal status">
                   <div className="flex justify-between">
                     <span>Status: Connected</span>
                     <span>Commands: {Object.keys(availableCommands).length}</span>

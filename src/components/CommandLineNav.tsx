@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { ChevronRight, Terminal } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 const CommandLineNav = () => {
   const [currentSection, setCurrentSection] = useState("hero");
@@ -93,15 +94,18 @@ const CommandLineNav = () => {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
+        role="status"
+        aria-live="polite"
+        aria-label="Current navigation location"
       >
-        <Terminal size={14} className="text-primary" />
+        <Terminal size={14} className="text-primary" aria-hidden="true" />
         <span className="text-muted-foreground">
           laxmikant@portfolio:
         </span>
-        <span className="text-primary">
+        <span className="text-primary" aria-current="page">
           {currentSectionData?.command || "cd ~/"}
         </span>
-        <span className="cursor text-primary">█</span>
+        <span className="cursor text-primary" aria-hidden="true">█</span>
       </motion.div>
 
       {/* Navigation Terminal */}
@@ -110,24 +114,31 @@ const CommandLineNav = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: showNav ? 1 : 0, y: showNav ? 0 : 20 }}
         transition={{ duration: 0.2 }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="nav-terminal-title"
+        aria-describedby="nav-terminal-description"
       >
         <div className="flex items-center gap-2 mb-2">
-          <ChevronRight size={14} className="text-primary" />
-          <span className="text-muted-foreground text-xs">
+          <ChevronRight size={14} className="text-primary" aria-hidden="true" />
+          <h2 id="nav-terminal-title" className="sr-only">Navigation Terminal</h2>
+          <span id="nav-terminal-description" className="text-muted-foreground text-xs">
             Navigation - Press Ctrl+K to toggle
           </span>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-primary">$</span>
+          <span className="text-primary" aria-hidden="true">$</span>
           <input
             type="text"
             value={command}
             onChange={(e) => setCommand(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Type command or section name..."
-            className="flex-1 bg-transparent outline-none text-terminal-text font-mono text-sm focus-terminal"
+            className="flex-1 bg-transparent outline-none text-terminal-text font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
             autoFocus={showNav}
+            aria-label="Navigation command input"
+            aria-describedby="nav-instructions"
           />
         </div>
 
@@ -137,6 +148,8 @@ const CommandLineNav = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mt-2 space-y-1"
+            role="listbox"
+            aria-label="Command suggestions"
           >
             {sections
               .filter(s =>
@@ -148,8 +161,10 @@ const CommandLineNav = () => {
                 <motion.button
                   key={section.id}
                   onClick={() => executeCommand(section.command)}
-                  className="block w-full text-left px-2 py-1 text-xs hover-highlight font-mono"
+                  className="block w-full text-left px-2 py-1 text-xs hover-highlight font-mono focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
                   whileHover={{ x: 4 }}
+                  role="option"
+                  aria-label={`Navigate to ${section.label} section`}
                 >
                   <span className="text-secondary">{section.command}</span>
                   <span className="text-muted-foreground ml-2">// {section.label}</span>
@@ -159,44 +174,48 @@ const CommandLineNav = () => {
         )}
 
         {/* Quick Commands */}
-        <div className="mt-3 text-xs text-muted-foreground">
+        <div id="nav-instructions" className="mt-3 text-xs text-muted-foreground" aria-label="Keyboard shortcuts">
           <div>Tab: autocomplete | Enter: execute | Esc: close</div>
         </div>
       </motion.div>
 
       {/* Section Quick Links */}
-      <motion.div
+      <motion.nav
         className="fixed right-4 top-1/2 transform -translate-y-1/2 z-40 hidden lg:block"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.5 }}
+        aria-label="Section quick navigation"
       >
         <div className="code-panel w-48">
-          <div className="code-header">
+          <header className="code-header">
             <span className="text-xs">navigation.json</span>
-          </div>
-          <div className="p-3 space-y-1">
+          </header>
+          <div className="p-3 space-y-1" role="list" aria-label="Site sections">
             {sections.map((section, index) => (
               <motion.button
                 key={section.id}
                 onClick={() => executeCommand(section.command)}
-                className={`block w-full text-left text-xs font-mono p-1 transition-colors ${
+                className={`block w-full text-left text-xs font-mono p-1 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background ${
                   currentSection === section.id
                     ? 'text-primary bg-primary/10'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
                 whileHover={{ x: 4 }}
+                role="listitem"
+                aria-current={currentSection === section.id ? 'page' : undefined}
+                aria-label={`Navigate to ${section.label} section`}
               >
                 <span className="syntax-string">"{section.id}"</span>:
                 <span className="syntax-string ml-1">"{section.label}"</span>
                 {currentSection === section.id && (
-                  <span className="text-primary ml-2">←</span>
+                  <span className="text-primary ml-2" aria-hidden="true">←</span>
                 )}
               </motion.button>
             ))}
           </div>
         </div>
-      </motion.div>
+      </motion.nav>
 
       {/* Remove redundant keyboard shortcut hint since we have the live terminal now */}
     </>

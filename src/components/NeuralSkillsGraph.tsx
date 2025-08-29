@@ -1,6 +1,14 @@
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useRef, useState } from "react";
+import { usePerformanceOptimization } from "@/hooks/usePerformanceOptimization";
+import { lazy, Suspense } from "react";
+import { Button } from "@/components/ui/button";
+import { Box, Network } from "lucide-react";
+import CosmicLoader from "./CosmicLoader";
+
+// Lazy load 3D component
+const ThreeDSkillsVisualization = lazy(() => import("./ThreeDSkillsVisualization"));
 
 interface SkillNode {
   id: string;
@@ -24,9 +32,11 @@ const NeuralSkillsGraph = () => {
     triggerOnce: true,
   });
 
+  const { addEventListener, throttle } = usePerformanceOptimization();
   const svgRef = useRef<SVGSVGElement>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  const [viewMode, setViewMode] = useState<"2d" | "3d">("2d");
 
   const skillNodes: SkillNode[] = [
     // ML/AI Core
@@ -74,20 +84,19 @@ const NeuralSkillsGraph = () => {
   };
 
   useEffect(() => {
-    const updateDimensions = () => {
+    const updateDimensions = throttle(() => {
       if (svgRef.current) {
         const rect = svgRef.current.getBoundingClientRect();
         setDimensions({ width: rect.width || 800, height: rect.height || 600 });
       }
-    };
+    }, 100); // Throttle to 100ms
 
     updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
-  }, []);
+    addEventListener(window, 'resize', updateDimensions);
+  }, [throttle, addEventListener]);
 
   return (
-    <section id="skills" className="py-16 px-4 md:px-8">
+    <section id="skills" className="py-12 sm:py-16 px-4 md:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <motion.div
           ref={ref}
@@ -95,106 +104,163 @@ const NeuralSkillsGraph = () => {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.3 }}
         >
-          <div className="text-data-header mb-6 cosmic-text">
+          <div className="text-data-header mb-4 sm:mb-6 cosmic-text">
             ~/skills $ python neural_graph.py --visualize
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Network Visualization */}
             <div className="lg:col-span-2">
-              <div className="code-panel h-[500px] md:h-[540px] cosmic-border">
-                <div className="code-header">
-                  <span className="text-xs cosmic-text">neural_network.svg</span>
-                  <span className="text-xs text-muted-foreground">
-                    {skillNodes.length} nodes, {connections.length} connections
-                  </span>
+              <div className="code-panel h-[400px] sm:h-[500px] md:h-[540px] cosmic-border">
+                <div className="code-header flex justify-between items-center">
+                  <div>
+                    <span className="text-xs cosmic-text">
+                      {viewMode === "2d" ? "neural_network.svg" : "neural_network_3d"}
+                    </span>
+                    <span className="text-xs text-muted-foreground ml-2">
+                      {skillNodes.length} nodes, {connections.length} connections
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setViewMode("2d")}
+                      className={viewMode === "2d" ? "bg-primary/20" : ""}
+                    >
+                      <Network className="w-4 h-4 mr-1" />
+                      2D
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setViewMode("3d")}
+                      className={viewMode === "3d" ? "bg-primary/20" : ""}
+                    >
+                      <Box className="w-4 h-4 mr-1" />
+                      3D
+                    </Button>
+                  </div>
                 </div>
 
-                <div className="relative h-full p-2 md:p-4 overflow-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
-                  <svg
-                    ref={svgRef}
-                    className="w-full h-full min-w-[720px] transition-transform duration-200"
-                    viewBox={`-20 -20 ${Math.max(dimensions.width + 40, 720)} ${Math.max(dimensions.height + 40, 440)}`}
-                    preserveAspectRatio="xMidYMid meet"
-                  >
-                    {/* Connections */}
-                    {connections.map((connection, index) => {
-                      const sourceNode = skillNodes.find(n => n.id === connection.source);
-                      const targetNode = skillNodes.find(n => n.id === connection.target);
+                <div className="relative h-full p-2 sm:p-3 md:p-4 overflow-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
+                  {viewMode === "2d" ? (
+                    <svg
+                      ref={svgRef}
+                      className="w-full h-full min-w-[720px] transition-transform duration-200"
+                      viewBox={`-20 -20 ${Math.max(dimensions.width + 40, 720)} ${Math.max(dimensions.height + 40, 440)}`}
+                      preserveAspectRatio="xMidYMid meet"
+                    >
+                      {/* Connections */}
+                      {connections.map((connection, index) => {
+                        const sourceNode = skillNodes.find(n => n.id === connection.source);
+                        const targetNode = skillNodes.find(n => n.id === connection.target);
 
-                      if (!sourceNode || !targetNode) return null;
+                        if (!sourceNode || !targetNode) return null;
 
-                      const isHighlighted = hoveredNode === connection.source || hoveredNode === connection.target;
+                        const isHighlighted = hoveredNode === connection.source || hoveredNode === connection.target;
 
-                      return (
-                        <motion.line
-                          key={index}
-                          x1={sourceNode.x}
-                          y1={sourceNode.y}
-                          x2={targetNode.x}
-                          y2={targetNode.y}
-                          stroke={isHighlighted ? "hsl(var(--data-active))" : "hsl(var(--data-connection))"}
-                          strokeWidth={isHighlighted ? 2 : 1}
-                          strokeOpacity={isHighlighted ? 0.8 : 0.3}
-                          initial={{ pathLength: 0 }}
-                          animate={inView ? { pathLength: 1 } : {}}
-                          transition={{ duration: 1, delay: index * 0.05 }}
-                        />
-                      );
-                    })}
+                        return (
+                          <motion.line
+                            key={index}
+                            x1={sourceNode.x}
+                            y1={sourceNode.y}
+                            x2={targetNode.x}
+                            y2={targetNode.y}
+                            stroke={isHighlighted ? "hsl(var(--data-active))" : "hsl(var(--data-connection))"}
+                            strokeWidth={isHighlighted ? 2 : 1}
+                            strokeOpacity={isHighlighted ? 0.8 : 0.3}
+                            initial={{ pathLength: 0, opacity: 0 }}
+                            animate={inView ? { pathLength: 1, opacity: 1 } : {}}
+                            transition={{
+                              duration: 1,
+                              delay: index * 0.05,
+                              ease: "easeOut"
+                            }}
+                            style={{
+                              willChange: "opacity, stroke-dasharray"
+                            }}
+                          />
+                        );
+                      })}
 
-                    {/* Skill Nodes */}
-                    {skillNodes.map((node, index) => (
-                      <motion.g
-                        key={node.id}
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={inView ? { scale: 1, opacity: 1 } : {}}
-                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                      >
-                        {/* Node Circle */}
-                        <circle
-                          cx={node.x}
-                          cy={node.y}
-                          r={Math.max(6, node.level / 8)}
-                          fill={categoryColors[node.category as keyof typeof categoryColors]}
-                          fillOpacity={hoveredNode === node.id ? 0.8 : 0.6}
-                          stroke={categoryColors[node.category as keyof typeof categoryColors]}
-                          strokeWidth={2}
-                          className="cursor-pointer transition-all duration-200"
-                          onMouseEnter={() => setHoveredNode(node.id)}
-                          onMouseLeave={() => setHoveredNode(null)}
-                        />
-
-                        {/* Node Label */}
-                        <text
-                          x={node.x}
-                          y={node.y - 15}
-                          textAnchor="middle"
-                          fill="hsl(var(--foreground))"
-                          fontSize="10"
-                          fontFamily="JetBrains Mono"
-                          className="pointer-events-none"
-                          opacity={hoveredNode === node.id || hoveredNode === null ? 1 : 0.5}
+                      {/* Skill Nodes */}
+                      {skillNodes.map((node, index) => (
+                        <motion.g
+                          key={node.id}
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={inView ? { scale: 1, opacity: 1 } : {}}
+                          transition={{
+                            duration: 0.5,
+                            delay: index * 0.1,
+                            ease: "easeOut"
+                          }}
+                          style={{
+                            willChange: "transform, opacity"
+                          }}
                         >
-                          {node.name}
-                        </text>
+                          {/* Node Circle */}
+                          <circle
+                            cx={node.x}
+                            cy={node.y}
+                            r={Math.max(6, node.level / 8)}
+                            fill={categoryColors[node.category as keyof typeof categoryColors]}
+                            fillOpacity={hoveredNode === node.id ? 0.8 : 0.6}
+                            stroke={categoryColors[node.category as keyof typeof categoryColors]}
+                            strokeWidth={2}
+                            className="cursor-pointer transition-all duration-200"
+                            onMouseEnter={() => setHoveredNode(node.id)}
+                            onMouseLeave={() => setHoveredNode(null)}
+                            onTouchStart={() => setHoveredNode(node.id)}
+                            onTouchEnd={() => setHoveredNode(null)}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`View details for ${node.name} skill`}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                setHoveredNode(node.id);
+                              }
+                            }}
+                          />
 
-                        {/* Skill Level */}
-                        <text
-                          x={node.x}
-                          y={node.y + 20}
-                          textAnchor="middle"
-                          fill="hsl(var(--muted-foreground))"
-                          fontSize="8"
-                          fontFamily="JetBrains Mono"
-                          className="pointer-events-none"
-                          opacity={hoveredNode === node.id ? 1 : 0}
-                        >
-                          {node.level}%
-                        </text>
-                      </motion.g>
-                    ))}
-                  </svg>
+                          {/* Node Label */}
+                          <text
+                            x={node.x}
+                            y={node.y - 15}
+                            textAnchor="middle"
+                            fill="hsl(var(--foreground))"
+                            fontSize="10"
+                            fontFamily="JetBrains Mono"
+                            className="pointer-events-none"
+                            opacity={hoveredNode === node.id || hoveredNode === null ? 1 : 0.5}
+                          >
+                            {node.name}
+                          </text>
+
+                          {/* Skill Level */}
+                          <text
+                            x={node.x}
+                            y={node.y + 20}
+                            textAnchor="middle"
+                            fill="hsl(var(--muted-foreground))"
+                            fontSize="8"
+                            fontFamily="JetBrains Mono"
+                            className="pointer-events-none"
+                            opacity={hoveredNode === node.id ? 1 : 0}
+                          >
+                            {node.level}%
+                          </text>
+                        </motion.g>
+                      ))}
+                    </svg>
+                  ) : (
+                    <div className="w-full h-full">
+                      <Suspense fallback={<CosmicLoader message="Loading 3D skills visualization..." />}>
+                        <ThreeDSkillsVisualization />
+                      </Suspense>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

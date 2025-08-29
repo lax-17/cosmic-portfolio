@@ -37,19 +37,24 @@ const TerminalHero = () => {
   }, [currentIndex, currentLine]);
 
   return (
-    <section id="hero" className="min-h-screen flex items-center justify-start p-8">
+    <section id="hero" className="min-h-screen flex items-center justify-start p-8" aria-labelledby="hero-heading">
       <div className="w-full max-w-4xl">
+        {/* Main Heading */}
+        <h1 id="hero-heading" className="sr-only">
+          Laxmikant Nishad - AI/ML Engineer Portfolio
+        </h1>
+
         {/* Terminal Window */}
-        <div className="terminal-panel">
+        <div className="terminal-panel" role="region" aria-label="Interactive portfolio terminal">
           {/* Terminal Header */}
-          <div className="terminal-header">
-            <div className="flex gap-2">
-              <div className="terminal-dot bg-red-500"></div>
-              <div className="terminal-dot bg-yellow-500"></div>
-              <div className="terminal-dot bg-green-500"></div>
+          <header className="terminal-header">
+            <div className="flex gap-2" aria-label="Terminal window controls">
+              <div className="terminal-dot bg-red-500" aria-label="Close terminal"></div>
+              <div className="terminal-dot bg-yellow-500" aria-label="Minimize terminal"></div>
+              <div className="terminal-dot bg-green-500" aria-label="Maximize terminal"></div>
             </div>
-            <div className="text-xs text-muted-foreground">portfolio.py</div>
-          </div>
+            <div className="text-xs text-muted-foreground" aria-label="Current file">portfolio.py</div>
+          </header>
 
           {/* Terminal Content */}
           <div className="terminal-content min-h-[400px]">
@@ -76,25 +81,28 @@ const TerminalHero = () => {
                   Portfolio successfully loaded!
                 </div>
                 <div className="flex gap-4 flex-wrap">
-                  <button 
-                    onClick={() => document.getElementById('projects')?.scrollIntoView()}
-                    className="px-4 py-2 border border-primary text-primary hover:bg-primary hover:text-black transition-colors"
-                  >
-                    ./projects --list
-                  </button>
-                  <button 
-                    onClick={() => document.getElementById('experience')?.scrollIntoView()}
-                    className="px-4 py-2 border border-secondary text-secondary hover:bg-secondary hover:text-black transition-colors"
-                  >
-                    ./experience --timeline
-                  </button>
-                  <button 
-                    onClick={() => document.getElementById('contact')?.scrollIntoView()}
-                    className="px-4 py-2 border border-accent text-accent hover:bg-accent hover:text-black transition-colors"
-                  >
-                    ./contact --info
-                  </button>
-                </div>
+                   <button
+                     onClick={() => document.getElementById('projects')?.scrollIntoView()}
+                     className="px-4 py-2 border border-primary text-primary hover:bg-primary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                     aria-label="Navigate to projects section"
+                   >
+                     ./projects --list
+                   </button>
+                   <button
+                     onClick={() => document.getElementById('experience')?.scrollIntoView()}
+                     className="px-4 py-2 border border-secondary text-secondary hover:bg-secondary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-background"
+                     aria-label="Navigate to experience section"
+                   >
+                     ./experience --timeline
+                   </button>
+                   <button
+                     onClick={() => document.getElementById('contact')?.scrollIntoView()}
+                     className="px-4 py-2 border border-accent text-accent hover:bg-accent hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background"
+                     aria-label="Navigate to contact section"
+                   >
+                     ./contact --info
+                   </button>
+                 </div>
               </motion.div>
             )}
           </div>

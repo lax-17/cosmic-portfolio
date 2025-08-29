@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -16,7 +15,7 @@
     --neural-gray: 230 25% 12%; /* Deep space gray */
     --neural-light-gray: 0 0% 90%; /* Bright text for contrast */
 
-    /* Design System Colors */
+    /* Design System Colors - Dark Theme (Default) */
     --background: 230 40% 6%; /* Deep space black */
     --foreground: var(--neural-light-gray);
 
@@ -62,6 +61,69 @@
     /* Transitions - Instant for terminal feel */
     --transition-instant: all 0.1s ease-out;
     --transition-data: all 0.2s ease-out;
+
+    /* Theme transition */
+    --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    /* Dark theme is the default, so no changes needed */
+  }
+
+  .light {
+    /* Light Theme Variables */
+    --background: 0 0% 98%; /* Light background */
+    --foreground: 230 40% 10%; /* Dark text */
+
+    --panel: 0 0% 95%; /* Light panel background */
+    --panel-foreground: 230 40% 15%; /* Dark panel text */
+    --panel-border: 210 30% 80%; /* Light border */
+
+    --terminal: 0 0% 93%; /* Light terminal background */
+    --terminal-border: 210 60% 60%; /* Light terminal border */
+    --terminal-text: 180 100% 30%; /* Darker green for light mode */
+
+    --primary: 210 100% 50%; /* Blue for primary */
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 290 100% 60%; /* Purple for secondary */
+    --secondary-foreground: 0 0% 98%;
+
+    --accent: 180 100% 40%; /* Teal for accent */
+    --accent-foreground: 0 0% 98%;
+
+    --muted: 0 0% 90%;
+    --muted-foreground: 230 20% 40%;
+
+    --border: 210 20% 85%;
+    --input: 0 0% 90%;
+    --ring: 210 100% 50%;
+
+    /* Data Visualization Colors for Light Theme */
+    --data-node: 210 100% 50%; /* Blue nodes */
+    --data-connection: 230 20% 70%; /* Light gray connections */
+    --data-active: 180 100% 40%; /* Teal active */
+    --data-hover: 290 100% 60%; /* Purple hover */
+
+    /* Cosmic Effects for Light Theme */
+    --cosmic-glow: 0 0 20px hsl(var(--neural-blue) / 0.2);
+    --cosmic-shadow: 0 0 30px hsl(var(--neural-blue) / 0.05);
+  }
+}
+
+/* Theme transition for all elements */
+*,
+*::before,
+*::after {
+  transition: var(--theme-transition);
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
   }
 }
 
@@ -97,6 +159,62 @@
   @keyframes blink {
     0%, 50% { opacity: 1; }
     51%, 100% { opacity: 0; }
+  }
+
+  /* Skip links for accessibility */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 0;
+    z-index: 1000;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    transition: top 0.3s;
+  }
+
+  .skip-link:focus {
+    top: 6px;
+  }
+
+  /* Screen reader only content */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    .cursor {
+      animation: none;
+    }
+
+    .animate-data-flow,
+    .animate-neural-pulse,
+    .animate-typing,
+    .animate-scan-line {
+      animation: none;
+    }
   }
 }
 
@@ -361,6 +479,32 @@
 
   .terminal-panel:hover {
     box-shadow: var(--cosmic-glow);
+  }
+
+  /* Hardware Acceleration & Performance */
+  .hardware-accelerated {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  .gpu-accelerated {
+    will-change: transform, opacity;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+
+  .animation-optimized {
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    contain: layout style paint;
+  }
+
+  /* Optimized transitions for animations */
+  .smooth-transform {
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+    will-change: transform, opacity;
   }
 
 }

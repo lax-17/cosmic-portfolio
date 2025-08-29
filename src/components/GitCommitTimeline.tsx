@@ -102,8 +102,15 @@ const GitCommitTimeline = () => {
                         key={commit.hash}
                         initial={{ opacity: 0, x: -30 }}
                         animate={inView ? { opacity: 1, x: 0 } : {}}
-                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                        transition={{
+                          duration: 0.3,
+                          delay: index * 0.1,
+                          ease: "easeOut"
+                        }}
                         className="commit-entry group"
+                        style={{
+                          willChange: "transform, opacity"
+                        }}
                       >
                         <div className="flex items-start gap-4 w-full">
                           {/* Commit Graph */}
@@ -194,6 +201,21 @@ const GitCommitTimeline = () => {
 
             {/* Git Statistics */}
             <div className="space-y-4 sticky top-4">
+              {/* System Info */}
+              <div className="code-panel">
+                <div className="code-header">
+                  <span className="text-xs">system.json</span>
+                </div>
+                <div className="p-4 text-xs space-y-2">
+                  <div className="text-muted-foreground">// System Information</div>
+                  <div><span className="syntax-keyword">user</span>: <span className="syntax-string">"laxmikant-nishad"</span></div>
+                  <div><span className="syntax-keyword">role</span>: <span className="syntax-string">"AI/ML Engineer"</span></div>
+                  <div><span className="syntax-keyword">location</span>: <span className="syntax-string">"Sheffield, UK"</span></div>
+                  <div><span className="syntax-keyword">experience</span>: <span className="syntax-string">"4+ years"</span></div>
+                  <div><span className="syntax-keyword">status</span>: <span className="syntax-string">"available"</span></div>
+                </div>
+              </div>
+
               {/* Commit Stats */}
               <div className="code-panel">
                 <div className="code-header">
