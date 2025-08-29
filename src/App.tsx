@@ -139,28 +139,28 @@ const NeuralPortfolio = () => {
       </Suspense>
 
       {/* Projects Section */}
-      <section aria-labelledby="projects-heading">
+      <section id="projects" aria-labelledby="projects-heading">
         <Suspense fallback={<CosmicLoader message="Loading project repository..." />}>
           <ProjectRepository />
         </Suspense>
       </section>
 
       {/* Skills Section */}
-      <section aria-labelledby="skills-heading">
+      <section id="skills" aria-labelledby="skills-heading">
         <Suspense fallback={<CosmicLoader message="Loading neural network visualization..." />}>
           <NeuralSkillsGraph />
         </Suspense>
       </section>
 
       {/* Experience Section */}
-      <section aria-labelledby="experience-heading">
+      <section id="experience" aria-labelledby="experience-heading">
         <Suspense fallback={<CosmicLoader message="Loading career timeline..." />}>
           <GitCommitTimeline />
         </Suspense>
       </section>
 
       {/* Contact Section */}
-      <section aria-labelledby="contact-heading">
+      <section id="contact" aria-labelledby="contact-heading">
         <Suspense fallback={<CosmicLoader message="Loading contact panel..." />}>
           <DataContactPanel />
         </Suspense>

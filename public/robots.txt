@@ -29,5 +29,3 @@ Disallow: /admin/
 Disallow: /private/
 
 Sitemap: https://laxmikant-nishad.dev/sitemap.xml
-
-Host: laxmikant-nishad.dev

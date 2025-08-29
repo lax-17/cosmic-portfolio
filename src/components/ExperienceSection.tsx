@@ -9,12 +9,20 @@ const ExperienceSection = () => {
 
   const experiences = [
     {
-      title: "AI Researcher",
+      title: "Applied AI/LLM Engineer (Clinical Narratives Platform)",
       company: "Sheffield Hallam University",
-      period: "June 2025 – Present",
+      period: "Jun 2025 – Present",
       location: "Sheffield, UK",
-      description: "Leading research in advanced AI systems and multi-modal models. Developing novel approaches to improve model performance and efficiency.",
-      highlights: ["Research Leadership", "Publication Writing", "Model Development"],
+      description: "Built an end-to-end healthcare LLM system: QLoRA fine-tuning (Llama 3 8B, 8192 tokens), prompt/context engineering, clinician evaluation, and Docker/llama.cpp deployment for offline inference.",
+      highlights: ["QLoRA fine-tuning", "600 clinician-validated profiles", "Schema-faithful JSON", "Safety & hallucination checks", "Docker + llama.cpp"],
+    },
+    {
+      title: "AI Researcher — Multi-modal Transformers",
+      company: "Sheffield Hallam University",
+      period: "Feb 2025 – Aug 2025",
+      location: "Sheffield, UK",
+      description: "Designed a hybrid Conv1D + Transformer model fusing DINOv2 image embeddings with MediaPipe features; implemented normalization, EMA, and light TTA for robust evaluation.",
+      highlights: ["0.350 macro-F1; 53.4% accuracy (7-class, 2,152 samples)", "Outperformed ATL-BP baseline (~0.25 F1)", "Beat personalized model (0.308 F1) without per-user adaptation"],
     },
     {
       title: "Junior Developer Intern",
@@ -26,9 +34,9 @@ const ExperienceSection = () => {
     },
     {
       title: "Industry Collaboration Coordinator",
-      company: "Ufa University",
-      period: "Jan 2022 – June 2022",
-      location: "Ufa, Russia",
+      company: "Ufa University of Science and Technology",
+      period: "Jan 2022 – Jun 2022",
+      location: "Sterlitamak, Russia",
       description: "Coordinated industry partnerships and research collaborations, bridging academic research with practical applications.",
       highlights: ["Partnership Management", "Research Coordination", "Industry Relations"],
     },

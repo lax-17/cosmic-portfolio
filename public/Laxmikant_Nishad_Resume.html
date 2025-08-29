@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Laxmikant Nishad — Resume</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{--fg:#0b1220;--muted:#4a5568;--primary:#0ea5e9;--accent:#7c3aed;}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.4;margin:0;padding:24px;color:var(--fg);background:#fff;max-width:900px}
+    h1,h2,h3{margin:0 0 6px}
+    h1{font-size:28px}
+    h2{font-size:18px;border-bottom:2px solid #e5e7eb;padding-bottom:4px;margin-top:20px}
+    h3{font-size:14px}
+    a{color:var(--primary);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:16px;flex-wrap:wrap}
+    .badge{display:inline-block;border:1px solid #e5e7eb;border-radius:6px;padding:4px 8px;margin:2px 6px 2px 0;font-size:12px}
+    .section{margin-top:14px}
+    .split{display:flex;justify-content:space-between;gap:16px}
+    .split > div{min-width:260px}
+    .role{display:flex;justify-content:space-between;gap:12px}
+    .role .when{white-space:nowrap}
+    .bullets{margin:6px 0 0 16px}
+    .bullets li{margin:4px 0}
+    .small{font-size:12px}
+    .hr{height:1px;background:#e5e7eb;margin:12px 0}
+    @media print{
+      body{padding:0}
+      a{color:#000;text-decoration:none}
+      .no-print{display:none !important}
+    }
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;margin-right:8px;font-weight:600}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  </style>
+</head>
+<body>
+  <header class="section">
+    <div class="split">
+      <div>
+        <h1>Laxmikant Nishad</h1>
+        <div class="muted">Applied AI/ML Engineer — Leeds, UK</div>
+      </div>
+      <div class="small" style="text-align:right">
+        <div>+44 7470398416</div>
+        <div><a href="mailto:laxmikant.data@gmail.com">laxmikant.data@gmail.com</a></div>
+        <div><a href="https://linkedin.com/in/laxmikant-nishad" target="_blank">linkedin.com/in/laxmikant-nishad</a></div>
+        <div><a href="https://github.com/lax-17" target="_blank">github.com/lax-17</a></div>
+      </div>
+    </div>
+    <div class="hr"></div>
+    <div class="row no-print">
+      <a class="btn" href="mailto:laxmikant.data@gmail.com">Email</a>
+      <a class="btn" href="https://linkedin.com/in/laxmikant-nishad" target="_blank">LinkedIn</a>
+      <a class="btn" href="https://github.com/lax-17" target="_blank">GitHub</a>
+      <a class="btn" href="#" onclick="window.print()">Print / Save as PDF</a>
+    </div>
+  </header>
+
+  <section class="section">
+    <h2>Summary</h2>
+    <div>
+      Applied AI/ML Engineer (MSc AI) specializing in LLMs, Transformers, and multi‑modal systems. Built end‑to‑end healthcare LLM applications: data curation, QLoRA fine‑tuning, prompt & context engineering, structured JSON outputs, evaluation/regression pipelines with clinicians, and Docker/llama.cpp packaging for offline inference. Delivered benchmark‑beating models and trustworthy evaluation with safety/hallucination checks.
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Experience</h2>
+
+    <div class="role">
+      <div>
+        <strong>Applied AI/LLM Engineer (Clinical Narratives Platform)</strong> — Sheffield Hallam University, Sheffield, UK
+        <ul class="bullets">
+          <li>End‑to‑end healthcare LLM: QLoRA fine‑tuning (Llama 3 8B, 8192‑token context), schema‑faithful JSON outputs for EHR/RAG, safety & hallucination checks.</li>
+          <li>Created 600 structured synthetic profiles with Gemini 1.5 Pro; validated by clinicians; built evaluation & regression tests.</li>
+          <li>Deployment packaging with Docker + llama.cpp for offline inference; emphasis on reliability and compliance.</li>
+        </ul>
+      </div>
+      <div class="when">Jun 2025 – Present</div>
+    </div>
+
+    <div class="role">
+      <div>
+        <strong>AI Researcher — Multi‑modal Transformers</strong> — Sheffield Hallam University, Sheffield, UK
+        <ul class="bullets">
+          <li>Hybrid Conv1D + Transformer fusing DINOv2 image embeddings with MediaPipe features; normalization, EMA, TTA for robust evaluation.</li>
+          <li>Achieved <strong>0.350 macro‑F1</strong> and 53.4% accuracy (7‑class, 2,152‑sample) — outperformed ATL‑BP baseline (~0.25 F1) and personalized model (0.308 F1).</li>
+          <li>Compared unimodal vs multi‑modal pipelines; authored recommendations for next‑step modalities.</li>
+        </ul>
+      </div>
+      <div class="when">Feb 2025 – Aug 2025</div>
+    </div>
+
+    <div class="role">
+      <div>
+        <strong>Junior Developer Intern</strong> — Tan Theta Software Studio, Remote
+        <ul class="bullets">
+          <li>Built SQL schemas and automated pipelines for a blockchain app; implemented web scraping for data ingestion.</li>
+          <li>Contributed to production ML systems and collaborative engineering workflows.</li>
+        </ul>
+      </div>
+      <div class="when">Oct 2023 – Dec 2023</div>
+    </div>
+
+    <div class="role">
+      <div>
+        <strong>Industry Collaboration Coordinator</strong> — Ufa University of Science and Technology, Sterlitamak, Russia
+        <ul class="bullets">
+          <li>Secured 5+ industry‑led projects; managed partnerships aligning academic and industry goals.</li>
+        </ul>
+      </div>
+      <div class="when">Jan 2022 – Jun 2022</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Selected Projects</h2>
+    <div class="grid-2">
+      <div>
+        <h3>Clinical Narrative Assistant (LLM/NLP)</h3>
+        <div class="muted small">Llama 3 8B • QLoRA • Transformers/PEFT/Accelerate • bitsandbytes • Docker • llama.cpp</div>
+        <ul class="bullets">
+          <li>Schema‑faithful JSON outputs; evaluation pipeline with regression tests and clinician validation (600 profiles).</li>
+          <li>Safety/hallucination checks; offline inference packaging for constrained environments.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Object‑Tracking Drone Navigation (CV/Controls)</h3>
+        <div class="muted small">OpenCV • Python • PID • GPS/IMU + Vision Fusion</div>
+        <ul class="bullets">
+          <li>Real‑time pursuit with closed‑loop PID; robust to occlusions; latency‑aware command generation.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>fMRI Image Reconstruction (Medical AI)</h3>
+        <div class="muted small">StyleGAN2 • U‑Net • PyTorch • LSGAN</div>
+        <ul class="bullets">
+          <li>SSIM 0.87 / PSNR 28.4 dB; stabilized training with LSGAN; analyzed domain mismatch & instability.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Education</h2>
+    <div class="role">
+      <div><strong>MSc in Artificial Intelligence</strong> — Sheffield Hallam University</div>
+      <div class="when">2025 – 2026</div>
+    </div>
+    <div class="role">
+      <div><strong>BSc in Information Technology and Mathematics (Distinction, GPA: 4.77/5)</strong> — Ufa University of Science and Technology</div>
+      <div class="when">2019 – 2023</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Technical Skills</h2>
+    <div class="small muted">LLMs & NLP</div>
+    <div>
+      <span class="badge">Llama 3 8B</span>
+      <span class="badge">Transformers</span>
+      <span class="badge">QLoRA</span>
+      <span class="badge">PEFT</span>
+      <span class="badge">Accelerate</span>
+      <span class="badge">bitsandbytes</span>
+      <span class="badge">RAG</span>
+      <span class="badge">Structured JSON</span>
+      <span class="badge">Prompt/Context Engineering</span>
+      <span class="badge">Evaluation Pipelines</span>
+      <span class="badge">Safety/Hallucination Checks</span>
+    </div>
+    <div class="small muted" style="margin-top:6px">ML/CV</div>
+    <div>
+      <span class="badge">PyTorch</span>
+      <span class="badge">DINOv2</span>
+      <span class="badge">ViT</span>
+      <span class="badge">OpenFace</span>
+      <span class="badge">MediaPipe</span>
+      <span class="badge">OpenCV</span>
+      <span class="badge">EMA</span>
+      <span class="badge">TTA</span>
+      <span class="badge">StyleGAN2</span>
+      <span class="badge">U‑Net</span>
+    </div>
+    <div class="small muted" style="margin-top:6px">Systems/Tools</div>
+    <div>
+      <span class="badge">Python</span>
+      <span class="badge">Docker</span>
+      <span class="badge">llama.cpp</span>
+      <span class="badge">Linux</span>
+      <span class="badge">CUDA</span>
+      <span class="badge">Git</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Certifications</h2>
+    <div class="row small">
+      <div>DeepLearning.AI: Neural Networks & Deep Learning (2023)</div>
+      <div>DeepLearning.AI: Improving Deep Neural Networks (2023)</div>
+      <div>DeepLearning.AI: Convolutional Neural Networks (2023)</div>
+      <div>Kaggle: Intro/Intermediate ML; Data Visualization</div>
+      <div>365 Data Science Bootcamp (2022)</div>
+      <div>MongoDB: M001 Basics (2021)</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Leadership / Extracurricular</h2>
+    <div class="small">AI Club, Computer Science Club, Coffee Club, Physics Discussions (2023 – Present), Sheffield Hallam University</div>
+    <div class="small">Organised technical talks, coding challenges, and research paper discussions; promoted faculty–student collaboration.</div>
+  </section>
+
+  <section class="section">
+    <h2>Honors & Awards</h2>
+    <div class="small">Transform Together Scholarship — academic excellence and leadership potential.</div>
+    <div class="small">Academic Excellence Award (Distinction) — top performance in BSc IT & Mathematics.</div>
+  </section>
+</body>
+</html>

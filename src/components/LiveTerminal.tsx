@@ -47,9 +47,9 @@ const LiveTerminal = () => {
       output: [
         "laxmikant@neural-interface:~$ whoami",
         "laxmikant_nishad",
-        "AI/ML Engineer | Leeds, UK",
-        "Specializing in Multi-modal Models, LLM Fine-tuning, Computer Vision",
-        "40% accuracy improvement over published baselines"
+        "Applied AI/ML Engineer | Leeds, UK",
+        "Specializing in LLMs, Transformers, and multi-modal systems",
+        "QLoRA fine-tuning • Structured JSON outputs • Docker/llama.cpp"
       ]
     },
     skills: {
@@ -91,11 +91,12 @@ const LiveTerminal = () => {
       description: "Display contact information",
       output: [
         "Contact Information:",
-        "├── Email: contact@laxmikant.dev",
+        "├── Email: laxmikant.data@gmail.com",
+        "├── Phone: +44 7470398416",
         "├── LinkedIn: /in/laxmikant-nishad",
-        "├── GitHub: @laxmikant-nishad",
+        "├── GitHub: @lax-17",
         "├── Location: Leeds, UK",
-        "└── Status: Available for opportunities",
+        "└── Status: Seeking to build production-ready, trustworthy LLM systems",
         "",
         "Technical Specialties:",
         "├── Multi-modal AI systems",

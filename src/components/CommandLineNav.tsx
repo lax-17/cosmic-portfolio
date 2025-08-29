@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { ChevronRight, Terminal } from "lucide-react";
+import { ChevronRight, Terminal, Download } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
 const CommandLineNav = () => {
@@ -14,6 +14,8 @@ const CommandLineNav = () => {
     { id: "skills", command: "cd ~/skills", label: "Skills" },
     { id: "experience", command: "cd ~/experience", label: "Experience" },
     { id: "contact", command: "cd ~/contact", label: "Contact" },
+    // Direct resume action
+    { id: "resume", command: "open ~/resume.pdf", label: "Resume", href: "/Updated_Resume%20AI%20ready%20A16.pdf" },
   ];
 
   useEffect(() => {
@@ -39,11 +41,23 @@ const CommandLineNav = () => {
 
   const executeCommand = (cmd: string) => {
     const section = sections.find(s => s.command === cmd || s.id === cmd.replace("cd ~/", ""));
-    if (section) {
-      document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth" });
+    if (!section) return;
+
+    // Special handling for resume (open PDF)
+    if (section.id === "resume" || (section as any).href) {
+      const href = (section as any).href as string;
+      if (href) window.open(href, "_blank");
       setCommand("");
       setShowNav(false);
+      return;
     }
+
+    const el = document.getElementById(section.id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+    setCommand("");
+    setShowNav(false);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -107,6 +121,22 @@ const CommandLineNav = () => {
         </span>
         <span className="cursor text-primary" aria-hidden="true">█</span>
       </motion.div>
+
+      {/* Resume quick button (top-right) */}
+      <motion.a
+        href="/Updated_Resume%20AI%20ready%20A16.pdf"
+        download="Laxmikant_Nishad_Resume.pdf"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed top-4 right-4 z-50 px-3 py-2 rounded-lg text-xs font-mono text-primary bg-primary/10 hover:bg-primary/20 flex items-center gap-2"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+        aria-label="Download resume (PDF)"
+      >
+        <Download size={14} />
+        Resume
+      </motion.a>
 
       {/* Navigation Terminal */}
       <motion.div
@@ -187,7 +217,7 @@ const CommandLineNav = () => {
         transition={{ duration: 0.5, delay: 0.5 }}
         aria-label="Section quick navigation"
       >
-        <div className="code-panel w-48">
+        <div className="code-panel w-64">
           <header className="code-header">
             <span className="text-xs">navigation.json</span>
           </header>
@@ -206,8 +236,7 @@ const CommandLineNav = () => {
                 aria-current={currentSection === section.id ? 'page' : undefined}
                 aria-label={`Navigate to ${section.label} section`}
               >
-                <span className="syntax-string">"{section.id}"</span>:
-                <span className="syntax-string ml-1">"{section.label}"</span>
+                <span className="syntax-string">{section.label}</span>
                 {currentSection === section.id && (
                   <span className="text-primary ml-2" aria-hidden="true">←</span>
                 )}

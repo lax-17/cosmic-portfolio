@@ -49,27 +49,44 @@ const NeuralSkillsGraph = () => {
 
   const skillNodes: SkillNode[] = [
     // ML/AI Core
-    { id: "pytorch", name: "PyTorch", level: 90, x: 180, y: 130, category: "ml", connections: ["transformers", "computer-vision", "huggingface"] },
-    { id: "transformers", name: "Transformers", level: 88, x: 320, y: 80, category: "ml", connections: ["llama", "huggingface", "nlp"] },
-    { id: "huggingface", name: "Hugging Face", level: 85, x: 460, y: 130, category: "ml", connections: ["qora", "pytorch", "transformers"] },
+    { id: "pytorch", name: "PyTorch", level: 90, x: 180, y: 130, category: "ml", connections: ["transformers", "computer-vision", "huggingface", "peft"] },
+    { id: "transformers", name: "Transformers", level: 88, x: 320, y: 80, category: "ml", connections: ["llama", "huggingface", "nlp", "vit", "ema", "tta"] },
+    { id: "huggingface", name: "Hugging Face", level: 85, x: 460, y: 130, category: "ml", connections: ["qlora", "pytorch", "transformers", "accelerate"] },
+    { id: "peft", name: "PEFT", level: 85, x: 360, y: 150, category: "ml", connections: ["pytorch", "transformers", "qlora"] },
+    { id: "accelerate", name: "Accelerate", level: 80, x: 420, y: 90, category: "ml", connections: ["huggingface", "pytorch"] },
+    { id: "bitsandbytes", name: "bitsandbytes", level: 82, x: 410, y: 190, category: "ml", connections: ["pytorch", "qlora"] },
 
     // Computer Vision
-    { id: "computer-vision", name: "Computer Vision", level: 92, x: 130, y: 260, category: "cv", connections: ["opencv", "dinov2", "pytorch"] },
+    { id: "computer-vision", name: "Computer Vision", level: 92, x: 130, y: 260, category: "cv", connections: ["opencv", "dinov2", "pytorch", "vit", "mediapipe", "openface"] },
     { id: "opencv", name: "OpenCV", level: 89, x: 80, y: 380, category: "cv", connections: ["computer-vision", "python"] },
     { id: "dinov2", name: "DINOv2", level: 75, x: 220, y: 340, category: "cv", connections: ["computer-vision", "transformers"] },
+    { id: "vit", name: "ViT", level: 80, x: 210, y: 280, category: "cv", connections: ["computer-vision", "transformers"] },
+    { id: "mediapipe", name: "MediaPipe", level: 78, x: 90, y: 320, category: "cv", connections: ["computer-vision"] },
+    { id: "openface", name: "OpenFace", level: 75, x: 160, y: 380, category: "cv", connections: ["computer-vision"] },
+    { id: "ema", name: "EMA", level: 70, x: 300, y: 220, category: "ml", connections: ["transformers", "dinov2"] },
+    { id: "tta", name: "TTA", level: 70, x: 260, y: 200, category: "ml", connections: ["transformers", "computer-vision"] },
 
     // NLP
-    { id: "nlp", name: "NLP", level: 87, x: 500, y: 210, category: "nlp", connections: ["llama", "rag", "transformers"] },
-    { id: "llama", name: "Llama 3", level: 87, x: 580, y: 160, category: "nlp", connections: ["qora", "nlp", "transformers"] },
+    { id: "nlp", name: "NLP", level: 87, x: 500, y: 210, category: "nlp", connections: ["llama", "rag", "transformers", "structured-json", "eval-pipelines", "safety"] },
+    { id: "llama", name: "Llama 3", level: 87, x: 580, y: 160, category: "nlp", connections: ["qlora", "nlp", "transformers", "llama-cpp"] },
     { id: "rag", name: "RAG", level: 85, x: 540, y: 290, category: "nlp", connections: ["nlp", "llama"] },
-    { id: "qora", name: "QLoRA", level: 80, x: 620, y: 240, category: "nlp", connections: ["llama", "huggingface"] },
+    { id: "qlora", name: "QLoRA", level: 82, x: 620, y: 240, category: "nlp", connections: ["llama", "huggingface", "bitsandbytes", "peft"] },
+    { id: "structured-json", name: "Structured JSON", level: 88, x: 560, y: 240, category: "nlp", connections: ["llama", "rag"] },
+    { id: "eval-pipelines", name: "Evaluation Pipelines", level: 84, x: 520, y: 330, category: "ml", connections: ["nlp", "transformers"] },
+    { id: "safety", name: "Safety & Hallucination Checks", level: 82, x: 600, y: 320, category: "ml", connections: ["nlp", "llama"] },
 
     // Tools
     { id: "python", name: "Python", level: 95, x: 260, y: 420, category: "tools", connections: ["pytorch", "opencv", "docker"] },
-    { id: "docker", name: "Docker", level: 88, x: 400, y: 380, category: "tools", connections: ["python", "linux"] },
+    { id: "docker", name: "Docker", level: 88, x: 400, y: 380, category: "tools", connections: ["python", "linux", "llama-cpp"] },
     { id: "linux", name: "Linux", level: 91, x: 500, y: 420, category: "tools", connections: ["docker", "cuda"] },
     { id: "cuda", name: "CUDA", level: 82, x: 360, y: 300, category: "tools", connections: ["pytorch", "linux"] },
+    { id: "llama-cpp", name: "llama.cpp", level: 78, x: 460, y: 350, category: "tools", connections: ["docker", "llama"] },
   ];
+
+  // Original layout: use static node positions without offsets/scale
+  const positionedNodes = useMemo(() => {
+    return skillNodes;
+  }, []);
 
   const connections: Connection[] = [];
   skillNodes.forEach(node => {
@@ -87,7 +104,7 @@ const NeuralSkillsGraph = () => {
 
   // Filtered data based on search and category
   const filteredNodes = useMemo(() => {
-    return skillNodes.filter(node => {
+    return positionedNodes.filter(node => {
       const matchesSearch = !searchTerm ||
         node.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         node.category.toLowerCase().includes(searchTerm.toLowerCase());
@@ -96,14 +113,11 @@ const NeuralSkillsGraph = () => {
 
       return matchesSearch && matchesCategory;
     });
-  }, [skillNodes, searchTerm, selectedCategory]);
+  }, [positionedNodes, searchTerm, selectedCategory]);
 
   const filteredConnections = useMemo(() => {
-    return connections.filter(connection => {
-      const sourceNode = filteredNodes.find(n => n.id === connection.source);
-      const targetNode = filteredNodes.find(n => n.id === connection.target);
-      return sourceNode && targetNode;
-    });
+    const ids = new Set(filteredNodes.map(n => n.id));
+    return connections.filter(c => ids.has(c.source) && ids.has(c.target));
   }, [connections, filteredNodes]);
 
   // Export functionality
@@ -363,7 +377,7 @@ const NeuralSkillsGraph = () => {
                             y2={targetNode.y}
                             stroke={isHighlighted ? "hsl(var(--data-active))" : "hsl(var(--data-connection))"}
                             strokeWidth={isHighlighted ? 3 : 1}
-                            strokeOpacity={isHighlighted ? 0.9 : 0.4}
+                            strokeOpacity={isHighlighted ? 0.9 : 0.3}
                             initial={{ pathLength: 0, opacity: 0 }}
                             animate={inView ? { pathLength: 1, opacity: 1 } : {}}
                             transition={{
@@ -417,7 +431,7 @@ const NeuralSkillsGraph = () => {
                             <motion.circle
                               cx={node.x}
                               cy={node.y}
-                              r={Math.max(6, node.level / 8)}
+                              r={Math.max(5, node.level / 10)}
                               fill={categoryColors[node.category as keyof typeof categoryColors]}
                               fillOpacity={isHighlighted ? 0.9 : 0.7}
                               stroke={isSelected ? "hsl(var(--primary))" : categoryColors[node.category as keyof typeof categoryColors]}
@@ -444,7 +458,7 @@ const NeuralSkillsGraph = () => {
                             {/* Node Label */}
                             <text
                               x={node.x}
-                              y={node.y - 15}
+                              y={node.y - 18}
                               textAnchor="middle"
                               fill="hsl(var(--foreground))"
                               fontSize="10"

@@ -22,15 +22,23 @@ const ProjectsSection = () => {
       {
         id: "clinical-narrative",
         title: "Clinical Narrative Assistant",
-        tech: ["Llama 3", "QLoRA", "Hugging Face", "Python"],
-        description: "Fine-tuned LLM for medical narrative processing with 600 structured patient profiles. Achieved significant improvements in clinical data extraction and analysis.",
-        highlights: ["600+ Patient Profiles", "Medical NLP", "Production Ready"],
+        tech: ["Llama 3 8B", "QLoRA", "Transformers", "PEFT", "bitsandbytes", "Accelerate", "Python"],
+        description: "End‑to‑end healthcare LLM system: QLoRA fine‑tuning (Llama 3 8B, 8192‑token context), schema‑faithful JSON outputs for EHR/RAG, safety & hallucination checks, and Docker + llama.cpp packaging for offline inference. 600 clinician‑validated synthetic profiles used for evaluation and regression tests.",
+        highlights: [
+          "QLoRA fine‑tuning (Llama 3 8B)",
+          "8192‑token context",
+          "600 clinician‑validated profiles",
+          "Schema‑faithful JSON outputs",
+          "Safety & hallucination checks",
+          "Docker + llama.cpp (offline)",
+          "Evaluation & regression tests"
+        ],
         category: "NLP/Healthcare",
         status: "completed",
         featured: true,
         github: "https://github.com/laxmikant-nishad/clinical-narrative",
         demo: "https://clinical-narrative-demo.vercel.app",
-        date: "2024",
+        date: "2025",
         complexity: "Advanced",
         collaborators: 2,
         impact: "High"
@@ -38,9 +46,15 @@ const ProjectsSection = () => {
       {
         id: "drone-navigation",
         title: "Object-Tracking Drone Navigation",
-        tech: ["OpenCV", "Python", "PID Control", "GPS Fusion"],
-        description: "Real-time drone pursuit system with PID control and GPS fusion. Implemented advanced computer vision algorithms for autonomous navigation and tracking.",
-        highlights: ["Real-time Tracking", "Autonomous Navigation", "Computer Vision"],
+        tech: ["OpenCV", "Python", "PID Control", "GPS/IMU Fusion"],
+        description: "Real‑time drone pursuit with robust object tracking and closed‑loop PID control. v2 integrates GPS/IMU + vision fusion for stable navigation under noisy measurements and occlusions; tuned controllers yield smooth path corrections and latency‑aware command outputs.",
+        highlights: [
+          "Real‑time tracking (30 FPS)",
+          "Closed‑loop PID control",
+          "GPS + vision fusion (v2)",
+          "Robust to occlusions",
+          "Latency‑aware control"
+        ],
         category: "Computer Vision",
         status: "completed",
         featured: true,
@@ -54,9 +68,15 @@ const ProjectsSection = () => {
       {
         id: "fmri-reconstruction",
         title: "fMRI Image Reconstruction",
-        tech: ["StyleGAN2", "U-Net", "PyTorch", "Deep Learning"],
-        description: "Benchmarked GAN architectures for brain imaging reconstruction. Developed novel approaches for high-quality medical image generation and analysis.",
-        highlights: ["Medical Imaging", "GAN Architecture", "Research Impact"],
+        tech: ["StyleGAN2", "U‑Net", "PyTorch", "LSGAN", "Deep Learning"],
+        description: "GAN‑based brain imaging reconstruction on Algonauts‑style data. Achieved SSIM 0.87 and PSNR 28.4 dB with StyleGAN2 + U‑Net hybrid; stabilized training via LSGAN objective and careful normalization; analyzed domain mismatch and instability factors.",
+        highlights: [
+          "StyleGAN2 + U‑Net hybrid",
+          "SSIM 0.87 / PSNR 28.4 dB",
+          "Stable training via LSGAN",
+          "Normalization & EMA tuning",
+          "Domain mismatch analysis"
+        ],
         category: "Medical AI",
         status: "research",
         featured: true,

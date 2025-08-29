@@ -51,12 +51,6 @@ const CookieConsentBanner = () => {
           >
             Reject All
           </Button>
-          <Button 
-            variant="secondary"
-            className="w-full sm:w-auto"
-          >
-            Customize
-          </Button>
         </div>
         <button 
           onClick={() => setIsVisible(false)}

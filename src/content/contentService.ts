@@ -106,13 +106,13 @@ class ContentStorage {
     // Sample experiences
     this.experiences = [
       {
-        id: "ai-researcher",
-        title: "AI Researcher",
+        id: "applied-llm-engineer",
+        title: "Applied AI/LLM Engineer (Clinical Narratives Platform)",
         company: "Sheffield Hallam University",
-        period: "June 2025 – Present",
+        period: "Jun 2025 – Present",
         location: "Sheffield, UK",
-        description: "Leading research in advanced AI systems and multi-modal models. Developing novel approaches to improve model performance and efficiency.",
-        highlights: ["Research Leadership", "Publication Writing", "Model Development"],
+        description: "Built an end-to-end healthcare LLM system: synthetic data generation, fine-tuning with QLoRA, prompt & context engineering, clinician evaluation, and deployment packaging (Docker, llama.cpp for offline inference).",
+        highlights: ["QLoRA fine-tuning (Llama 3 8B, 8192 tokens)", "600 clinician-validated profiles", "Schema-faithful JSON outputs", "Safety & hallucination checks", "Docker + llama.cpp deployment"],
         current: true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -131,9 +131,9 @@ class ContentStorage {
       {
         id: "industry-coordinator",
         title: "Industry Collaboration Coordinator",
-        company: "Ufa University",
+        company: "Ufa University of Science and Technology",
         period: "Jan 2022 – June 2022",
-        location: "Ufa, Russia",
+        location: "Sterlitamak, Russia",
         description: "Coordinated industry partnerships and research collaborations, bridging academic research with practical applications.",
         highlights: ["Partnership Management", "Research Coordination", "Industry Relations"],
         createdAt: new Date().toISOString(),
@@ -143,14 +143,14 @@ class ContentStorage {
 
     // Sample metadata
     this.metadata = {
-      title: "AI Researcher Portfolio",
-      description: "Portfolio of an AI researcher specializing in machine learning and neural networks",
-      author: "AI Researcher",
-      keywords: ["AI", "Machine Learning", "Neural Networks", "Research"],
+      title: "Applied AI/ML Engineer Portfolio",
+      description: "Portfolio of Laxmikant Nishad, an Applied AI/ML Engineer specializing in LLMs, Transformers, and multi-modal systems.",
+      author: "Laxmikant Nishad",
+      keywords: ["Applied AI", "LLM", "Transformers", "RAG", "PyTorch", "Hugging Face", "Computer Vision", "Healthcare AI"],
       social: {
-        github: "https://github.com/airesearcher",
-        linkedin: "https://linkedin.com/in/airesearcher",
-        email: "contact@airesearcher.com"
+        github: "https://github.com/lax-17",
+        linkedin: "https://linkedin.com/in/laxmikant-nishad",
+        email: "laxmikant.data@gmail.com"
       },
       theme: {
         primaryColor: "hsl(272, 91%, 60%)",

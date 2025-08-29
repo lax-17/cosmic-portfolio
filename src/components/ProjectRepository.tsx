@@ -21,7 +21,7 @@ const ProjectRepository = () => {
       id: "clinical-assistant",
       name: "clinical_narrative_assistant/",
       type: "folder",
-      description: "Fine-tuned LLM for medical narrative processing",
+      description: "End‑to‑end healthcare LLM: QLoRA fine‑tuning (Llama 3 8B, 8192‑token context), schema‑faithful JSON outputs, safety/hallucination checks, and Docker + llama.cpp packaging for offline inference.",
       files: [
         { name: "model.py", type: "python", content: `# Clinical Narrative Assistant
 # Fine-tuned Llama 3 with QLoRA for medical data
@@ -87,13 +87,13 @@ Fine-tuned Llama 3 model using QLoRA for processing medical narratives and extra
 - **Optimization**: 4-bit quantization with BitsAndBytes
 - **Training**: Parameter-Efficient Fine-Tuning (PEFT)` }
       ],
-      tech: ["Llama 3", "QLoRA", "Hugging Face", "PyTorch"]
+      tech: ["Llama 3 8B", "QLoRA", "Transformers", "PEFT", "bitsandbytes", "Accelerate", "PyTorch", "llama.cpp"]
     },
     {
       id: "drone-tracking",
       name: "object_tracking_drone/",
-      type: "folder", 
-      description: "Real-time drone navigation with computer vision",
+      type: "folder",
+      description: "Real‑time drone pursuit with robust object tracking and closed‑loop PID control. v2 adds GPS/IMU + vision fusion for stability under noise and occlusions; tuned controllers yield smooth, latency‑aware commands.",
       files: [
         { name: "tracker.py", type: "python", content: `# Object Tracking Drone Navigation System
 # Real-time pursuit with PID control and GPS fusion
@@ -137,13 +137,13 @@ class PIDController:
         self.integral_x = 0
         self.integral_y = 0` }
       ],
-      tech: ["OpenCV", "Python", "PID Control", "GPS Fusion"]
+      tech: ["OpenCV", "Python", "PID Control", "GPS/IMU Fusion"]
     },
     {
-      id: "fmri-reconstruction", 
+      id: "fmri-reconstruction",
       name: "fmri_image_reconstruction/",
       type: "folder",
-      description: "GAN-based brain imaging reconstruction",
+      description: "GAN‑based brain imaging reconstruction: StyleGAN2 + U‑Net hybrid stabilized with LSGAN objective. Achieved SSIM 0.87 and PSNR 28.4 dB; analyzed domain mismatch and instability factors.",
       files: [
         { name: "models.py", type: "python", content: `# fMRI Image Reconstruction using GANs
 # Benchmarked StyleGAN2 and U-Net architectures
@@ -198,7 +198,7 @@ class UNetReconstructor(nn.Module):
             nn.Conv2d(64, out_channels, 1)
         ])` }
       ],
-      tech: ["StyleGAN2", "U-Net", "PyTorch", "Medical Imaging"]
+      tech: ["StyleGAN2", "U‑Net", "PyTorch", "LSGAN", "Medical Imaging"]
     }
   ];
 
@@ -223,14 +223,18 @@ class UNetReconstructor(nn.Module):
     const outputs = {
       "clinical-assistant": [
         ">>> Initializing Clinical Narrative Assistant...",
-        "Loading Llama 3 model with QLoRA configuration...",
+        "Loading Llama 3 8B with QLoRA (4‑bit, nf4) via bitsandbytes...",
         "Model loaded successfully! 🏥",
+        "Context window: 8192 tokens",
         "Processing sample medical narrative...",
         "Extracted patient data:",
         "  - Age: 45",
         "  - Symptoms: chest pain, shortness of breath",
         "  - Diagnosis: Possible cardiac event",
         "  - Confidence: 94.2%",
+        "JSON schema compliance: PASSED",
+        "Safety/hallucination checks: PASSED",
+        "Offline inference (llama.cpp): READY",
         "",
         "✅ Clinical data extraction completed!"
       ],

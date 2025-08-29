@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useState, useEffect } from "react";
-import { Mail, Github, Linkedin, Phone, Copy, ExternalLink, Terminal, Database, Code, Eye, Settings, Zap } from "lucide-react";
+import { Mail, Github, Linkedin, Phone, Copy, ExternalLink, Terminal, Database, Code, Eye, Settings, Zap, Download } from "lucide-react";
 import ContactForm from "@/components/ContactForm";
 import SQLQueryBuilder from "@/components/SQLQueryBuilder";
 import DatabaseVisualizer from "@/components/DatabaseVisualizer";
@@ -502,6 +502,17 @@ const DataContactPanel = () => {
                     <Github size={12} className="inline mr-2" />
                     ./view_github.sh
                   </motion.button>
+
+                  <motion.button
+                    onClick={() => window.open('/Updated_Resume%20AI%20ready%20A16.pdf', '_blank')}
+                    className="block w-full text-left p-2 border border-terminal-border text-terminal-text hover:bg-terminal/60 transition-colors font-mono text-xs"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    title="Download Resume (PDF)"
+                  >
+                    <Download size={12} className="inline mr-2" />
+                    ./download_resume.sh
+                  </motion.button>
                 </div>
               </div>
 
@@ -513,7 +524,7 @@ const DataContactPanel = () => {
                 <div className="p-4 text-xs space-y-1 font-mono">
                   <div className="text-muted-foreground">// System Information</div>
                   <div><span className="syntax-keyword">name</span>: <span className="syntax-string">"Laxmikant Nishad"</span></div>
-                  <div><span className="syntax-keyword">role</span>: <span className="syntax-string">"AI/ML Engineer"</span></div>
+                  <div><span className="syntax-keyword">role</span>: <span className="syntax-string">"Applied AI/ML Engineer"</span></div>
                   <div><span className="syntax-keyword">location</span>: <span className="syntax-string">"Leeds, UK"</span></div>
                   <div><span className="syntax-keyword">experience</span>: <span className="syntax-number">3</span> years</div>
                   <div><span className="syntax-keyword">availability</span>: <span className="syntax-string">"open_to_opportunities"</span></div>

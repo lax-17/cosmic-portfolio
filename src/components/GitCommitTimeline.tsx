@@ -23,13 +23,25 @@ const GitCommitTimeline = () => {
       date: "June 2025",
       author: "laxmikant-nishad",
       branch: "main",
-      title: "feat: AI Researcher position at Sheffield Hallam University",
-      message: "Leading research in advanced AI systems and multi-modal models\n\n+ Developing novel approaches to improve model performance\n+ Research publication pipeline established\n+ Cross-disciplinary collaboration with medical teams",
+      title: "feat: Applied AI/LLM Engineer (Clinical Narratives Platform) at Sheffield Hallam University",
+      message: "Built end-to-end healthcare LLM system (QLoRA, Llama 3 8B, 8192 context) with schema-faithful JSON outputs, safety checks, and Docker/llama.cpp offline inference.\n\n+ Synthetic data generation (600 profiles) validated by clinicians\n+ Prompt/context engineering and evaluation pipeline\n+ Deployment packaging and reliability checks",
       tags: ["research", "ai-systems", "publications"],
       company: "Sheffield Hallam University",
       location: "Sheffield, UK",
       type: "feature",
       status: "current"
+    },
+    {
+      hash: "b2mm025",
+      date: "Feb 2025 - Aug 2025",
+      author: "laxmikant-nishad",
+      branch: "research",
+      title: "feat: AI Researcher — Multi-modal Transformers at Sheffield Hallam University",
+      message: "Hybrid Conv1D + Transformer fusing DINOv2 embeddings with MediaPipe features; normalization, EMA, threshold calibration, and light TTA.\n\n+ 0.350 macro-F1; 53.4% accuracy on a 7-class, 2,152-sample dataset\n+ Outperformed ATL-BP baseline (~0.25 F1)\n+ Beat personalized model (0.308 F1) without per-user adaptation",
+      tags: ["research", "multimodal", "transformers"],
+      company: "Sheffield Hallam University",
+      location: "Sheffield, UK",
+      type: "feature"
     },
     {
       hash: "c3b8d91",
@@ -51,8 +63,8 @@ const GitCommitTimeline = () => {
       title: "feat: Industry Collaboration Coordinator at Ufa University",
       message: "Coordinated industry partnerships and research collaborations\n\n+ Partnership management with tech companies\n+ Research project coordination\n+ Academic-industry bridge building\n+ International collaboration facilitation",
       tags: ["coordination", "partnerships", "research"],
-      company: "Ufa University",
-      location: "Ufa, Russia",
+      company: "Ufa University of Science and Technology",
+      location: "Sterlitamak, Russia",
       type: "feature"
     },
     {

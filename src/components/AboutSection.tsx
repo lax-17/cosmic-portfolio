@@ -40,10 +40,8 @@ const AboutSection = () => {
                   transition={{ duration: 0.8, delay: 0.6 }}
                   className="text-lg text-foreground leading-relaxed mb-6"
                 >
-                  I'm an <span className="text-cosmic font-semibold">AI/ML Engineer</span> with 
-                  hands-on experience in multi-modal models, LLM fine-tuning, and computer vision. 
-                  My passion lies in pushing the boundaries of artificial intelligence to solve 
-                  real-world problems.
+                  I'm an <span className="text-cosmic font-semibold">Applied AI/ML Engineer</span> specializing in LLMs, Transformers, and multi-modal systems.
+                  I build end-to-end, production-ready AI applications with a strong focus on reliability, safety, and measurable impact.
                 </motion.p>
 
                 <motion.p
@@ -52,9 +50,8 @@ const AboutSection = () => {
                   transition={{ duration: 0.8, delay: 0.8 }}
                   className="text-lg text-muted-foreground leading-relaxed mb-8"
                 >
-                  I've achieved a <span className="text-primary font-semibold">40% accuracy improvement</span> over 
-                  published baselines in my research, demonstrating my ability to innovate and optimize 
-                  cutting-edge AI systems.
+                  Recent highlights include a clinical narratives LLM platform (QLoRA fine-tuning, schema-faithful JSON outputs, safety/hallucination checks, Docker/llama.cpp for offline inference)
+                  and a multi-modal Transformer achieving <span className="text-primary font-semibold">0.350 macro-F1</span> and 53.4% accuracy on a 7-class dataset without per-user personalization.
                 </motion.p>
 
                 <motion.div
@@ -104,8 +101,8 @@ const AboutSection = () => {
                   transition={{ duration: 0.8, delay: 1.4 }}
                   className="glass-card p-6 text-center mt-4"
                 >
-                  <div className="text-4xl font-bold text-cosmic mb-2">40%</div>
-                  <div className="text-sm text-muted-foreground">Accuracy Improvement</div>
+                  <div className="text-4xl font-bold text-cosmic mb-2">0.350</div>
+                  <div className="text-sm text-muted-foreground">Macro-F1 (7-class)</div>
                 </motion.div>
               </motion.div>
             </div>

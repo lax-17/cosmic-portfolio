@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Mail, Linkedin, Github, Phone, Copy, ExternalLink } from "lucide-react";
+import { Mail, Linkedin, Github, Phone, Copy, ExternalLink, Download } from "lucide-react";
 import { useState } from "react";
 
 const ContactSection = () => {
@@ -110,15 +110,31 @@ const ContactSection = () => {
                 transition={{ duration: 0.8, delay: 1.0 }}
                 className="mt-8"
               >
-                <motion.a
-                  href="mailto:laxmikant.data@gmail.com"
-                  className="inline-flex items-center gap-3 glass-card px-6 py-3 text-cosmic font-semibold hover:scale-105 transition-all duration-300"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Mail size={20} />
-                  Send Message
-                </motion.a>
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <motion.a
+                    href="mailto:laxmikant.data@gmail.com"
+                    className="inline-flex items-center gap-3 glass-card px-6 py-3 text-cosmic font-semibold hover:scale-105 transition-all duration-300"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Mail size={20} />
+                    Send Message
+                  </motion.a>
+
+                  <motion.a
+                    href="/Updated_Resume%20AI%20ready%20A16.pdf"
+                    download="Laxmikant_Nishad_Resume.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-3 glass-card px-6 py-3 text-cosmic font-semibold hover:scale-105 transition-all duration-300"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label="Download resume as PDF"
+                  >
+                    <Download size={20} />
+                    Download Resume (PDF)
+                  </motion.a>
+                </div>
               </motion.div>
             </motion.div>
 

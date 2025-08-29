@@ -38,7 +38,7 @@ interface PerformanceMetrics {
 const AnalyticsContext = createContext<AnalyticsContextType | undefined>(undefined);
 
 // GA4 tracking ID - replace with your actual GA4 measurement ID
-const GA4_MEASUREMENT_ID = 'G-XXXXXXXXXX';
+const GA4_MEASUREMENT_ID = (import.meta.env.VITE_GA_ID as string | undefined);
 
 interface AnalyticsProviderProps {
   children: ReactNode;
@@ -48,28 +48,33 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
   const [analyticsConsent, setAnalyticsConsent] = useState<boolean | null>(null);
   const location = useLocation();
   
-  // Initialize GA4
+  // Initialize GA4 (consent + env driven)
   useEffect(() => {
-    if (analyticsConsent) {
-      // Load GA4 script
+    if (!analyticsConsent || !GA4_MEASUREMENT_ID) return;
+
+    // Avoid duplicate script injection
+    const existing = document.querySelector(`script[src*="googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}"]`);
+    if (!existing) {
       const script = document.createElement('script');
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`;
       document.head.appendChild(script);
-      
-      // Initialize gtag
+    }
+
+    // Initialize gtag once
+    if (!(window as any).gtag) {
       (window as any).dataLayer = (window as any).dataLayer || [];
-      function gtag(){(window as any).dataLayer.push(arguments);}
-      (gtag as any)('js', new Date());
-      (gtag as any)('config', GA4_MEASUREMENT_ID, {
-        page_title: document.title,
-        page_location: window.location.href,
-        page_path: window.location.pathname
-      });
-      
-      // Make gtag globally available
+      function gtag(){ (window as any).dataLayer.push(arguments); }
       (window as any).gtag = gtag as any;
     }
+
+    // Configure page after ensuring gtag is available
+    (window as any).gtag('js', new Date());
+    (window as any).gtag('config', GA4_MEASUREMENT_ID, {
+      page_title: document.title,
+      page_location: window.location.href,
+      page_path: window.location.pathname
+    });
   }, [analyticsConsent]);
   
   // Track page views on route changes

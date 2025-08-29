@@ -81,6 +81,19 @@ const HeroSection = () => {
             >
               View My Work
             </motion.a>
+
+            <motion.a
+              href="/Updated_Resume%20AI%20ready%20A16.pdf"
+              download="Laxmikant_Nishad_Resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-card px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold text-primary hover:scale-105 transition-all duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Download resume (PDF)"
+            >
+              Download Resume
+            </motion.a>
           </motion.div>
         </motion.div>
       </div>

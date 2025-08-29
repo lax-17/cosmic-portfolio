@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Laxmikant Nishad - AI/ML Engineer | Portfolio</title>
-    <meta name="description" content="AI/ML Engineer specializing in multi-modal models, LLM fine-tuning, and computer vision. Based in Leeds, UK with 40% accuracy improvements over published baselines." />
-    <meta name="keywords" content="AI Engineer, ML Engineer, Machine Learning, Artificial Intelligence, Computer Vision, NLP, LLM, PyTorch, Hugging Face, Portfolio, Leeds UK" />
+    <title>Laxmikant Nishad - Applied AI/ML Engineer | Portfolio</title>
+    <meta name="description" content="Applied AI/ML Engineer specializing in LLMs, Transformers, and multi-modal systems. Built healthcare LLM apps with QLoRA, structured JSON outputs, safety checks, and Docker/llama.cpp deployment. Leeds, UK." />
+    <meta name="keywords" content="Applied AI, ML Engineer, LLM, Transformers, QLoRA, RAG, PyTorch, Hugging Face, Computer Vision, DINOv2, ViT, Docker, llama.cpp, Leeds UK, Portfolio" />
     <meta name="author" content="Laxmikant Nishad" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#1e90ff" />
@@ -15,7 +15,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://laxmikant-nishad.dev/" />
     <meta property="og:title" content="Laxmikant Nishad - AI/ML Engineer Portfolio" />
-    <meta property="og:description" content="AI/ML Engineer with expertise in PyTorch, Hugging Face, Computer Vision, and NLP. Available for opportunities in Leeds, UK." />
+    <meta property="og:description" content="Applied AI/ML Engineer specializing in LLMs, Transformers, and multi-modal systems. Built healthcare LLM apps with QLoRA and structured JSON outputs. Leeds, UK." />
     <meta property="og:image" content="https://laxmikant-nishad.dev/og-image.png" />
     <meta property="og:image:alt" content="Laxmikant Nishad - AI/ML Engineer Portfolio" />
     <meta property="og:image:width" content="1200" />
@@ -25,11 +25,9 @@
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:creator" content="@lovable_dev" />
     <meta name="twitter:url" content="https://laxmikant-nishad.dev/" />
     <meta name="twitter:title" content="Laxmikant Nishad - AI/ML Engineer Portfolio" />
-    <meta name="twitter:description" content="AI/ML Engineer with expertise in PyTorch, Hugging Face, Computer Vision, and NLP. Available for opportunities in Leeds, UK." />
+    <meta name="twitter:description" content="Applied AI/ML Engineer specializing in LLMs, Transformers, and multi-modal systems. Built healthcare LLM apps with QLoRA and structured JSON outputs. Leeds, UK." />
     <meta name="twitter:image" content="https://laxmikant-nishad.dev/og-image.png" />
     <meta name="twitter:image:alt" content="Laxmikant Nishad - AI/ML Engineer Portfolio" />
 
@@ -41,21 +39,22 @@
       "name": "Laxmikant Nishad",
       "url": "https://laxmikant-nishad.dev/",
       "image": "https://laxmikant-nishad.dev/profile.jpg",
-      "jobTitle": "AI/ML Engineer",
+      "jobTitle": "Applied AI/ML Engineer",
       "worksFor": {
         "@type": "Organization",
         "name": "Sheffield Hallam University"
       },
       "alumniOf": {
         "@type": "EducationalOrganization",
-        "name": "Ufa University"
+        "name": "Ufa University of Science and Technology"
       },
       "sameAs": [
         "https://www.linkedin.com/in/laxmikant-nishad",
-        "https://github.com/lax-17",
-        "https://twitter.com/lovable_dev"
+        "https://github.com/lax-17"
       ],
-      "description": "AI/ML Engineer specializing in multi-modal models, LLM fine-tuning, and computer vision with 40% accuracy improvements over published baselines.",
+      "email": "mailto:laxmikant.data@gmail.com",
+      "telephone": "+44 7470398416",
+      "description": "Applied AI/ML Engineer specializing in LLMs, Transformers, and multi-modal systems. Built end-to-end healthcare LLM applications (QLoRA fine-tuning, structured JSON outputs, safety checks). Based in Leeds, UK.",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Leeds",
@@ -71,7 +70,7 @@
       "@type": "WebSite",
       "name": "Laxmikant Nishad Portfolio",
       "url": "https://laxmikant-nishad.dev/",
-      "description": "Portfolio of Laxmikant Nishad, an AI/ML Engineer specializing in multi-modal models, LLM fine-tuning, and computer vision.",
+      "description": "Portfolio of Laxmikant Nishad, an Applied AI/ML Engineer specializing in LLMs, Transformers, and multi-modal systems for healthcare and beyond.",
       "author": {
         "@type": "Person",
         "name": "Laxmikant Nishad"
@@ -97,49 +96,6 @@
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-XXXXXXXXXX', {
-        page_title: document.title,
-        page_location: window.location.href,
-        page_path: window.location.pathname
-      });
-    </script>
-
-    <!-- Performance Monitoring -->
-    <script>
-      // Custom performance monitoring
-      if ('performance' in window) {
-        window.addEventListener('load', function() {
-          setTimeout(function() {
-            const perfData = performance.getEntriesByType('navigation')[0];
-            if (perfData) {
-              // Send performance data to analytics
-              gtag('event', 'performance_metrics', {
-                'page_load_time': Math.round(perfData.loadEventEnd - perfData.loadEventStart),
-                'dom_content_loaded': Math.round(perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart),
-                'first_paint': Math.round(performance.getEntriesByType('paint')[0]?.startTime || 0),
-                'first_contentful_paint': Math.round(performance.getEntriesByType('paint')[1]?.startTime || 0)
-              });
-            }
-          }, 0);
-        });
-      }
-    </script>
-
-    <!-- Error Tracking -->
-    <script>
-      window.addEventListener('error', function(e) {
-        gtag('event', 'exception', {
-          'description': e.error.toString(),
-          'fatal': false
-        });
-      });
-    </script>
   </head>
 
   <body>

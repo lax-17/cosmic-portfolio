@@ -12,33 +12,9 @@
     <priority>1.0</priority>
   </url>
 
-  <!-- Projects Section -->
+  <!-- Analytics Route -->
   <url>
-    <loc>https://laxmikant-nishad.dev/#projects</loc>
-    <lastmod>2025-08-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Skills Section -->
-  <url>
-    <loc>https://laxmikant-nishad.dev/#skills</loc>
-    <lastmod>2025-08-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Experience Section -->
-  <url>
-    <loc>https://laxmikant-nishad.dev/#experience</loc>
-    <lastmod>2025-08-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Contact Section -->
-  <url>
-    <loc>https://laxmikant-nishad.dev/#contact</loc>
+    <loc>https://laxmikant-nishad.dev/analytics</loc>
     <lastmod>2025-08-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
