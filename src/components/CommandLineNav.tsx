@@ -76,12 +76,12 @@ const CommandLineNav = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [showNav]);
 
-  // Auto-show nav briefly when section changes
-  useEffect(() => {
-    setShowNav(true);
-    const timer = setTimeout(() => setShowNav(false), 2000);
-    return () => clearTimeout(timer);
-  }, [currentSection]);
+  // Remove auto-show nav when section changes to avoid redundancy
+  // useEffect(() => {
+  //   setShowNav(true);
+  //   const timer = setTimeout(() => setShowNav(false), 2000);
+  //   return () => clearTimeout(timer);
+  // }, [currentSection]);
 
   const currentSectionData = sections.find(s => s.id === currentSection);
 
@@ -198,15 +198,7 @@ const CommandLineNav = () => {
         </div>
       </motion.div>
 
-      {/* Keyboard Shortcut Hint */}
-      <motion.div
-        className="fixed bottom-4 right-4 z-40 text-xs font-mono text-muted-foreground"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-      >
-        Press <span className="text-primary">Ctrl+K</span> for navigation
-      </motion.div>
+      {/* Remove redundant keyboard shortcut hint since we have the live terminal now */}
     </>
   );
 };

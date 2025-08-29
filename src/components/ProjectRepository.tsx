@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { useState } from "react";
-import { ChevronRight, ChevronDown, File, Folder } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ChevronRight, ChevronDown, File, Folder, Play, Code, Zap, Cpu, GitBranch, Star } from "lucide-react";
 
 const ProjectRepository = () => {
   const { ref, inView } = useInView({
@@ -11,6 +11,10 @@ const ProjectRepository = () => {
 
   const [expandedProjects, setExpandedProjects] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<string | null>("clinical-assistant");
+  const [isRunningCode, setIsRunningCode] = useState(false);
+  const [codeOutput, setCodeOutput] = useState<string>("");
+  const [hoveredProject, setHoveredProject] = useState<string | null>(null);
+  const [showDemo, setShowDemo] = useState(false);
 
   const projects = [
     {
@@ -209,6 +213,81 @@ class UNetReconstructor(nn.Module):
   const selectedProject = projects.find(p => p.id === selectedFile);
   const selectedFileContent = selectedProject?.files[0]; // Default to first file
 
+  const runCodeSimulation = async () => {
+    if (!selectedProject) return;
+
+    setIsRunningCode(true);
+    setCodeOutput("");
+
+    // Simulate code execution with realistic outputs
+    const outputs = {
+      "clinical-assistant": [
+        ">>> Initializing Clinical Narrative Assistant...",
+        "Loading Llama 3 model with QLoRA configuration...",
+        "Model loaded successfully! 🏥",
+        "Processing sample medical narrative...",
+        "Extracted patient data:",
+        "  - Age: 45",
+        "  - Symptoms: chest pain, shortness of breath",
+        "  - Diagnosis: Possible cardiac event",
+        "  - Confidence: 94.2%",
+        "",
+        "✅ Clinical data extraction completed!"
+      ],
+      "drone-tracking": [
+        ">>> Initializing Drone Tracking System...",
+        "Connecting to drone hardware...",
+        "Calibrating PID controllers...",
+        "Initializing OpenCV tracker...",
+        "Target acquired! 📡",
+        "Tracking object at coordinates: (245, 180)",
+        "PID Output: X=0.12, Y=-0.08",
+        "Drone following target smoothly...",
+        "",
+        "✅ Object tracking active!"
+      ],
+      "fmri-reconstruction": [
+        ">>> Initializing fMRI Reconstruction...",
+        "Loading StyleGAN2 generator...",
+        "Setting up U-Net architecture...",
+        "Processing brain imaging data...",
+        "Generating high-resolution reconstruction...",
+        "SSIM Score: 0.87",
+        "PSNR: 28.4 dB",
+        "Reconstruction completed! 🧠",
+        "",
+        "✅ Medical imaging reconstruction successful!"
+      ]
+    };
+
+    const projectOutput = outputs[selectedProject.id as keyof typeof outputs] || ["Running code..."];
+
+    for (let i = 0; i < projectOutput.length; i++) {
+      await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 500));
+      setCodeOutput(prev => prev + projectOutput[i] + "\n");
+    }
+
+    setIsRunningCode(false);
+  };
+
+  const getProjectIcon = (projectId: string) => {
+    const icons = {
+      "clinical-assistant": Cpu,
+      "drone-tracking": Zap,
+      "fmri-reconstruction": GitBranch
+    };
+    return icons[projectId as keyof typeof icons] || Folder;
+  };
+
+  const getProjectColor = (projectId: string) => {
+    const colors = {
+      "clinical-assistant": "text-green-400",
+      "drone-tracking": "text-blue-400",
+      "fmri-reconstruction": "text-pink-400"
+    };
+    return colors[projectId as keyof typeof colors] || "text-primary";
+  };
+
   return (
     <section id="projects" className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
@@ -223,102 +302,251 @@ class UNetReconstructor(nn.Module):
           </div>
 
           <div className="asymmetric-layout">
-            {/* File Tree Navigation */}
-            <div className="code-panel">
-              <div className="code-header">
-                <span className="text-xs">Project Repository</span>
-                <span className="text-xs text-muted-foreground">{projects.length} folders</span>
+            {/* Enhanced Project Cards */}
+            <div className="space-y-4">
+              <div className="text-data-header mb-6">
+                🚀 Featured Projects
               </div>
-              
-              <div className="file-tree">
-                {projects.map((project, index) => (
+
+              {projects.map((project, index) => {
+                const ProjectIcon = getProjectIcon(project.id);
+                const isSelected = selectedFile === project.id;
+                const isHovered = hoveredProject === project.id;
+
+                return (
                   <motion.div
                     key={project.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={inView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.2, delay: index * 0.1 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={inView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    className={`relative overflow-hidden rounded-lg border transition-all duration-300 cursor-pointer ${
+                      isSelected
+                        ? 'border-primary bg-primary/5 shadow-lg shadow-primary/20'
+                        : 'border-panel-border bg-panel/50 hover:border-primary/50'
+                    }`}
+                    onClick={() => {
+                      toggleProject(project.id);
+                      setSelectedFile(project.id);
+                    }}
+                    onMouseEnter={() => setHoveredProject(project.id)}
+                    onMouseLeave={() => setHoveredProject(null)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    {/* Project Folder */}
-                    <div
-                      className={`file-item ${selectedFile === project.id ? 'active' : ''}`}
-                      onClick={() => {
-                        toggleProject(project.id);
-                        setSelectedFile(project.id);
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        {expandedProjects.includes(project.id) ? 
-                          <ChevronDown size={14} /> : <ChevronRight size={14} />
-                        }
-                        <Folder size={14} className="text-accent" />
-                        <span>{project.name}</span>
-                      </div>
-                    </div>
+                    {/* Animated background gradient */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-secondary/10"
+                      initial={{ x: '-100%' }}
+                      animate={isHovered ? { x: '100%' } : { x: '-100%' }}
+                      transition={{ duration: 0.6 }}
+                    />
 
-                    {/* Project Files */}
-                    {expandedProjects.includes(project.id) && (
-                      <div className="ml-6">
-                        {project.files.map((file, fileIndex) => (
-                          <div key={fileIndex} className="file-item pl-4">
-                            <File size={12} className="text-muted-foreground" />
-                            <span className="text-sm">{file.name}</span>
+                    <div className="relative p-6">
+                      {/* Project Header */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <motion.div
+                            animate={isHovered ? { rotate: 360 } : { rotate: 0 }}
+                            transition={{ duration: 0.5 }}
+                          >
+                            <ProjectIcon size={24} className={getProjectColor(project.id)} />
+                          </motion.div>
+                          <div>
+                            <h3 className="font-semibold text-foreground">{project.name.replace('/', '')}</h3>
+                            <p className="text-sm text-muted-foreground">{project.description}</p>
                           </div>
-                        ))}
-                      </div>
-                    )}
+                        </div>
 
-                    {/* Tech Stack */}
-                    <div className="px-4 pb-2">
-                      <div className="flex flex-wrap gap-1 mt-1">
+                        <motion.div
+                          animate={isSelected ? { scale: 1.1 } : { scale: 1 }}
+                          className={`p-2 rounded-full ${isSelected ? 'bg-primary/20' : 'bg-muted/20'}`}
+                        >
+                          {expandedProjects.includes(project.id) ?
+                            <ChevronDown size={16} className="text-primary" /> :
+                            <ChevronRight size={16} className="text-muted-foreground" />
+                          }
+                        </motion.div>
+                      </div>
+
+                      {/* Tech Stack */}
+                      <div className="flex flex-wrap gap-2 mb-4">
                         {project.tech.map((tech, techIndex) => (
-                          <span
+                          <motion.span
                             key={techIndex}
-                            className="text-xs px-2 py-1 bg-muted/20 text-muted-foreground"
+                            className="px-3 py-1 text-xs bg-muted/30 text-muted-foreground rounded-full border border-panel-border/50"
+                            whileHover={{ scale: 1.05, backgroundColor: 'hsl(var(--primary) / 0.1)' }}
                           >
                             {tech}
-                          </span>
+                          </motion.span>
                         ))}
                       </div>
-                      <div className="text-xs text-muted-foreground mt-1 px-0">
-                        {project.description}
+
+                      {/* Project Stats */}
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <File size={12} />
+                          {project.files.length} files
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Star size={12} />
+                          Featured
+                        </span>
                       </div>
+
+                      {/* Expandable Files */}
+                      <AnimatePresence>
+                        {expandedProjects.includes(project.id) && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="mt-4 pt-4 border-t border-panel-border/50"
+                          >
+                            <div className="space-y-2">
+                              {project.files.map((file, fileIndex) => (
+                                <motion.div
+                                  key={fileIndex}
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: fileIndex * 0.1 }}
+                                  className="flex items-center gap-2 p-2 rounded border border-panel-border/30 hover:bg-muted/20 transition-colors"
+                                >
+                                  <File size={14} className="text-muted-foreground" />
+                                  <span className="text-sm font-mono">{file.name}</span>
+                                  <span className="text-xs text-muted-foreground ml-auto">
+                                    {file.type.toUpperCase()}
+                                  </span>
+                                </motion.div>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </motion.div>
-                ))}
-              </div>
+                );
+              })}
             </div>
 
             {/* Code Editor */}
             <div className="code-panel">
-              <div className="code-header">
-                <span className="text-xs">
-                  {selectedProject?.name}{selectedFileContent?.name}
-                </span>
-                <div className="flex gap-4 text-xs text-muted-foreground">
-                  <span>Python</span>
-                  <span>UTF-8</span>
+              <div className="code-header flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <span className="text-xs">
+                    {selectedProject?.name}{selectedFileContent?.name}
+                  </span>
+                  <div className="flex gap-4 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Code size={12} />
+                      Python
+                    </span>
+                    <span>UTF-8</span>
+                  </div>
+                </div>
+
+                {/* Control Buttons */}
+                <div className="flex items-center gap-2">
+                  <motion.button
+                    onClick={runCodeSimulation}
+                    disabled={isRunningCode}
+                    className="flex items-center gap-2 px-3 py-1 text-xs bg-primary/10 text-primary rounded border border-primary/20 hover:bg-primary/20 transition-colors disabled:opacity-50"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {isRunningCode ? (
+                      <>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        >
+                          <Cpu size={12} />
+                        </motion.div>
+                        Running...
+                      </>
+                    ) : (
+                      <>
+                        <Play size={12} />
+                        Run Code
+                      </>
+                    )}
+                  </motion.button>
                 </div>
               </div>
               
-              <div className="p-4 font-mono text-sm overflow-auto max-h-[600px]">
-                {selectedFileContent && (
-                  <motion.pre
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className="whitespace-pre-wrap text-foreground"
-                  >
-                    <code dangerouslySetInnerHTML={{
-                      __html: selectedFileContent.content
-                        .replace(/# (.*)/g, '<span class="syntax-comment"># $1</span>')
-                        .replace(/(import|from|class|def|return|if|else|for|while)/g, '<span class="syntax-keyword">$1</span>')
-                        .replace(/"([^"]*)"/g, '<span class="syntax-string">"$1"</span>')
-                        .replace(/\'([^\']*)\'/g, '<span class="syntax-string">\'$1\'</span>')
-                        .replace(/(\d+)/g, '<span class="syntax-number">$1</span>')
-                    }} />
-                  </motion.pre>
-                )}
+              {/* Code Content */}
+              <div className="relative">
+                <div className="p-4 font-mono text-sm overflow-auto max-h-[400px] bg-terminal/30">
+                  {selectedFileContent && (
+                    <motion.pre
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                      className="whitespace-pre-wrap text-foreground"
+                    >
+                      <code dangerouslySetInnerHTML={{
+                        __html: selectedFileContent.content
+                          .replace(/# (.*)/g, '<span class="syntax-comment"># $1</span>')
+                          .replace(/(import|from|class|def|return|if|else|for|while)/g, '<span class="syntax-keyword">$1</span>')
+                          .replace(/"([^"]*)"/g, '<span class="syntax-string">"$1"</span>')
+                          .replace(/\'([^\']*)\'/g, '<span class="syntax-string">\'$1\'</span>')
+                          .replace(/(\d+)/g, '<span class="syntax-number">$1</span>')
+                      }} />
+                    </motion.pre>
+                  )}
+                </div>
+
+                {/* Code Output Terminal */}
+                <AnimatePresence>
+                  {codeOutput && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="border-t border-panel-border"
+                    >
+                      <div className="p-4 bg-terminal/50">
+                        <div className="text-xs text-primary mb-2 font-mono">
+                          ~/projects/{selectedProject?.name}$ python {selectedFileContent?.name}
+                        </div>
+                        <motion.pre
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-sm font-mono text-terminal-text whitespace-pre-wrap"
+                        >
+                          {codeOutput}
+                        </motion.pre>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
+
+              {/* Floating particles effect */}
+              <motion.div
+                className="absolute top-4 right-4 w-2 h-2 bg-primary rounded-full"
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [0.5, 1, 0.5]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.div
+                className="absolute bottom-4 left-4 w-1 h-1 bg-secondary rounded-full"
+                animate={{
+                  scale: [1, 2, 1],
+                  opacity: [0.3, 0.8, 0.3]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1
+                }}
+              />
             </div>
           </div>
         </motion.div>
