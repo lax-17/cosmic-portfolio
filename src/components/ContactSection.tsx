@@ -123,7 +123,7 @@ const ContactSection = () => {
 
                   <motion.a
                     href="/Laxmikant_Resume.pdf"
-                    download="Laxmikant_Resume.pdf"
+                    download="Laxmikant's Resume.pdf"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-3 glass-card px-6 py-3 text-cosmic font-semibold hover:scale-105 transition-all duration-300"

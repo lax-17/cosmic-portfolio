@@ -504,7 +504,7 @@ const DataContactPanel = () => {
                   </motion.button>
 
                   <motion.button
-                    onClick={() => window.open('/Updated_Resume%20AI%20ready%20A16.pdf', '_blank')}
+                    onClick={() => window.open('/Laxmikant_Resume.pdf', '_blank')}
                     className="block w-full text-left p-2 border border-terminal-border text-terminal-text hover:bg-terminal/60 transition-colors font-mono text-xs"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}

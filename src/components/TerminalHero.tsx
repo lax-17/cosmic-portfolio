@@ -104,7 +104,7 @@ const TerminalHero = () => {
                    </button>
                    <a
                      href="/Laxmikant_Resume.pdf"
-                     download="Laxmikant_Resume.pdf"
+                     download="Laxmikant's Resume.pdf"
                      target="_blank"
                      rel="noopener noreferrer"
                      className="px-4 py-2 border border-terminal-border text-terminal-text hover:bg-terminal transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
