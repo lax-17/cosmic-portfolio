@@ -163,14 +163,15 @@ const ParticleBackground = () => {
       ref={canvasRef}
       width={dimensions.width}
       height={dimensions.height}
-      className="fixed inset-0 pointer-events-none z-0"
+      className="fixed inset-0 pointer-events-none z-[-1]"
       onMouseMove={handleMouseMove}
       initial={{ opacity: 0 }}
-      animate={{ opacity: 0.6 }}
+      animate={{ opacity: 0.2 }}
       transition={{ duration: 2 }}
       style={{
         width: '100vw',
-        height: '100vh'
+        height: '100vh',
+        mixBlendMode: 'screen'
       }}
     />
   );

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+
+import { useEffect, useRef, useState, useCallback } from "react";
 import * as THREE from "three";
 import { usePerformanceOptimization, useWebGLPerformance } from "@/hooks/usePerformanceOptimization";
 import { useInView } from "react-intersection-observer";
@@ -86,6 +87,33 @@ const ThreeDSkillsVisualization = () => {
     tools: new THREE.Color(0.6, 0.6, 0.6) // hsl(var(--muted))
   };
 
+  // Create simple space background
+  const createSpaceBackground = useCallback((scene: THREE.Scene) => {
+    // Set scene background to dark space color
+    scene.background = new THREE.Color(0x000011);
+    
+    // Add some simple stars
+    const starGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+    const starMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.6
+    });
+    
+    // Create random star field
+    for (let i = 0; i < 100; i++) {
+      const star = new THREE.Mesh(starGeometry, starMaterial);
+      
+      star.position.x = (Math.random() - 0.5) * 100;
+      star.position.y = (Math.random() - 0.5) * 100;
+      star.position.z = -30 + Math.random() * 20;
+      
+      scene.add(star);
+    }
+    
+    return { updateTime: () => {} };
+  }, []);
+
   useEffect(() => {
     // Check for WebGL support
     const checkWebGLSupport = () => {
@@ -113,19 +141,16 @@ const ThreeDSkillsVisualization = () => {
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    // Add ambient light
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    // Create simple space background
+    createSpaceBackground(scene);
+
+    // Simple lighting setup
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
     scene.add(ambientLight);
 
-    // Add directional light
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
     directionalLight.position.set(5, 5, 5);
     scene.add(directionalLight);
-
-    // Add point light
-    const pointLight = new THREE.PointLight(0x00ffcc, 1, 100);
-    pointLight.position.set(0, 0, 10);
-    scene.add(pointLight);
 
     // Initialize camera
     const camera = new THREE.PerspectiveCamera(
@@ -137,46 +162,48 @@ const ThreeDSkillsVisualization = () => {
     camera.position.z = zoomLevel;
     cameraRef.current = camera;
 
-    // Initialize renderer
+    // Initialize renderer with enhanced settings
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
       powerPreference: "high-performance"
     });
     
-    // Adjust for device capabilities
-    const { pixelRatio } = adjustForDevice('medium');
-    renderer.setPixelRatio(pixelRatio);
+    renderer.setClearColor(0x000011, 0.1);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    
     rendererRef.current = renderer;
     mountRef.current.appendChild(renderer.domElement);
 
-    // Create nodes
+    // Create enhanced nodes with mathematical positioning
     const nodes: THREE.Mesh[] = [];
-    const nodeGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+    const nodeGeometry = new THREE.SphereGeometry(0.5, 32, 32);
     
-    // Position nodes in 3D space
+    // Position nodes using mathematical algorithms
     const positions: THREE.Vector3[] = [];
-    const gridSize = Math.ceil(Math.sqrt(skillNodes.length));
     
     skillNodes.forEach((node, index) => {
-      const row = Math.floor(index / gridSize);
-      const col = index % gridSize;
+      // Use golden ratio spiral for positioning
+      const phi = (1 + Math.sqrt(5)) / 2;
+      const angle = index * 2 * Math.PI / phi;
+      const radius = Math.sqrt(index) * 1.5;
       
-      // Create 3D position with some variation in Z
       const position = new THREE.Vector3(
-        (col - gridSize / 2) * 2,
-        (row - gridSize / 2) * 2,
-        (Math.random() - 0.5) * 4
+        Math.cos(angle) * radius,
+        Math.sin(angle) * radius,
+        (Math.random() - 0.5) * 6
       );
       
       positions.push(position);
       
-      // Create material with category color
+      // Enhanced material with cosmic effects
       const material = new THREE.MeshPhongMaterial({
         color: categoryColors[node.category as keyof typeof categoryColors],
-        emissive: categoryColors[node.category as keyof typeof categoryColors].clone().multiplyScalar(0.2),
-        shininess: 80,
+        emissive: categoryColors[node.category as keyof typeof categoryColors].clone().multiplyScalar(0.3),
+        shininess: 100,
         transparent: true,
         opacity: 0.9
       });
@@ -184,6 +211,8 @@ const ThreeDSkillsVisualization = () => {
       const mesh = new THREE.Mesh(nodeGeometry, material);
       mesh.position.copy(position);
       mesh.userData = { id: node.id, name: node.name, level: node.level, category: node.category };
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
       
       scene.add(mesh);
       nodes.push(mesh);
@@ -191,13 +220,7 @@ const ThreeDSkillsVisualization = () => {
     
     nodesRef.current = nodes;
 
-    // Create connections
-    const connectionMaterial = new THREE.LineBasicMaterial({
-      color: 0x00ffaa,
-      transparent: true,
-      opacity: 0.3
-    });
-    
+    // Enhanced connections with mathematical curves
     connections.forEach(connection => {
       const sourceNode = skillNodes.find(n => n.id === connection.source);
       const targetNode = skillNodes.find(n => n.id === connection.target);
@@ -207,13 +230,23 @@ const ThreeDSkillsVisualization = () => {
         const targetIndex = skillNodes.findIndex(n => n.id === connection.target);
         
         if (sourceIndex !== -1 && targetIndex !== -1) {
-          const points = [
-            positions[sourceIndex],
-            positions[targetIndex]
-          ];
+          // Create curved connection using quadratic bezier
+          const start = positions[sourceIndex];
+          const end = positions[targetIndex];
+          const mid = start.clone().add(end).multiplyScalar(0.5);
+          mid.z += Math.random() * 2 - 1; // Add some curve variation
+          
+          const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+          const points = curve.getPoints(20);
           
           const geometry = new THREE.BufferGeometry().setFromPoints(points);
-          const line = new THREE.Line(geometry, connectionMaterial);
+          const material = new THREE.LineBasicMaterial({
+            color: new THREE.Color().setHSL(0.5 + Math.random() * 0.3, 0.7, 0.6),
+            transparent: true,
+            opacity: 0.4
+          });
+          
+          const line = new THREE.Line(geometry, material);
           line.userData = { source: connection.source, target: connection.target };
           
           scene.add(line);
@@ -231,7 +264,6 @@ const ThreeDSkillsVisualization = () => {
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       
-      // Raycasting for hover detection
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(mouse, cameraRef.current);
       
@@ -241,35 +273,33 @@ const ThreeDSkillsVisualization = () => {
         const node = intersects[0].object as THREE.Mesh;
         setHoveredNode(node.userData.id);
         
-        // Highlight hovered node
+        // Hover effects
         nodesRef.current.forEach(n => {
           const material = n.material as THREE.MeshPhongMaterial;
           if (n.userData.id === node.userData.id) {
-            material.emissive.set(0xffffff);
-            material.emissiveIntensity = 1.0;
+            material.emissive.setHex(0xffffff);
+            material.emissiveIntensity = 0.4;
           } else {
-            material.emissive.set(categoryColors[n.userData.category as keyof typeof categoryColors]);
+            material.emissive.copy(categoryColors[n.userData.category as keyof typeof categoryColors]);
             material.emissiveIntensity = 0.2;
           }
         });
       } else {
         setHoveredNode(null);
         
-        // Reset node highlights
         nodesRef.current.forEach(n => {
           const material = n.material as THREE.MeshPhongMaterial;
-          material.emissive.set(categoryColors[n.userData.category as keyof typeof categoryColors]);
+          material.emissive.copy(categoryColors[n.userData.category as keyof typeof categoryColors]);
           material.emissiveIntensity = 0.2;
         });
       }
     };
 
-    // Mouse wheel for zoom
     const handleWheel = (event: WheelEvent) => {
       if (!cameraRef.current) return;
       
       cameraRef.current.position.z += event.deltaY * 0.01;
-      const newZoomLevel = Math.max(5, Math.min(30, cameraRef.current.position.z));
+      const newZoomLevel = Math.max(5, Math.min(50, cameraRef.current.position.z));
       cameraRef.current.position.z = newZoomLevel;
       setZoomLevel(newZoomLevel);
     };
@@ -277,7 +307,6 @@ const ThreeDSkillsVisualization = () => {
     addEventListener(mountRef.current, 'mousemove', handleMouseMove);
     addEventListener(mountRef.current, 'wheel', handleWheel);
 
-    // Handle resize
     const handleResize = () => {
       if (!mountRef.current || !cameraRef.current || !rendererRef.current) return;
       
@@ -288,28 +317,39 @@ const ThreeDSkillsVisualization = () => {
 
     addEventListener(window, 'resize', handleResize);
 
-    // Animation loop
+    // Simple animation loop
     const animate = () => {
       animationRef.current = requestAnimationFrame(animate);
       
       if (!sceneRef.current || !cameraRef.current || !rendererRef.current) return;
       
+      const time = Date.now() * 0.001;
+      
       // Rotate scene slowly
       sceneRef.current.rotation.y += rotationSpeed;
       
-      // Animate nodes based on skill level
+      // Animate nodes
       nodesRef.current.forEach((node, index) => {
         const nodeData = skillNodes[index];
-        node.scale.x = 0.5 + (nodeData.level / 100) * 0.5;
-        node.scale.y = 0.5 + (nodeData.level / 100) * 0.5;
-        node.scale.z = 0.5 + (nodeData.level / 100) * 0.5;
         
-        // Pulsing effect for hovered node
+        // Base scale based on skill level
+        const baseScale = 0.8 + (nodeData.level / 100) * 0.4;
+        
+        // Gentle breathing animation
+        const breathe = Math.sin(time + index * 0.3) * 0.1 + 1;
+        node.scale.setScalar(baseScale * breathe);
+        
+        // Enhanced pulsing effect for hovered node
         if (hoveredNode === node.userData.id) {
-          node.scale.x *= 1 + Math.sin(Date.now() * 0.005) * 0.1;
-          node.scale.y *= 1 + Math.sin(Date.now() * 0.005) * 0.1;
-          node.scale.z *= 1 + Math.sin(Date.now() * 0.005) * 0.1;
+          const pulse = Math.sin(time * 6) * 0.3 + 1.3;
+          node.scale.multiplyScalar(pulse);
         }
+      });
+      
+      // Animate connections
+      connectionsRef.current.forEach((line, index) => {
+        const material = line.material as THREE.LineBasicMaterial;
+        material.opacity = 0.4 + Math.sin(time * 1.5 + index) * 0.2;
       });
       
       rendererRef.current.render(sceneRef.current, cameraRef.current);
@@ -331,10 +371,10 @@ const ThreeDSkillsVisualization = () => {
         mountRef.current.removeChild(rendererRef.current.domElement);
       }
     };
-  }, [inView, addEventListener, cleanup, hoveredNode, skillNodes, connections, categoryColors, rotationSpeed, zoomLevel]);
+  }, [inView, addEventListener, cleanup, createSpaceBackground, hoveredNode, rotationSpeed, zoomLevel, adjustForDevice, cleanupWebGL]);
 
   return (
-    <div className="relative w-full h-full">
+    <div ref={ref} className="relative w-full h-full">
       {!webGLEnabled ? (
         <WebGLFallback message="3D skills visualization requires WebGL support." />
       ) : (
@@ -346,55 +386,51 @@ const ThreeDSkillsVisualization = () => {
       
       {/* Node info panel */}
       {hoveredNode && (
-        <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-sm rounded-lg p-4 text-white min-w-[200px]">
+        <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-md rounded-lg p-4 text-white min-w-[200px] border border-cyan-500/30">
           {(() => {
             const node = skillNodes.find(n => n.id === hoveredNode);
             return node ? (
-              <div className="space-y-2">
-                <h3 className="font-bold text-lg">{node.name}</h3>
+              <div className="space-y-3">
+                <h3 className="font-bold text-lg text-cyan-300">{node.name}</h3>
                 <div className="flex items-center gap-2">
-                  <div 
+                  <div
                     className="w-3 h-3 rounded-full"
-                    style={{ 
+                    style={{
                       backgroundColor: `hsl(${
                         node.category === 'ml' ? '140, 100%, 60%' :
                         node.category === 'cv' ? '210, 100%, 60%' :
                         node.category === 'nlp' ? '300, 100%, 60%' :
                         '0, 0%, 60%'
-                      })` 
+                      })`
                     }}
                   ></div>
-                  <span className="text-sm capitalize">
-                    {node.category === 'ml' ? 'ML/AI' :
+                  <span className="text-sm font-mono">
+                    {node.category === 'ml' ? 'Machine Learning' :
                      node.category === 'cv' ? 'Computer Vision' :
-                     node.category === 'nlp' ? 'NLP' :
-                     'Tools'}
+                     node.category === 'nlp' ? 'Natural Language Processing' :
+                     'Development Tools'}
                   </span>
                 </div>
                 <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div 
-                    className="bg-cosmic h-2 rounded-full"
+                  <div
+                    className="bg-gradient-to-r from-cyan-500 to-purple-500 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${node.level}%` }}
                   ></div>
                 </div>
-                <div className="text-sm text-gray-300">{node.level}% proficiency</div>
-                <div className="text-xs text-gray-400">{node.connections.length} connections</div>
+                <div className="text-sm text-cyan-200 font-mono">{node.level}% proficiency</div>
+                <div className="text-xs text-gray-400 font-mono">{node.connections.length} connections</div>
               </div>
             ) : null;
           })()}
         </div>
       )}
       
-      {/* Instructions */}
-      <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm rounded-lg p-2 text-white text-xs">
-        <div>Mouse: Rotate | Scroll: Zoom</div>
-      </div>
-      
-      {/* Controls */}
-      <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm rounded-lg p-3 text-white">
+      {/* Simple controls */}
+      <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-md rounded-lg p-3 text-white border border-cyan-500/30">
         <div className="space-y-3">
+          <div className="text-sm font-bold text-cyan-300 mb-2">3D Controls</div>
           <div>
-            <label className="text-xs block mb-1">Rotation Speed</label>
+            <label className="text-xs block mb-1 text-cyan-300">Rotation Speed</label>
             <input
               type="range"
               min="0"
@@ -402,21 +438,18 @@ const ThreeDSkillsVisualization = () => {
               step="0.001"
               value={rotationSpeed}
               onChange={(e) => setRotationSpeed(parseFloat(e.target.value))}
-              className="w-full"
+              className="w-full accent-cyan-500"
             />
           </div>
-          <div>
-            <label className="text-xs block mb-1">Zoom Level</label>
-            <input
-              type="range"
-              min="5"
-              max="30"
-              step="1"
-              value={zoomLevel}
-              onChange={(e) => setZoomLevel(parseInt(e.target.value))}
-              className="w-full"
-            />
-          </div>
+        </div>
+      </div>
+      
+      {/* Simple instructions */}
+      <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm rounded-lg p-3 text-white text-xs">
+        <div className="space-y-1">
+          <div className="text-cyan-300 font-bold">Navigation:</div>
+          <div>🖱️ Hover nodes for details</div>
+          <div>🔄 Scroll to zoom</div>
         </div>
       </div>
     </div>

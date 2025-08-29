@@ -108,27 +108,6 @@ const TerminalHero = () => {
           </div>
         </div>
 
-        {/* Side Data Panel */}
-        <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 3, duration: 0.5 }}
-          className="absolute right-8 top-1/2 transform -translate-y-1/2 w-64 hidden lg:block"
-        >
-          <div className="code-panel">
-            <div className="code-header">
-              <span className="text-xs">system.json</span>
-            </div>
-            <div className="p-4 text-xs space-y-2">
-              <div className="text-muted-foreground">// Live System Data</div>
-              <div><span className="syntax-keyword">status</span>: <span className="syntax-string">"active"</span></div>
-              <div><span className="syntax-keyword">location</span>: <span className="syntax-string">"Leeds, UK"</span></div>
-              <div><span className="syntax-keyword">experience</span>: <span className="syntax-number">3</span> years</div>
-              <div><span className="syntax-keyword">projects</span>: <span className="syntax-number">10</span>+</div>
-              <div><span className="syntax-keyword">accuracy_boost</span>: <span className="syntax-number">40</span>%</div>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );

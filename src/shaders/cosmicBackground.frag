@@ -3,82 +3,69 @@ precision mediump float;
 uniform float time;
 uniform vec2 resolution;
 
+uniform vec3 baseColor;
+uniform vec3 accentA;
+uniform vec3 accentB;
+uniform vec3 starColor;
+uniform float intensity;
+uniform float alpha;
+uniform float exposure;
+
 varying vec2 vUv;
 
-// Noise function for procedural generation
-float noise(vec2 st) {
-    return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+/* Simple 2D hash */
+float hash21(vec2 p){
+  p = fract(p*vec2(123.34, 456.21));
+  p += dot(p, p+45.32);
+  return fract(p.x*p.y);
 }
 
-// Fractional Brownian Motion for more complex noise
-float fbm(vec2 st) {
-    float value = 0.0;
-    float amplitude = 0.5;
-    for (int i = 0; i < 5; i++) {
-        value += amplitude * noise(st);
-        st *= 2.0;
-        amplitude *= 0.5;
-    }
-    return value;
+/* Star layer: jittered cell star with twinkle */
+float starLayer(vec2 uv, float scale, float threshold, float size){
+  vec2 p = uv * scale;
+  vec2 ip = floor(p);
+  vec2 fp = fract(p) - 0.5;
+
+  float rnd = hash21(ip);
+  vec2 jitter = (vec2(hash21(ip + 1.3), hash21(ip + 2.7)) - 0.5) * 0.6;
+
+  float d = length(fp + jitter * 0.35);
+  float s = smoothstep(size, 0.0, d);
+  s *= step(threshold, rnd);
+
+  float twinkle = 0.7 + 0.3 * sin(time * (0.8 + rnd * 1.8) + rnd * 6.2831);
+  return s * twinkle;
 }
 
-void main() {
-    // Normalize UV coordinates
-    vec2 uv = (gl_FragCoord.xy - 0.5 * resolution.xy) / min(resolution.y, resolution.x);
-    
-    // Time-based animation
-    float t = time * 0.5;
-    
-    // Create multiple layers of animated noise
-    vec2 q = vec2(0.0);
-    q.x = fbm(uv + 0.1 * t);
-    q.y = fbm(uv + vec2(1.0));
-    
-    vec2 r = vec2(0.0);
-    r.x = fbm(uv + 1.0 * q + vec2(1.7, 9.2) + 0.15 * t);
-    r.y = fbm(uv + 1.0 * q + vec2(8.3, 2.8) + 0.126 * t);
-    
-    // Color mixing
-    float f = fbm(uv + r);
-    
-    // Cosmic color palette
-    vec3 color = mix(
-        vec3(0.0, 0.1, 0.3),  // Deep space blue
-        vec3(0.2, 0.0, 0.4),  // Cosmic purple
-        clamp((f * f) * 4.0, 0.0, 1.0)
-    );
-    
-    color = mix(
-        color,
-        vec3(0.0, 0.3, 0.6),  // Nebula blue
-        clamp(length(q), 0.0, 1.0)
-    );
-    
-    color = mix(
-        color,
-        vec3(0.8, 0.2, 0.6),  // Stellar pink
-        clamp(length(r.x), 0.0, 1.0)
-    );
-    
-    // Add stars
-    vec2 grid = fract(uv * 50.0);
-    float star = 1.0 - smoothstep(0.0, 0.1, length(grid - 0.5));
-    star *= 1.0 - smoothstep(0.5, 1.0, fbm(uv * 10.0 + t));
-    
-    // Add glow effect
-    float glow = 0.0;
-    glow += sin(uv.x * 5.0 + t) * 0.5 + 0.5;
-    glow += cos(uv.y * 7.0 + t * 1.3) * 0.5 + 0.5;
-    glow = glow * 0.5;
-    
-    // Combine all effects
-    color += vec3(star * 0.8, star * 0.5, star * 1.0);
-    color += vec3(glow * 0.2, glow * 0.1, glow * 0.3);
-    
-    // Vignette effect
-    vec2 vignetteUV = vUv - 0.5;
-    float vignette = 1.0 - dot(vignetteUV, vignetteUV) * 1.5;
-    color *= vignette;
-    
-    gl_FragColor = vec4(color, 1.0);
+void main(){
+  // Normalized coordinates maintaining aspect ratio
+  vec2 uv = (gl_FragCoord.xy - 0.5 * resolution.xy) / min(resolution.x, resolution.y);
+  float t = time;
+
+  // Near-black space with a slight theme tint
+  vec3 base = mix(vec3(0.0), baseColor, 0.02);
+
+  // Parallax starfield (no nebula, no grids)
+  float stars = 0.0;
+  vec2 uv1 = uv + vec2(-t * 0.010, 0.0); // far stars
+  vec2 uv2 = uv + vec2(-t * 0.020, 0.0); // mid stars
+  vec2 uv3 = uv + vec2(-t * 0.040, 0.0); // near stars
+
+  stars += starLayer(uv1, 60.0, 0.80, 0.035) * 1.2;   // large
+  stars += starLayer(uv2, 120.0, 0.86, 0.025) * 0.95; // medium
+  stars += starLayer(uv3, 220.0, 0.92, 0.018) * 0.75; // small
+  stars += starLayer(uv3, 360.0, 0.96, 0.010) * 0.50; // micro
+
+  // Gentle cool tint for stars
+  vec3 starTint = mix(starColor, mix(accentA, accentB, 0.5), 0.15 * clamp(intensity, 0.0, 1.0));
+  vec3 color = base + starTint * stars * 1.8;
+
+  // Subtle vignette
+  float vignette = 1.0 - dot(uv, uv) * 0.25;
+  color *= clamp(vignette, 0.0, 1.0);
+
+  // Filmic-like exposure
+  color = 1.0 - exp(-color * max(exposure, 0.001));
+
+  gl_FragColor = vec4(color, clamp(alpha, 0.0, 1.0));
 }

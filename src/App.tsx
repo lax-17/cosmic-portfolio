@@ -23,8 +23,6 @@ const GitCommitTimeline = lazy(() => import("./components/GitCommitTimeline"));
 const DataContactPanel = lazy(() => import("./components/DataContactPanel"));
 const CommandLineNav = lazy(() => import("./components/CommandLineNav"));
 const LiveTerminal = lazy(() => import("./components/LiveTerminal"));
-const ParticleBackground = lazy(() => import("./components/ParticleBackground"));
-const ThreeDParticleBackground = lazy(() => import("./components/ThreeDParticleBackground"));
 const CosmicShaderBackground = lazy(() => import("./components/CosmicShaderBackground"));
 const KeyboardShortcuts = lazy(() => import("./components/KeyboardShortcuts"));
 const PageTransition = lazy(() => import("./components/PageTransition"));
@@ -125,13 +123,6 @@ const NeuralPortfolio = () => {
   <div className="relative">
     {/* Error Boundary */}
     <ErrorBoundary>
-      {/* Background Effects */}
-      <Suspense fallback={<CosmicLoader message="Initializing cosmic shader background..." />}>
-        <CosmicShaderBackground />
-      </Suspense>
-    <Suspense fallback={<CosmicLoader message="Initializing 3D particle system..." />}>
-      <ThreeDParticleBackground />
-    </Suspense>
 
     {/* Main Navigation */}
     <nav id="main-navigation" aria-label="Main navigation">
@@ -198,6 +189,10 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        {/* Global Cosmic Background mounted OUTSIDE page transitions to cover full viewport */}
+        <Suspense fallback={<div className="fixed inset-0 pointer-events-none z-0 cosmic-bg"></div>}>
+          <CosmicShaderBackground />
+        </Suspense>
         <BrowserRouter>
           <AnalyticsProvider>
             <Suspense fallback={<CosmicLoader message="Loading page transition..." />}>
