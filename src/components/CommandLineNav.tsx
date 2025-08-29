@@ -17,12 +17,12 @@ const CommandLineNav = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sectionElements = sections.map(section => 
+      const sectionElements = sections.map(section =>
         document.getElementById(section.id)
       );
-      
+
       const scrollPosition = window.scrollY + 200;
-      
+
       for (let i = sectionElements.length - 1; i >= 0; i--) {
         const element = sectionElements[i];
         if (element && element.offsetTop <= scrollPosition) {
@@ -51,7 +51,7 @@ const CommandLineNav = () => {
     } else if (e.key === "Tab") {
       e.preventDefault();
       // Auto-complete functionality
-      const matches = sections.filter(s => 
+      const matches = sections.filter(s =>
         s.command.startsWith(command) || s.id.includes(command)
       );
       if (matches.length === 1) {
@@ -117,7 +117,7 @@ const CommandLineNav = () => {
             Navigation - Press Ctrl+K to toggle
           </span>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <span className="text-primary">$</span>
           <input
@@ -139,7 +139,7 @@ const CommandLineNav = () => {
             className="mt-2 space-y-1"
           >
             {sections
-              .filter(s => 
+              .filter(s =>
                 s.command.toLowerCase().includes(command.toLowerCase()) ||
                 s.label.toLowerCase().includes(command.toLowerCase())
               )
@@ -181,13 +181,13 @@ const CommandLineNav = () => {
                 key={section.id}
                 onClick={() => executeCommand(section.command)}
                 className={`block w-full text-left text-xs font-mono p-1 transition-colors ${
-                  currentSection === section.id 
-                    ? 'text-primary bg-primary/10' 
+                  currentSection === section.id
+                    ? 'text-primary bg-primary/10'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
                 whileHover={{ x: 4 }}
               >
-                <span className="syntax-string">"{section.id}"</span>: 
+                <span className="syntax-string">"{section.id}"</span>:
                 <span className="syntax-string ml-1">"{section.label}"</span>
                 {currentSection === section.id && (
                   <span className="text-primary ml-2">←</span>

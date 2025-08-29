@@ -30,26 +30,26 @@ const NeuralSkillsGraph = () => {
 
   const skillNodes: SkillNode[] = [
     // ML/AI Core
-    { id: "pytorch", name: "PyTorch", level: 90, x: 200, y: 150, category: "ml", connections: ["transformers", "computer-vision", "huggingface"] },
-    { id: "transformers", name: "Transformers", level: 88, x: 350, y: 100, category: "ml", connections: ["llama", "huggingface", "nlp"] },
-    { id: "huggingface", name: "Hugging Face", level: 85, x: 500, y: 150, category: "ml", connections: ["qora", "pytorch", "transformers"] },
-    
+    { id: "pytorch", name: "PyTorch", level: 90, x: 180, y: 130, category: "ml", connections: ["transformers", "computer-vision", "huggingface"] },
+    { id: "transformers", name: "Transformers", level: 88, x: 320, y: 80, category: "ml", connections: ["llama", "huggingface", "nlp"] },
+    { id: "huggingface", name: "Hugging Face", level: 85, x: 460, y: 130, category: "ml", connections: ["qora", "pytorch", "transformers"] },
+
     // Computer Vision
-    { id: "computer-vision", name: "Computer Vision", level: 92, x: 150, y: 300, category: "cv", connections: ["opencv", "dinov2", "pytorch"] },
-    { id: "opencv", name: "OpenCV", level: 89, x: 100, y: 450, category: "cv", connections: ["computer-vision", "python"] },
-    { id: "dinov2", name: "DINOv2", level: 75, x: 250, y: 400, category: "cv", connections: ["computer-vision", "transformers"] },
-    
+    { id: "computer-vision", name: "Computer Vision", level: 92, x: 130, y: 260, category: "cv", connections: ["opencv", "dinov2", "pytorch"] },
+    { id: "opencv", name: "OpenCV", level: 89, x: 80, y: 380, category: "cv", connections: ["computer-vision", "python"] },
+    { id: "dinov2", name: "DINOv2", level: 75, x: 220, y: 340, category: "cv", connections: ["computer-vision", "transformers"] },
+
     // NLP
-    { id: "nlp", name: "NLP", level: 87, x: 550, y: 250, category: "nlp", connections: ["llama", "rag", "transformers"] },
-    { id: "llama", name: "Llama 3", level: 87, x: 650, y: 200, category: "nlp", connections: ["qora", "nlp", "transformers"] },
-    { id: "rag", name: "RAG", level: 85, x: 600, y: 350, category: "nlp", connections: ["nlp", "llama"] },
-    { id: "qora", name: "QLoRA", level: 80, x: 700, y: 300, category: "nlp", connections: ["llama", "huggingface"] },
-    
+    { id: "nlp", name: "NLP", level: 87, x: 500, y: 210, category: "nlp", connections: ["llama", "rag", "transformers"] },
+    { id: "llama", name: "Llama 3", level: 87, x: 580, y: 160, category: "nlp", connections: ["qora", "nlp", "transformers"] },
+    { id: "rag", name: "RAG", level: 85, x: 540, y: 290, category: "nlp", connections: ["nlp", "llama"] },
+    { id: "qora", name: "QLoRA", level: 80, x: 620, y: 240, category: "nlp", connections: ["llama", "huggingface"] },
+
     // Tools
-    { id: "python", name: "Python", level: 95, x: 300, y: 500, category: "tools", connections: ["pytorch", "opencv", "docker"] },
-    { id: "docker", name: "Docker", level: 88, x: 450, y: 450, category: "tools", connections: ["python", "linux"] },
-    { id: "linux", name: "Linux", level: 91, x: 550, y: 500, category: "tools", connections: ["docker", "cuda"] },
-    { id: "cuda", name: "CUDA", level: 82, x: 400, y: 350, category: "tools", connections: ["pytorch", "linux"] },
+    { id: "python", name: "Python", level: 95, x: 260, y: 420, category: "tools", connections: ["pytorch", "opencv", "docker"] },
+    { id: "docker", name: "Docker", level: 88, x: 400, y: 380, category: "tools", connections: ["python", "linux"] },
+    { id: "linux", name: "Linux", level: 91, x: 500, y: 420, category: "tools", connections: ["docker", "cuda"] },
+    { id: "cuda", name: "CUDA", level: 82, x: 360, y: 300, category: "tools", connections: ["pytorch", "linux"] },
   ];
 
   const connections: Connection[] = [];
@@ -87,7 +87,7 @@ const NeuralSkillsGraph = () => {
   }, []);
 
   return (
-    <section id="skills" className="min-h-screen p-8">
+    <section id="skills" className="py-16 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
         <motion.div
           ref={ref}
@@ -95,36 +95,37 @@ const NeuralSkillsGraph = () => {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.3 }}
         >
-          <div className="text-data-header mb-8">
+          <div className="text-data-header mb-6 cosmic-text">
             ~/skills $ python neural_graph.py --visualize
           </div>
 
-          <div className="asymmetric-layout">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Network Visualization */}
-            <div className="col-span-2">
-              <div className="code-panel h-[600px]">
+            <div className="lg:col-span-2">
+              <div className="code-panel h-[500px] md:h-[540px] cosmic-border">
                 <div className="code-header">
-                  <span className="text-xs">neural_network.svg</span>
+                  <span className="text-xs cosmic-text">neural_network.svg</span>
                   <span className="text-xs text-muted-foreground">
                     {skillNodes.length} nodes, {connections.length} connections
                   </span>
                 </div>
-                
-                <div className="relative h-full p-4">
+
+                <div className="relative h-full p-2 md:p-4 overflow-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
                   <svg
                     ref={svgRef}
-                    className="w-full h-full"
-                    viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
+                    className="w-full h-full min-w-[720px] transition-transform duration-200"
+                    viewBox={`-20 -20 ${Math.max(dimensions.width + 40, 720)} ${Math.max(dimensions.height + 40, 440)}`}
+                    preserveAspectRatio="xMidYMid meet"
                   >
                     {/* Connections */}
                     {connections.map((connection, index) => {
                       const sourceNode = skillNodes.find(n => n.id === connection.source);
                       const targetNode = skillNodes.find(n => n.id === connection.target);
-                      
+
                       if (!sourceNode || !targetNode) return null;
 
                       const isHighlighted = hoveredNode === connection.source || hoveredNode === connection.target;
-                      
+
                       return (
                         <motion.line
                           key={index}
@@ -163,7 +164,7 @@ const NeuralSkillsGraph = () => {
                           onMouseEnter={() => setHoveredNode(node.id)}
                           onMouseLeave={() => setHoveredNode(null)}
                         />
-                        
+
                         {/* Node Label */}
                         <text
                           x={node.x}
@@ -193,58 +194,30 @@ const NeuralSkillsGraph = () => {
                         </text>
                       </motion.g>
                     ))}
-
-                    {/* Data Flow Animation */}
-                    {hoveredNode && connections
-                      .filter(c => c.source === hoveredNode || c.target === hoveredNode)
-                      .map((connection, index) => {
-                        const sourceNode = skillNodes.find(n => n.id === connection.source);
-                        const targetNode = skillNodes.find(n => n.id === connection.target);
-                        
-                        if (!sourceNode || !targetNode) return null;
-
-                        return (
-                          <motion.circle
-                            key={`flow-${index}`}
-                            r="2"
-                            fill="hsl(var(--data-active))"
-                            initial={{ cx: sourceNode.x, cy: sourceNode.y }}
-                            animate={{ 
-                              cx: [sourceNode.x, targetNode.x, sourceNode.x],
-                              cy: [sourceNode.y, targetNode.y, sourceNode.y]
-                            }}
-                            transition={{ 
-                              duration: 2,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                          />
-                        );
-                      })}
                   </svg>
                 </div>
               </div>
             </div>
 
             {/* Skill Categories Panel */}
-            <div className="space-y-4">
+            <div className="space-y-3">
               {/* Legend */}
-              <div className="code-panel">
+              <div className="code-panel cosmic-border">
                 <div className="code-header">
-                  <span className="text-xs">legend.json</span>
+                  <span className="text-xs cosmic-text">legend.json</span>
                 </div>
-                <div className="p-4 space-y-3">
+                <div className="p-3 space-y-2">
                   {Object.entries(categoryColors).map(([category, color]) => (
-                    <div key={category} className="flex items-center gap-3">
-                      <div 
-                        className="w-3 h-3 rounded-full"
+                    <div key={category} className="flex items-center gap-2">
+                      <div
+                        className="w-2 h-2 rounded-full cosmic-glow"
                         style={{ backgroundColor: color }}
                       ></div>
                       <span className="text-xs font-mono capitalize">
-                        {category === 'ml' ? 'Machine Learning' : 
-                         category === 'cv' ? 'Computer Vision' :
-                         category === 'nlp' ? 'Natural Language Processing' :
-                         'Development Tools'}
+                        {category === 'ml' ? 'ML' :
+                          category === 'cv' ? 'CV' :
+                          category === 'nlp' ? 'NLP' :
+                          'Tools'}
                       </span>
                     </div>
                   ))}
@@ -252,18 +225,18 @@ const NeuralSkillsGraph = () => {
               </div>
 
               {/* Network Stats */}
-              <div className="terminal-panel">
+              <div className="terminal-panel cosmic-glow">
                 <div className="terminal-header">
-                  <span className="text-xs text-terminal-text">network.stats</span>
+                  <span className="text-xs text-terminal-text cosmic-text">network.stats</span>
                 </div>
-                <div className="terminal-content text-xs space-y-2">
-                  <div className="text-muted-foreground">// Network Analysis</div>
+                <div className="terminal-content text-xs space-y-1">
+                  <div className="text-muted-foreground">// Analysis</div>
                   <div><span className="syntax-keyword">nodes</span>: <span className="syntax-number">{skillNodes.length}</span></div>
                   <div><span className="syntax-keyword">connections</span>: <span className="syntax-number">{connections.length}</span></div>
-                  <div><span className="syntax-keyword">avg_skill_level</span>: <span className="syntax-number">
+                  <div><span className="syntax-keyword">avg_level</span>: <span className="syntax-number">
                     {Math.round(skillNodes.reduce((sum, node) => sum + node.level, 0) / skillNodes.length)}
                   </span>%</div>
-                  <div><span className="syntax-keyword">specialization</span>: <span className="syntax-string">"AI/ML Engineering"</span></div>
+                  <div><span className="syntax-keyword">focus</span>: <span className="syntax-string">"AI/ML"</span></div>
                 </div>
               </div>
 
@@ -272,20 +245,20 @@ const NeuralSkillsGraph = () => {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="code-panel"
+                  className="code-panel cosmic-border"
                 >
                   <div className="code-header">
-                    <span className="text-xs">node_info.json</span>
+                    <span className="text-xs cosmic-text">node_info.json</span>
                   </div>
-                  <div className="p-4 text-xs">
+                  <div className="p-3 text-xs">
                     {(() => {
                       const node = skillNodes.find(n => n.id === hoveredNode);
                       return node ? (
                         <div className="space-y-1">
                           <div><span className="syntax-keyword">name</span>: <span className="syntax-string">"{node.name}"</span></div>
-                          <div><span className="syntax-keyword">proficiency</span>: <span className="syntax-number">{node.level}</span>%</div>
+                          <div><span className="syntax-keyword">level</span>: <span className="syntax-number">{node.level}</span>%</div>
                           <div><span className="syntax-keyword">category</span>: <span className="syntax-string">"{node.category}"</span></div>
-                          <div><span className="syntax-keyword">connections</span>: <span className="syntax-number">{node.connections.length}</span></div>
+                          <div><span className="syntax-keyword">links</span>: <span className="syntax-number">{node.connections.length}</span></div>
                         </div>
                       ) : null;
                     })()}

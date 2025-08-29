@@ -70,8 +70,8 @@ const GitCommitTimeline = () => {
   };
 
   return (
-    <section id="experience" className="min-h-screen p-8">
-      <div className="max-w-6xl mx-auto">
+    <section id="experience" className="py-12 md:py-16 px-4 md:px-8">
+      <div className="max-w-7xl mx-auto">
         <motion.div
           ref={ref}
           initial={{ opacity: 0, y: 20 }}
@@ -84,7 +84,7 @@ const GitCommitTimeline = () => {
 
           <div className="asymmetric-layout">
             {/* Git Log Output */}
-            <div className="col-span-2">
+            <div>
               <div className="terminal-panel">
                 <div className="terminal-header">
                   <div className="flex gap-2">
@@ -96,7 +96,7 @@ const GitCommitTimeline = () => {
                 </div>
 
                 <div className="terminal-content">
-                  <div className="space-y-6">
+                  <div className="space-y-4 text-sm md:text-base">
                     {commits.map((commit, index) => (
                       <motion.div
                         key={commit.hash}
@@ -117,7 +117,7 @@ const GitCommitTimeline = () => {
                             ></div>
                             {index < commits.length - 1 && (
                               <div 
-                                className="w-px h-16 mt-2"
+                                className="w-px h-12 mt-2"
                                 style={{ backgroundColor: "hsl(var(--muted))" }}
                               ></div>
                             )}

@@ -288,6 +288,58 @@ class UNetReconstructor(nn.Module):
     return colors[projectId as keyof typeof colors] || "text-primary";
   };
 
+  // Safe HTML escape to prevent injection and syntax issues
+  const escapeHtml = (str: string) => {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  };
+
+  const highlightContent = (content: string, type: string): string => {
+    if (type === 'python') {
+      // First escape HTML, then apply syntax highlighting
+      let highlighted = escapeHtml(content);
+      
+      // Comments first (to avoid conflicts with other patterns)
+      highlighted = highlighted.replace(/^#.*$/gm, '<span class="syntax-comment">$&</span>');
+      
+      // Python keywords
+      highlighted = highlighted.replace(/\b(import|from|class|def|return|if|elif|else|for|while|in|as|with|try|except|raise|pass|yield|True|False|None|self)\b/g, '<span class="syntax-keyword">$1</span>');
+      
+      // Function definitions and calls
+      highlighted = highlighted.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\s*(?=\()/g, '<span class="syntax-function">$1</span>');
+      
+      // String literals (double quotes) - handle escaped quotes
+      highlighted = highlighted.replace(/&quot;([^&]|&(?!quot;))*&quot;/g, '<span class="syntax-string">$&</span>');
+      
+      // String literals (single quotes) - handle escaped quotes
+      highlighted = highlighted.replace(/&#39;([^&]|&(?!#39;))*&#39;/g, '<span class="syntax-string">$&</span>');
+      
+      // Numbers
+      highlighted = highlighted.replace(/\b\d+(?:\.\d+)?\b/g, '<span class="syntax-number">$&</span>');
+      
+      return highlighted;
+    }
+
+    if (type === 'markdown') {
+      let highlighted = escapeHtml(content);
+      highlighted = highlighted.replace(/^# (.*)$/gm, '<span class="syntax-function">$1</span>');
+      highlighted = highlighted.replace(/^## (.*)$/gm, '<span class="syntax-keyword">$1</span>');
+      highlighted = highlighted.replace(/^\*\*(.+?)\*\*$/gm, '<span class="syntax-keyword">$1</span>');
+      highlighted = highlighted.replace(/^- (.*)$/gm, '<span class="syntax-string">$1</span>');
+      return highlighted;
+    }
+
+    if (type === 'text') {
+      return escapeHtml(content);
+    }
+
+    return escapeHtml(content);
+  };
+
   return (
     <section id="projects" className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
@@ -301,7 +353,7 @@ class UNetReconstructor(nn.Module):
             ~/projects $ ls -la
           </div>
 
-          <div className="asymmetric-layout">
+          <div className="grid items-start gap-6 md:grid-cols-[1fr_2fr]">
             {/* Enhanced Project Cards */}
             <div className="space-y-4">
               <div className="text-data-header mb-6">
@@ -438,7 +490,7 @@ class UNetReconstructor(nn.Module):
                   <div className="flex gap-4 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Code size={12} />
-                      Python
+                      {selectedFileContent?.type === 'python' ? 'Python' : (selectedFileContent?.type === 'markdown' ? 'Markdown' : 'Text')}
                     </span>
                     <span>UTF-8</span>
                   </div>
@@ -475,7 +527,7 @@ class UNetReconstructor(nn.Module):
               
               {/* Code Content */}
               <div className="relative">
-                <div className="p-4 font-mono text-sm overflow-auto max-h-[400px] bg-terminal/30">
+                <div className="p-6 md:p-8 font-mono text-base md:text-lg leading-relaxed overflow-auto max-h-[680px] min-h-[480px] bg-terminal/30">
                   {selectedFileContent && (
                     <motion.pre
                       initial={{ opacity: 0 }}
@@ -484,12 +536,7 @@ class UNetReconstructor(nn.Module):
                       className="whitespace-pre-wrap text-foreground"
                     >
                       <code dangerouslySetInnerHTML={{
-                        __html: selectedFileContent.content
-                          .replace(/# (.*)/g, '<span class="syntax-comment"># $1</span>')
-                          .replace(/(import|from|class|def|return|if|else|for|while)/g, '<span class="syntax-keyword">$1</span>')
-                          .replace(/"([^"]*)"/g, '<span class="syntax-string">"$1"</span>')
-                          .replace(/\'([^\']*)\'/g, '<span class="syntax-string">\'$1\'</span>')
-                          .replace(/(\d+)/g, '<span class="syntax-number">$1</span>')
+                        __html: highlightContent(selectedFileContent.content, selectedFileContent.type)
                       }} />
                     </motion.pre>
                   )}

@@ -8,52 +8,56 @@
 
 @layer base {
   :root {
-    /* Neural Interface Color Palette */
-    --neural-black: 0 0% 0%; /* Pure black background */
-    --neural-green: 142 100% 50%; /* #00ff88 */
-    --neural-pink: 320 100% 50%; /* #ff0080 */
-    --neural-blue: 208 100% 50%; /* #0080ff */
-    --neural-gray: 0 0% 15%; /* Dark gray for panels */
-    --neural-light-gray: 0 0% 85%; /* Light text */
-    
+    /* Enhanced Cosmic Interface Color Palette */
+    --neural-black: 0 0% 100%; /* Pure white for text */
+    --neural-green: 180 100% 65%; /* Electric cyan for cosmic energy */
+    --neural-pink: 290 100% 75%; /* Vivid purple for cosmic mystery */
+    --neural-blue: 210 100% 75%; /* Bright blue for cosmic light */
+    --neural-gray: 230 25% 12%; /* Deep space gray */
+    --neural-light-gray: 0 0% 90%; /* Bright text for contrast */
+
     /* Design System Colors */
-    --background: var(--neural-black);
+    --background: 230 40% 6%; /* Deep space black */
     --foreground: var(--neural-light-gray);
 
-    --panel: 0 0% 5%; /* Slight off-black for panels */
+    --panel: 230 30% 10%; /* Cosmic panel background */
     --panel-foreground: var(--neural-light-gray);
-    --panel-border: 0 0% 15%;
+    --panel-border: 210 60% 30%;
 
-    --terminal: 0 0% 8%; /* Terminal background */
-    --terminal-border: var(--neural-green);
+    --terminal: 230 45% 8%; /* Deep terminal void */
+    --terminal-border: var(--neural-blue);
     --terminal-text: var(--neural-green);
 
-    --primary: var(--neural-green);
-    --primary-foreground: var(--neural-black);
+    --primary: var(--neural-blue);
+    --primary-foreground: 0 0% 3%;
 
     --secondary: var(--neural-pink);
-    --secondary-foreground: var(--neural-black);
+    --secondary-foreground: 0 0% 3%;
 
-    --accent: var(--neural-blue);
-    --accent-foreground: var(--neural-black);
+    --accent: var(--neural-green);
+    --accent-foreground: 0 0% 3%;
 
-    --muted: 0 0% 25%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 230 25% 15%;
+    --muted-foreground: 0 0% 70%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 10%;
-    --ring: var(--neural-green);
+    --border: 210 40% 25%;
+    --input: 230 30% 12%;
+    --ring: var(--neural-blue);
 
     --radius: 0; /* Sharp corners for terminal aesthetic */
 
     /* Data Visualization Colors */
     --data-node: var(--neural-blue);
-    --data-connection: var(--neural-gray);
+    --data-connection: 230 30% 20%;
     --data-active: var(--neural-green);
     --data-hover: var(--neural-pink);
+
+    /* Cosmic Effects */
+    --cosmic-glow: 0 0 20px hsl(var(--neural-blue) / 0.3);
+    --cosmic-shadow: 0 0 40px hsl(var(--neural-blue) / 0.1);
 
     /* Transitions - Instant for terminal feel */
     --transition-instant: all 0.1s ease-out;
@@ -72,13 +76,17 @@
 
   body {
     @apply bg-background text-foreground font-mono overflow-x-hidden;
-    background: #000000; /* Pure black background */
+    background: linear-gradient(135deg,
+      hsl(var(--background)) 0%,
+      hsl(230 35% 8%) 50%,
+      hsl(var(--background)) 100%);
+    background-attachment: fixed;
     font-family: 'JetBrains Mono', monospace;
   }
 
   section {
-    min-height: 100vh;
-    padding: 0; /* Remove default padding for asymmetric layouts */
+    min-height: auto; /* let content control height; prevents excessive blank space */
+    padding: 0; /* Sections define their own spacing via utilities */
   }
 
   /* Terminal cursor animation */
@@ -172,7 +180,7 @@
   /* Asymmetric Layout */
   .asymmetric-layout {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 3fr 1fr; /* make career-timeline.git panel significantly wider */
     gap: 2rem;
     align-items: start;
   }
@@ -292,4 +300,67 @@
   .focus-terminal:focus {
     @apply outline-none ring-1 ring-primary;
   }
+
+  /* Cosmic Effects */
+  .cosmic-glow {
+    box-shadow: var(--cosmic-glow);
+  }
+
+  .cosmic-border {
+    border: 1px solid hsl(var(--neural-blue));
+    box-shadow: var(--cosmic-shadow);
+  }
+
+  .cosmic-text {
+    text-shadow: 0 0 10px hsl(var(--neural-blue) / 0.5);
+  }
+
+  /* Custom Scrollbar for Cosmic Theme */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: hsl(var(--panel));
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.3);
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.6);
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-corner {
+    background: hsl(var(--panel));
+  }
+
+  .cosmic-bg {
+    background: linear-gradient(135deg,
+      hsl(var(--background)) 0%,
+      hsl(230 35% 8%) 50%,
+      hsl(var(--background)) 100%);
+  }
+
+  /* Enhanced Terminal Panel */
+  .terminal-panel {
+    @apply border border-terminal-border bg-terminal text-terminal-text;
+    border-radius: 0;
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: var(--cosmic-shadow);
+  }
+
+  .terminal-panel:hover {
+    box-shadow: var(--cosmic-glow);
+  }
+
 }

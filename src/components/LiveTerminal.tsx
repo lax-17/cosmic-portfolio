@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { Terminal, X, Maximize2, Minimize2 } from "lucide-react";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 
 interface Command {
   input: string;
@@ -297,8 +298,8 @@ const LiveTerminal = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className={`fixed bottom-24 right-6 z-50 w-96 h-80 bg-terminal border border-terminal-border shadow-2xl ${
-              isMinimized ? 'h-12' : ''
+            className={`fixed bottom-24 right-6 z-50 w-96 border border-terminal-border shadow-2xl cosmic-glow ${
+              isMinimized ? 'h-12' : 'h-80'
             }`}
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -335,14 +336,14 @@ const LiveTerminal = () => {
 
             {/* Terminal Content */}
             {!isMinimized && (
-              <div className="flex flex-col h-full">
+              <div className="h-full flex flex-col">
                 {/* Output Area */}
                 <div
                   ref={terminalRef}
-                  className="flex-1 p-3 font-mono text-sm overflow-y-auto bg-terminal"
+                  className="flex-1 p-3 font-mono text-sm overflow-y-auto bg-terminal min-h-0"
                 >
                   {/* Welcome Message */}
-                  <div className="text-muted-foreground mb-2">
+                  <div className="text-muted-foreground mb-2 cosmic-text">
                     Neural Interface Terminal v2.1.0
                   </div>
                   <div className="text-muted-foreground mb-4">
@@ -354,7 +355,7 @@ const LiveTerminal = () => {
                     <div key={index} className="mb-2">
                       {cmd.input && (
                         <div className="flex items-center gap-2">
-                          <span className="text-primary">$</span>
+                          <span className="text-primary cosmic-text">$</span>
                           <span className="text-terminal-text">{cmd.input}</span>
                         </div>
                       )}
@@ -368,7 +369,7 @@ const LiveTerminal = () => {
 
                   {/* Current Input */}
                   <div className="flex items-center gap-2">
-                    <span className="text-primary">$</span>
+                    <span className="text-primary cosmic-text">$</span>
                     <input
                       ref={inputRef}
                       type="text"
@@ -381,7 +382,7 @@ const LiveTerminal = () => {
                     />
                     {isTyping && (
                       <motion.span
-                        className="text-primary"
+                        className="text-primary cosmic-glow"
                         animate={{ opacity: [1, 0] }}
                         transition={{ duration: 0.5, repeat: Infinity }}
                       >
@@ -389,6 +390,37 @@ const LiveTerminal = () => {
                       </motion.span>
                     )}
                   </div>
+                </div>
+
+                {/* Resize Handle */}
+                <div className="h-1 bg-terminal-border cursor-row-resize hover:bg-primary/50 transition-colors"
+                     onMouseDown={(e) => {
+                       e.preventDefault();
+                       const startY = e.clientY;
+                       const terminal = e.currentTarget.parentElement;
+                       if (!terminal) return;
+
+                       const outputArea = terminal.children[0] as HTMLElement;
+                       const statusBar = terminal.children[2] as HTMLElement;
+
+                       const handleMouseMove = (moveEvent: MouseEvent) => {
+                         const deltaY = moveEvent.clientY - startY;
+                         const newOutputHeight = Math.max(100, outputArea.offsetHeight + deltaY);
+                         const totalHeight = terminal.clientHeight;
+                         const newStatusHeight = Math.max(40, totalHeight - newOutputHeight);
+
+                         outputArea.style.height = `${newOutputHeight}px`;
+                         statusBar.style.height = `${newStatusHeight}px`;
+                       };
+
+                       const handleMouseUp = () => {
+                         document.removeEventListener('mousemove', handleMouseMove);
+                         document.removeEventListener('mouseup', handleMouseUp);
+                       };
+
+                       document.addEventListener('mousemove', handleMouseMove);
+                       document.addEventListener('mouseup', handleMouseUp);
+                     }}>
                 </div>
 
                 {/* Status Bar */}
