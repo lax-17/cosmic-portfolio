@@ -181,7 +181,7 @@ const ProjectsSection = () => {
     const categories = [...new Set(projects.map(p => p.category))];
 
   return (
-    <section id="projects" className="min-h-screen flex items-center py-20">
+    <section id="projects" className="min-h-screen flex items-center py-20 scroll-mt-20">
       <div className="container mx-auto px-6">
         <motion.div
           ref={ref}

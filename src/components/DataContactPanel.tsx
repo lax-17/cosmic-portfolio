@@ -151,7 +151,7 @@ const DataContactPanel = () => {
   }, [inView]);
 
   return (
-    <section id="contact" className="min-h-screen p-8" aria-labelledby="contact-heading">
+    <section id="contact" className="min-h-screen p-8 scroll-mt-20" aria-labelledby="contact-heading">
       <div className="max-w-7xl mx-auto">
         <motion.div
           ref={ref}

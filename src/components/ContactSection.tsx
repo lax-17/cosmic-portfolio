@@ -53,7 +53,7 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="min-h-screen flex items-center py-20">
+    <section id="contact" className="min-h-screen flex items-center py-20 scroll-mt-20">
       <div className="container mx-auto px-6">
         <motion.div
           ref={ref}

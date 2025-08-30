@@ -89,7 +89,15 @@ const MobileNavigation = () => {
     }
     
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      // Scroll with offset to account for fixed navigation elements
+      const offset = 80; // Adjust this value based on your fixed header height
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
       setIsOpen(false);
     } else {
       // If no element found, just close the menu

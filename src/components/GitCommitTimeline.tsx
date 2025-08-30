@@ -199,7 +199,7 @@ const GitCommitTimeline = () => {
   const types = [...new Set(commits.map(c => c.type))];
 
   return (
-    <section id="experience" className="py-12 md:py-16 px-4 md:px-8">
+    <section id="experience" className="py-12 md:py-16 px-4 md:px-8 scroll-mt-20">
       <div className="max-w-7xl mx-auto">
         <motion.div
           ref={ref}

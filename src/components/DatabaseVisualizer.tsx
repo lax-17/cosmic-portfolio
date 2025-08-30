@@ -327,7 +327,7 @@ const DatabaseVisualizer: React.FC<DatabaseVisualizerProps> = ({
       {/* SVG Canvas */}
       <div
         className="relative border border-border rounded-lg overflow-hidden bg-gradient-to-br from-background to-muted/20"
-        style={{ height: isFullscreen ? 'calc(100vh - 120px)' : '500px' }}
+        style={{ height: isFullscreen ? 'calc(100dvh - 120px)' : '500px' }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}

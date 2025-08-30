@@ -43,7 +43,7 @@ const ExperienceSection = () => {
   ];
 
   return (
-    <section id="experience" className="py-12 md:py-16">
+    <section id="experience" className="py-12 md:py-16 scroll-mt-20">
       <div className="container mx-auto px-4 md:px-6">
         <motion.div
           ref={ref}

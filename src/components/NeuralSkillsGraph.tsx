@@ -213,7 +213,7 @@ const NeuralSkillsGraph = () => {
   }, [throttle, addEventListener]);
 
   return (
-    <section id="skills" className="py-12 sm:py-16 px-4 md:px-6 lg:px-8">
+    <section id="skills" className="py-12 sm:py-16 px-4 md:px-6 lg:px-8 scroll-mt-20">
       <div className="max-w-7xl mx-auto">
         <motion.div
           ref={ref}

@@ -37,7 +37,7 @@ const TerminalHero = () => {
   }, [currentIndex, currentLine]);
 
   return (
-    <section id="hero" className="min-h-screen flex items-center justify-start p-8" aria-labelledby="hero-heading">
+    <section id="hero" className="min-h-screen flex items-center justify-start p-8 scroll-mt-20" aria-labelledby="hero-heading">
       <div className="w-full max-w-4xl">
         {/* Main Heading */}
         <h1 id="hero-heading" className="sr-only">
@@ -82,21 +82,60 @@ const TerminalHero = () => {
                 </div>
                 <div className="flex gap-4 flex-wrap">
                    <button
-                     onClick={() => document.getElementById('projects')?.scrollIntoView()}
+                     onClick={() => {
+                       const element = document.getElementById('projects');
+                       if (element) {
+                         // Scroll with offset to account for fixed navigation elements
+                         const offset = 80; // Adjust this value based on your fixed header height
+                         const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                         const offsetPosition = elementPosition - offset;
+
+                         window.scrollTo({
+                           top: offsetPosition,
+                           behavior: 'smooth'
+                         });
+                       }
+                     }}
                      className="px-4 py-2 border border-primary text-primary hover:bg-primary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
                      aria-label="Navigate to projects section"
                    >
                      ./projects --list
                    </button>
                    <button
-                     onClick={() => document.getElementById('experience')?.scrollIntoView()}
+                     onClick={() => {
+                       const element = document.getElementById('experience');
+                       if (element) {
+                         // Scroll with offset to account for fixed navigation elements
+                         const offset = 80; // Adjust this value based on your fixed header height
+                         const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                         const offsetPosition = elementPosition - offset;
+
+                         window.scrollTo({
+                           top: offsetPosition,
+                           behavior: 'smooth'
+                         });
+                       }
+                     }}
                      className="px-4 py-2 border border-secondary text-secondary hover:bg-secondary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-background"
                      aria-label="Navigate to experience section"
                    >
                      ./experience --timeline
                    </button>
                    <button
-                     onClick={() => document.getElementById('contact')?.scrollIntoView()}
+                     onClick={() => {
+                       const element = document.getElementById('contact');
+                       if (element) {
+                         // Scroll with offset to account for fixed navigation elements
+                         const offset = 80; // Adjust this value based on your fixed header height
+                         const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                         const offsetPosition = elementPosition - offset;
+
+                         window.scrollTo({
+                           top: offsetPosition,
+                           behavior: 'smooth'
+                         });
+                       }
+                     }}
                      className="px-4 py-2 border border-accent text-accent hover:bg-accent hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background"
                      aria-label="Navigate to contact section"
                    >

@@ -744,4 +744,20 @@
     will-change: transform, opacity;
   }
 
+  /* Mobile safe area bottom padding for fixed UI (cookie banner, FABs, etc.) */
+  .mobile-bottom-safe-pad {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6rem);
+  }
+  @media (min-width: 768px) {
+    .mobile-bottom-safe-pad {
+      padding-bottom: 2rem;
+    }
+  }
+
+  /* Avoid CSS fixed-attachment issues on mobile for fallback cosmic background */
+  @media (max-width: 768px) {
+    .cosmic-bg {
+      background-attachment: scroll;
+    }
+  }
 }

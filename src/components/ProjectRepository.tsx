@@ -345,7 +345,7 @@ class UNetReconstructor(nn.Module):
   };
 
   return (
-    <section id="projects" className="min-h-screen p-4 sm:p-6 md:p-8">
+    <section id="projects" className="min-h-screen p-4 sm:p-6 md:p-8 scroll-mt-20">
       <div className="max-w-7xl mx-auto">
         <motion.div
           ref={ref}

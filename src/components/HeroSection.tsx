@@ -19,7 +19,7 @@ const HeroSection = () => {
   }, [currentIndex]);
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden scroll-mt-20">
       <ParticleBackground />
       
       <div className="container mx-auto px-4 sm:px-6 text-center relative z-10">
@@ -65,7 +65,20 @@ const HeroSection = () => {
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
             <motion.button
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => {
+                const element = document.getElementById('contact');
+                if (element) {
+                  // Scroll with offset to account for fixed navigation elements
+                  const offset = 80; // Adjust this value based on your fixed header height
+                  const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                  const offsetPosition = elementPosition - offset;
+
+                  window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                  });
+                }
+              }}
               className="glass-card px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold text-cosmic hover:scale-105 transition-all duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

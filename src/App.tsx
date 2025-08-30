@@ -136,7 +136,7 @@ const NeuralPortfolio = () => {
     </nav>
 
     {/* Main Content */}
-    <main id="main-content">
+    <main id="main-content" className="mobile-bottom-safe-pad">
       {/* Hero Section */}
       <Suspense fallback={<CosmicLoader message="Loading terminal interface..." />}>
         <TerminalHero />

@@ -51,7 +51,7 @@ const SkillsSection = () => {
   ];
 
   return (
-    <section id="skills" className="min-h-screen flex items-center py-20">
+    <section id="skills" className="min-h-screen flex items-center py-20 scroll-mt-20">
       <div className="container mx-auto px-6">
         <motion.div
           ref={ref}
