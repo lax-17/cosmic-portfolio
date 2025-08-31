@@ -141,15 +141,15 @@ const CommandLineNav = () => {
         <span className="cursor text-primary" aria-hidden="true">█</span>
       </motion.div>
 
-      {/* Top-right controls - Responsive */}
-      <div className="fixed top-4 right-4 z-50 flex items-center gap-2 md:gap-3">
+      {/* Top-right controls - Mobile responsive with proper spacing */}
+      <div className="fixed top-2 right-2 md:top-4 md:right-4 z-50 flex items-center gap-1 md:gap-3 max-w-[calc(100vw-1rem)] overflow-hidden">
         <BackgroundModeToggle />
         <motion.a
           href="/Laxmikant_Resume.pdf"
           download="Laxmikant's Resume.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          className="px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs font-mono text-primary bg-primary/10 hover:bg-primary/20 flex items-center gap-1 md:gap-2"
+          className="px-2 py-1 md:px-3 md:py-2 rounded-lg text-xs font-mono text-primary bg-primary/10 hover:bg-primary/20 flex items-center gap-1 md:gap-2 flex-shrink-0"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
