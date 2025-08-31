@@ -26,10 +26,14 @@ interface CosmicAudioContext {
 const CosmicSoundEffects: React.FC = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const [showControls, setShowControls] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [masterVolume, setMasterVolume] = useState(0.3);
   const [ambientEnabled, setAmbientEnabled] = useState(true);
   const [uiSoundsEnabled, setUiSoundsEnabled] = useState(true);
   const [currentAmbient, setCurrentAmbient] = useState<string>('cosmic-hum');
+  const [enabledEffects, setEnabledEffects] = useState<Set<string>>(new Set([
+    'button-hover', 'button-click', 'navigation', 'terminal-type', 'success', 'error'
+  ]));
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
@@ -173,6 +177,9 @@ const CosmicSoundEffects: React.FC = () => {
 
     // Skip UI sounds if disabled
     if (sound.category === 'ui' && !uiSoundsEnabled) return;
+
+    // Skip if sound effect is disabled
+    if (!enabledEffects.has(soundId)) return;
 
     const context = audioContextRef.current;
     const frequency = customFreq || sound.frequency;
@@ -409,15 +416,171 @@ const CosmicSoundEffects: React.FC = () => {
         )}
       </motion.button>
 
-      {/* Tooltip - Mobile responsive positioning */}
+      {/* Settings Button */}
       {isEnabled && (
+        <motion.button
+          className="fixed bottom-32 left-16 md:bottom-32 md:left-20 z-50 p-2 md:p-3 rounded-full shadow-lg bg-muted/80 text-muted-foreground border border-border hover:bg-muted transition-all duration-300"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setShowSettings(!showSettings)}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 3.2 }}
+          aria-label="Sound settings"
+          title="Sound settings"
+        >
+          <Settings className="w-4 h-4" />
+        </motion.button>
+      )}
+
+      {/* Sound Settings Panel */}
+      <AnimatePresence>
+        {isEnabled && showSettings && (
+          <motion.div
+            className="fixed bottom-44 left-4 md:left-6 z-50 w-80 md:w-96 bg-background/95 backdrop-blur-sm border border-primary/30 rounded-lg shadow-xl cosmic-glow"
+            initial={{ opacity: 0, x: -20, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -20, scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <div className="flex items-center gap-2">
+                <Waves className="w-4 h-4 text-primary" />
+                <span className="text-sm font-semibold cosmic-text">Cosmic Sound Settings</span>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowSettings(false)}
+                className="p-1"
+              >
+                <VolumeX className="w-3 h-3" />
+              </Button>
+            </div>
+
+            {/* Settings Content */}
+            <div className="p-4 space-y-4">
+              {/* Master Volume */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Master Volume</span>
+                  <span className="text-primary font-mono">{Math.round(masterVolume * 100)}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={masterVolume}
+                  onChange={(e) => setMasterVolume(Number(e.target.value))}
+                  className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                />
+              </div>
+
+              {/* Sound Categories */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Ambient Sounds</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setAmbientEnabled(!ambientEnabled)}
+                    className="p-1"
+                  >
+                    {ambientEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">UI Sounds</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setUiSoundsEnabled(!uiSoundsEnabled)}
+                    className="p-1"
+                  >
+                    {uiSoundsEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Ambient Sound Selection */}
+              <div className="space-y-2">
+                <span className="text-sm text-muted-foreground">Ambient Sound</span>
+                <div className="grid grid-cols-2 gap-2">
+                  {soundEffects.filter(s => s.category === 'ambient').map((sound) => (
+                    <Button
+                      key={sound.id}
+                      variant={currentAmbient === sound.id ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentAmbient(sound.id)}
+                      className="text-xs"
+                    >
+                      {sound.name}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sound Effects List */}
+              <div className="space-y-2">
+                <span className="text-sm text-muted-foreground">Individual Effects</span>
+                <div className="max-h-32 overflow-y-auto space-y-2">
+                  {soundEffects.filter(s => s.category !== 'ambient').map((sound) => (
+                    <div key={sound.id} className="flex items-center justify-between text-xs">
+                      <span className={`flex-1 ${enabledEffects.has(sound.id) ? 'text-primary' : 'text-muted-foreground'}`}>
+                        {sound.name}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const newEnabled = new Set(enabledEffects);
+                            if (newEnabled.has(sound.id)) {
+                              newEnabled.delete(sound.id);
+                            } else {
+                              newEnabled.add(sound.id);
+                            }
+                            setEnabledEffects(newEnabled);
+                          }}
+                          className="p-1"
+                        >
+                          {enabledEffects.has(sound.id) ? (
+                            <Volume2 className="w-3 h-3 text-primary" />
+                          ) : (
+                            <VolumeX className="w-3 h-3 text-muted-foreground" />
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => playSound(sound.id)}
+                          className="p-1"
+                          disabled={!enabledEffects.has(sound.id)}
+                        >
+                          <Play className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Tooltip - Mobile responsive positioning */}
+      {isEnabled && !showSettings && (
         <motion.div
           className="fixed bottom-44 left-4 md:bottom-44 md:left-6 z-50 px-2 py-1 bg-background/90 backdrop-blur-sm border border-border rounded text-xs text-muted-foreground pointer-events-none"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 4, duration: 2 }}
         >
-          Sound effects active
+          Sound effects active - Click ⚙️ for settings
         </motion.div>
       )}
     </>

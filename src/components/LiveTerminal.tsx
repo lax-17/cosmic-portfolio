@@ -27,12 +27,40 @@ const LiveTerminal = () => {
   const dragOffsetRef = useRef({ x: 0, y: 0 });
   const animationFrameRef = useRef<number>();
   const [matrixMode, setMatrixMode] = useState(false);
-  const [terminalTheme, setTerminalTheme] = useState<'default' | 'matrix' | 'hacker'>('default');
+  const [terminalTheme, setTerminalTheme] = useState<'default' | 'matrix' | 'hacker'>('matrix');
   const [gameNumber, setGameNumber] = useState<number | null>(null);
   const [gameAttempts, setGameAttempts] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
+  const [currentDirectory, setCurrentDirectory] = useState('/home/laxmikant');
+  const [userInfo, setUserInfo] = useState({ user: 'laxmikant', host: 'neural-interface' });
+  const [processes, setProcesses] = useState<string[]>(['systemd', 'sshd', 'nginx', 'node', 'terminal']);
+  const [lastLogin, setLastLogin] = useState(new Date(Date.now() - 3600000)); // 1 hour ago
+  const [cursorVisible, setCursorVisible] = useState(true);
+
+  // Simple sound effect function
+  const playSound = (frequency: number, duration: number) => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = frequency;
+      oscillator.type = 'sine';
+
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + duration);
+    } catch (e) {
+      // Silently fail if Web Audio API is not supported
+    }
+  };
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -46,38 +74,54 @@ const LiveTerminal = () => {
     help: {
       description: "Show available commands",
       output: [
-        "🚀 Available commands:",
+        terminalTheme === 'matrix'
+          ? "The Matrix Terminal - Reality is a simulation"
+          : "GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)",
+        terminalTheme === 'matrix'
+          ? "Welcome to the Matrix. Commands are your path to enlightenment."
+          : "These shell commands are defined internally. Type 'help' to see this list.",
         "",
-        "📋 Portfolio Commands:",
-        "  help          - Show this help message",
-        "  whoami        - Display current user info",
-        "  skills        - List technical skills",
-        "  projects      - Show project portfolio",
-        "  contact       - Display contact information",
+        "📋 Available Command Categories:",
         "",
-        "🛠️  Utility Commands:",
-        "  clear         - Clear terminal history",
-        "  date          - Show current date/time",
-        "  echo [text]   - Echo text to terminal",
-        "  pwd           - Show current directory",
-        "  ls            - List directory contents",
-        "  cat [file]    - Display file contents",
-        "  ping          - Test connection",
+        "🎯 Portfolio Commands:",
+        "  whoami, skills, projects, contact",
         "",
-        "🎉 Fun Commands:",
-        "  matrix        - Enter the Matrix",
-        "  hack          - Simulate hacking sequence",
-        "  joke          - Tell a random joke",
-        "  fortune       - Get a fortune cookie message",
-        "  8ball         - Ask the magic 8-ball",
-        "  quote         - Get an inspirational quote",
-        "  ascii         - Show ASCII art",
-        "  game          - Play number guessing game",
-        "  guess [num]   - Make a guess in the game",
+        "🗂️  File System:",
+        "  pwd, ls, cd, mkdir, rmdir, touch, rm, cp, mv, cat",
+        "",
+        "🔍 Text Processing:",
+        "  grep, find, wc, head, tail, sort, uniq",
+        "",
+        "🖥️  System Info:",
+        "  ps, top, df, free, uptime, uname, hostname, id, env",
+        "",
+        "🌐 Network:",
+        "  ping, nslookup, traceroute, ifconfig",
+        "",
+        "⚙️  Process Management:",
+        "  kill, jobs, fg, bg",
+        "",
+        "📦 Package Managers:",
+        "  apt, npm, pip",
+        "",
+        "🛠️  Development Tools:",
+        "  git, make, gcc, python, node",
+        "",
+        "🛠️  Utilities:",
+        "  clear, date, echo, history, man, alias, export, crontab, screen",
+        "",
+        "🎉 Fun & Games:",
+        "  matrix, hack, joke, fortune, 8ball, quote, ascii, game",
         "",
         "🎨 Customization:",
-        "  theme         - Change terminal theme",
-        "  fun           - Enable fun mode",
+        "  theme, fun",
+        "",
+        "📖 For detailed help on a category:",
+        "  help file     - File system commands",
+        "  help system   - System information commands",
+        "  help network  - Network commands",
+        "  help dev      - Development tools",
+        "  help all      - Show all commands",
         "",
         "⌨️  Keyboard Shortcuts:",
         "  ↑/↓           - Navigate command history",
@@ -88,19 +132,7 @@ const LiveTerminal = () => {
         "Type any command to get started! ✨"
       ]
     },
-    whoami: {
-      description: "Display current user info",
-      output: [
-        "🤖 laxmikant@neural-interface:~$ whoami",
-        "👨‍💻 laxmikant_nishad",
-        "🎯 Applied AI/ML Engineer | Leeds, UK",
-        "🧠 Specializing in LLMs, Transformers, and multi-modal systems",
-        "⚡ QLoRA fine-tuning • Structured JSON outputs • Docker/llama.cpp",
-        "",
-        "🌟 Passionate about building trustworthy AI systems that make a difference!",
-        "🚀 Always learning, always innovating, always coding!"
-      ]
-    },
+    // Old whoami removed - using the new one below
     skills: {
       description: "List technical skills",
       output: [
@@ -158,18 +190,290 @@ const LiveTerminal = () => {
     },
     pwd: {
       description: "Show current directory",
-      output: ["/home/laxmikant/portfolio"]
+      output: [currentDirectory]
     },
     ls: {
       description: "List directory contents",
       output: [
-        "drwxr-xr-x  laxmikant  neural  4096  projects/",
-        "drwxr-xr-x  laxmikant  neural  4096  skills/",
-        "drwxr-xr-x  laxmikant  neural  4096  experience/",
-        "-rw-r--r--  laxmikant  neural   256  README.md",
-        "-rw-r--r--  laxmikant  neural   512  portfolio.py",
-        "-rw-r--r--  laxmikant  neural   128  .bashrc"
+        "drwxr-xr-x  2 laxmikant neural  4096 Dec 15 10:30 Documents/",
+        "drwxr-xr-x  3 laxmikant neural  4096 Dec 15 09:45 Downloads/",
+        "drwxr-xr-x  2 laxmikant neural  4096 Dec 14 16:20 Pictures/",
+        "drwxr-xr-x  5 laxmikant neural  4096 Dec 15 11:15 Projects/",
+        "-rw-r--r--  1 laxmikant neural   256 Dec 15 08:30 .bashrc",
+        "-rw-r--r--  1 laxmikant neural   512 Dec 15 09:00 README.md",
+        "-rw-------  1 laxmikant neural  1024 Dec 15 07:45 .ssh/",
+        "lrwxrwxrwx  1 laxmikant neural    12 Dec 14 18:20 bin -> /usr/local/bin"
       ]
+    },
+    cd: {
+      description: "Change directory",
+      output: ["Usage: cd [directory]"]
+    },
+    ps: {
+      description: "Show running processes",
+      output: [
+        "  PID TTY          TIME CMD",
+        "  123 pts/0    00:00:01 systemd",
+        "  456 pts/0    00:00:02 sshd",
+        "  789 pts/0    00:00:05 nginx",
+        " 1012 pts/0    00:00:03 node",
+        " 1156 pts/0    00:00:00 bash",
+        " 1201 pts/0    00:00:00 terminal"
+      ]
+    },
+    top: {
+      description: "Show system processes",
+      output: [
+        "top - 13:45:23 up 2 days,  5:23,  1 user,  load average: 0.52, 0.58, 0.59",
+        "Tasks: 107 total,   1 running, 106 sleeping,   0 stopped,   0 zombie",
+        "%Cpu(s):  5.2 us,  2.1 sy,  0.0 ni, 92.1 id,  0.5 wa,  0.0 hi,  0.1 si,  0.0 st",
+        "MiB Mem :   8192.0 total,   2048.0 free,   4096.0 used,   2048.0 buff/cache",
+        "MiB Swap:   2048.0 total,   1024.0 free,   1024.0 used,    512.0 avail Mem",
+        "",
+        "  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND",
+        "  456 root      20   0  1123456  45678  12345 S   2.1   0.6   0:05.23 sshd",
+        "  789 www-data  20   0   987654  34567   8901 S   1.8   0.4   0:03.45 nginx",
+        " 1012 laxmikant 20   0  2345678  78901  23456 S   5.2   1.0   0:02.34 node",
+        " 1156 laxmikant 20   0   456789  12345   5678 S   0.1   0.2   0:00.01 bash"
+      ]
+    },
+    df: {
+      description: "Show disk usage",
+      output: [
+        "Filesystem     1K-blocks    Used Available Use% Mounted on",
+        "/dev/sda1       52428800 15728640  34603008  32% /",
+        "tmpfs             4194304       0   4194304   0% /tmp",
+        "/dev/sdb1      104857600 52428800  47185920  53% /home",
+        "udev               512000     1024    510976   1% /dev"
+      ]
+    },
+    free: {
+      description: "Show memory usage",
+      output: [
+        "               total        used        free      shared  buff/cache   available",
+        "Mem:        8388608     4194304     2097152      524288     2097152     3145728",
+        "Swap:       2097152     1048576     1048576"
+      ]
+    },
+    uptime: {
+      description: "Show system uptime",
+      output: [` ${Math.floor(Math.random() * 24) + 1} days, ${Math.floor(Math.random() * 24)}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')},  1 user,  load average: ${Math.random().toFixed(2)}, ${Math.random().toFixed(2)}, ${Math.random().toFixed(2)}`]
+    },
+    whoami: {
+      description: "Display current user info",
+      output: [
+        `${userInfo.user}@${userInfo.host}:~$ whoami`,
+        userInfo.user,
+        "AI/ML Engineer | Neural Interface Terminal",
+        "Specializing in Large Language Models & Computer Vision",
+        "",
+        "Last login:", lastLogin.toLocaleString(),
+        "",
+        "System Information:",
+        "├── OS: Neural Linux 5.15.0-neural",
+        "├── Kernel: 5.15.0-41-generic",
+        "├── Architecture: x86_64",
+        "└── Terminal: Neural Terminal v2.1.0"
+      ]
+    },
+    uname: {
+      description: "Show system information",
+      output: ["Linux neural-interface 5.15.0-neural #1 SMP Neural Linux 5.15.0-41-generic x86_64 x86_64 x86_64 GNU/Linux"]
+    },
+    history: {
+      description: "Show command history",
+      output: commandHistory.slice(-10).map((cmd, idx) => `${String(commandHistory.length - 9 + idx).padStart(4, ' ')}  ${cmd.input || '(empty)'}`).concat(["", "Type 'history -c' to clear history"])
+    },
+    "history -c": {
+      description: "Clear command history",
+      output: ["Command history cleared."]
+    },
+    mkdir: {
+      description: "Create directory",
+      output: ["Usage: mkdir [directory]"]
+    },
+    rmdir: {
+      description: "Remove empty directory",
+      output: ["Usage: rmdir [directory]"]
+    },
+    touch: {
+      description: "Create empty file or update timestamp",
+      output: ["Usage: touch [filename]"]
+    },
+    rm: {
+      description: "Remove files or directories",
+      output: ["Usage: rm [options] [file/directory]", "Options:", "  -r    Remove directories and their contents recursively", "  -f    Force removal without confirmation"]
+    },
+    cp: {
+      description: "Copy files and directories",
+      output: ["Usage: cp [options] source destination", "Options:", "  -r    Copy directories recursively", "  -i    Prompt before overwrite"]
+    },
+    mv: {
+      description: "Move or rename files and directories",
+      output: ["Usage: mv [options] source destination", "Options:", "  -i    Prompt before overwrite"]
+    },
+    grep: {
+      description: "Search for patterns in files",
+      output: ["Usage: grep [options] pattern [file...]", "Options:", "  -i    Ignore case", "  -n    Show line numbers", "  -r    Recursive search"]
+    },
+    find: {
+      description: "Search for files in directory hierarchy",
+      output: ["Usage: find [path] [expression]", "Examples:", "  find . -name '*.txt'    Find all .txt files", "  find . -type f         Find all files", "  find . -type d         Find all directories"]
+    },
+    wc: {
+      description: "Print newline, word, and byte counts",
+      output: ["Usage: wc [options] [file...]", "Options:", "  -l    Print line count", "  -w    Print word count", "  -c    Print byte count"]
+    },
+    head: {
+      description: "Output the first part of files",
+      output: ["Usage: head [options] [file...]", "Options:", "  -n N    Print first N lines (default 10)"]
+    },
+    tail: {
+      description: "Output the last part of files",
+      output: ["Usage: tail [options] [file...]", "Options:", "  -n N    Print last N lines (default 10)", "  -f      Follow file changes"]
+    },
+    sort: {
+      description: "Sort lines of text files",
+      output: ["Usage: sort [options] [file...]", "Options:", "  -n    Numeric sort", "  -r    Reverse order", "  -u    Unique lines only"]
+    },
+    uniq: {
+      description: "Report or omit repeated lines",
+      output: ["Usage: uniq [options] [input [output]]", "Options:", "  -c    Prefix lines with occurrence count", "  -d    Only print duplicate lines", "  -u    Only print unique lines"]
+    },
+    hostname: {
+      description: "Show or set system hostname",
+      output: [userInfo.host]
+    },
+    id: {
+      description: "Print user and group information",
+      output: [`uid=1000(${userInfo.user}) gid=1000(${userInfo.user}) groups=1000(${userInfo.user}),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),120(lp),131(lxd),132(sambashare)`]
+    },
+    env: {
+      description: "Display environment variables",
+      output: [
+        "SHELL=/bin/bash",
+        "USER=" + userInfo.user,
+        "HOME=/home/" + userInfo.user,
+        "PWD=" + currentDirectory,
+        "LANG=en_US.UTF-8",
+        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "TERM=xterm-256color",
+        "EDITOR=nano"
+      ]
+    },
+    which: {
+      description: "Locate a command",
+      output: ["Usage: which [command]"]
+    },
+    type: {
+      description: "Display information about command type",
+      output: ["Usage: type [command]"]
+    },
+    file: {
+      description: "Determine file type",
+      output: ["Usage: file [filename]"]
+    },
+    kill: {
+      description: "Send signal to process",
+      output: ["Usage: kill [signal] pid", "Common signals:", "  -9    SIGKILL (force kill)", "  -15   SIGTERM (terminate)", "  -2    SIGINT (interrupt)"]
+    },
+    jobs: {
+      description: "List active jobs",
+      output: ["[1]+  Running                 sleep 100 &"]
+    },
+    fg: {
+      description: "Bring job to foreground",
+      output: ["Usage: fg [job_spec]"]
+    },
+    bg: {
+      description: "Send job to background",
+      output: ["Usage: bg [job_spec]"]
+    },
+    alias: {
+      description: "Create command aliases",
+      output: ["Usage: alias [name='value']", "Current aliases:", "  alias ll='ls -alF'", "  alias la='ls -A'", "  alias l='ls -CF'"]
+    },
+    export: {
+      description: "Set environment variable",
+      output: ["Usage: export VARIABLE=value"]
+    },
+    nslookup: {
+      description: "Query DNS name servers",
+      output: ["Usage: nslookup [domain]"]
+    },
+    traceroute: {
+      description: "Trace packet route to host",
+      output: ["Usage: traceroute [host]"]
+    },
+    ifconfig: {
+      description: "Configure network interfaces",
+      output: [
+        "eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500",
+        "        inet 192.168.1.100  netmask 255.255.255.0  broadcast 192.168.1.255",
+        "        inet6 fe80::a00:27ff:fe4e:66a1  prefixlen 64  scopeid 0x20<link>",
+        "        ether 08:00:27:4e:66:a1  txqueuelen 1000  (Ethernet)",
+        "        RX packets 12345  bytes 1234567 (1.2 MiB)",
+        "        RX errors 0  dropped 0  overruns 0  frame 0",
+        "        TX packets 6789  bytes 987654 (987.6 KiB)",
+        "        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0",
+        "",
+        "lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536",
+        "        inet 127.0.0.1  netmask 255.0.0.0",
+        "        inet6 ::1  prefixlen 128  scopeid 0x10<host>",
+        "        loop  txqueuelen 1000  (Local Loopback)",
+        "        RX packets 1234  bytes 56789 (56.7 KiB)",
+        "        RX errors 0  dropped 0  overruns 0  frame 0",
+        "        TX packets 1234  bytes 56789 (56.7 KiB)",
+        "        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0"
+      ]
+    },
+    apt: {
+      description: "Package management command",
+      output: ["Usage: apt [options] command", "Commands:", "  install    Install packages", "  remove     Remove packages", "  update     Update package list", "  upgrade    Upgrade packages", "  search     Search for packages"]
+    },
+    npm: {
+      description: "Node Package Manager",
+      output: ["Usage: npm <command>", "Commands:", "  install     Install packages", "  uninstall   Remove packages", "  update      Update packages", "  list        List installed packages", "  run         Run package scripts"]
+    },
+    pip: {
+      description: "Python package installer",
+      output: ["Usage: pip <command> [options]", "Commands:", "  install     Install packages", "  uninstall   Remove packages", "  list        List installed packages", "  show        Show package info", "  freeze      Output installed packages in requirements format"]
+    },
+    git: {
+      description: "Version control system",
+      output: ["Usage: git <command> [options]", "Common commands:", "  status      Show working tree status", "  add         Add file contents to index", "  commit      Record changes to repository", "  push        Update remote refs", "  pull        Fetch and merge changes", "  clone       Clone repository", "  branch      List or create branches", "  checkout    Switch branches or restore files"]
+    },
+    make: {
+      description: "GNU make utility",
+      output: ["Usage: make [options] [target] ...", "Options:", "  -f FILE    Read FILE as a makefile", "  -j JOBS    Allow JOBS jobs at once", "  -k         Keep going when some targets can't be made"]
+    },
+    gcc: {
+      description: "GNU C Compiler",
+      output: ["Usage: gcc [options] file...", "Common options:", "  -o file    Place output in file", "  -c         Compile and assemble, but do not link", "  -g         Generate debugging information", "  -O2        Optimize for speed", "  -Wall      Enable all warnings"]
+    },
+    python: {
+      description: "Python interpreter",
+      output: ["Python 3.9.7 (default, Sep 10 2021, 14:59:43)", "[GCC 11.2.0] on linux", "Type \"help\", \"copyright\", \"credits\" or \"license\" for more information.", ">>> "]
+    },
+    node: {
+      description: "Node.js JavaScript runtime",
+      output: ["Welcome to Node.js v16.14.0.", "Type \".help\" for more information.", "> "]
+    },
+    crontab: {
+      description: "Maintain crontab files",
+      output: ["Usage: crontab [options]", "Options:", "  -l    List current crontab", "  -e    Edit current crontab", "  -r    Remove current crontab"]
+    },
+    screen: {
+      description: "Screen manager with VT100/ANSI terminal emulation",
+      output: ["Usage: screen [options] [command [args]]", "Options:", "  -S name    Name session", "  -r         Reattach to session", "  -ls        List sessions", "  -d         Detach session"]
+    },
+    man: {
+      description: "Display manual page",
+      output: ["Usage: man [command]", "Available commands: help, pwd, ls, cd, ps, top, df, free, uptime, whoami, uname, history, mkdir, rmdir, touch, rm, cp, mv, grep, find, wc, head, tail, sort, uniq, hostname, id, env, which, type, file, kill, jobs, fg, bg, alias, export, nslookup, traceroute, ifconfig, apt, npm, pip, git, make, gcc, python, node, crontab, screen"]
+    },
+    clear: {
+      description: "Clear terminal history",
+      output: []
     },
     date: {
       description: "Show current date/time",
@@ -365,6 +669,134 @@ const LiveTerminal = () => {
         "",
         "Good luck! 🍀"
       ]
+    },
+    "help file": {
+      description: "Show file system commands",
+      output: [
+        "🗂️  File System Commands:",
+        "",
+        "  pwd           - Print working directory",
+        "  ls            - List directory contents",
+        "  cd [dir]      - Change directory",
+        "  mkdir [dir]   - Create directory",
+        "  rmdir [dir]   - Remove empty directory",
+        "  touch [file]  - Create empty file or update timestamp",
+        "  rm [file]     - Remove files or directories",
+        "  cp [src] [dst]- Copy files and directories",
+        "  mv [src] [dst]- Move or rename files and directories",
+        "  cat [file]    - Display file contents",
+        "",
+        "Examples:",
+        "  mkdir projects    - Create a 'projects' directory",
+        "  touch hello.txt   - Create an empty file",
+        "  rm -r old_dir     - Remove directory recursively",
+        "  cp file1 file2    - Copy file1 to file2"
+      ]
+    },
+    "help system": {
+      description: "Show system information commands",
+      output: [
+        "🖥️  System Information Commands:",
+        "",
+        "  ps            - Show running processes",
+        "  top           - Show system processes (detailed)",
+        "  df            - Show disk usage",
+        "  free          - Show memory usage",
+        "  uptime        - Show system uptime",
+        "  uname         - Show system information",
+        "  hostname      - Show system hostname",
+        "  id            - Show user and group information",
+        "  env           - Show environment variables",
+        "  which [cmd]   - Locate a command",
+        "  type [cmd]    - Show command type",
+        "  file [file]   - Determine file type",
+        "  history       - Show command history",
+        "  man [cmd]     - Display manual page",
+        "",
+        "Examples:",
+        "  ps            - List all running processes",
+        "  df -h         - Show disk usage in human readable format",
+        "  free -h       - Show memory usage in human readable format",
+        "  env | grep PATH - Show PATH environment variable"
+      ]
+    },
+    "help network": {
+      description: "Show network commands",
+      output: [
+        "🌐 Network Commands:",
+        "",
+        "  ping [host]   - Test network connection",
+        "  nslookup [dom]- Query DNS name servers",
+        "  traceroute [h]- Trace packet route to host",
+        "  ifconfig      - Configure network interfaces",
+        "",
+        "Examples:",
+        "  ping google.com     - Test connection to Google",
+        "  nslookup example.com - Get DNS information",
+        "  traceroute 8.8.8.8  - Trace route to Google DNS",
+        "  ifconfig            - Show network interface information"
+      ]
+    },
+    "help dev": {
+      description: "Show development tools",
+      output: [
+        "🛠️  Development Tools:",
+        "",
+        "  git [cmd]     - Version control system",
+        "  make [target] - GNU make utility",
+        "  gcc [file]    - GNU C Compiler",
+        "  python        - Python interpreter",
+        "  node          - Node.js JavaScript runtime",
+        "",
+        "Examples:",
+        "  git status        - Show git status",
+        "  make all          - Build all targets",
+        "  gcc hello.c -o hello - Compile C program",
+        "  python --version  - Show Python version",
+        "  node -v           - Show Node.js version"
+      ]
+    },
+    "help all": {
+      description: "Show all available commands",
+      output: [
+        "📋 All Available Commands:",
+        "",
+        "🎯 Portfolio Commands:",
+        "  help, whoami, skills, projects, contact",
+        "",
+        "🗂️  File System:",
+        "  pwd, ls, cd, mkdir, rmdir, touch, rm, cp, mv, cat",
+        "",
+        "🔍 Text Processing:",
+        "  grep, find, wc, head, tail, sort, uniq",
+        "",
+        "🖥️  System Info:",
+        "  ps, top, df, free, uptime, uname, hostname, id, env, which, type, file, history, man",
+        "",
+        "🌐 Network:",
+        "  ping, nslookup, traceroute, ifconfig",
+        "",
+        "⚙️  Process Management:",
+        "  kill, jobs, fg, bg",
+        "",
+        "📦 Package Managers:",
+        "  apt, npm, pip",
+        "",
+        "🛠️  Development Tools:",
+        "  git, make, gcc, python, node",
+        "",
+        "🛠️  Utilities:",
+        "  clear, date, echo, alias, export, crontab, screen",
+        "",
+        "🎉 Fun & Games:",
+        "  matrix, hack, joke, fortune, 8ball, quote, ascii, game, guess",
+        "",
+        "🎨 Customization:",
+        "  theme, fun, resize",
+        "",
+        "📖 Help Commands:",
+        "  help file, help system, help network, help dev, help all"
+      ]
     }
   };
 
@@ -383,6 +815,9 @@ const LiveTerminal = () => {
     const [cmd, ...args] = trimmedCommand.split(' ');
 
     setIsTyping(true);
+
+    // Play typing sound effect
+    playSound(800, 0.1);
 
     // Faster processing with minimal delay for better UX
     await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 150));
@@ -447,6 +882,25 @@ const LiveTerminal = () => {
       ];
     } else if (cmd === 'echo') {
       output = [args.join(' ')];
+    } else if (cmd === 'cd') {
+      const newDir = args[0];
+      if (!newDir || newDir === '~') {
+        setCurrentDirectory('/home/laxmikant');
+        output = [];
+      } else if (newDir === '..') {
+        const parts = currentDirectory.split('/');
+        parts.pop();
+        const newPath = parts.length > 1 ? parts.join('/') : '/';
+        setCurrentDirectory(newPath);
+        output = [];
+      } else if (newDir.startsWith('/')) {
+        setCurrentDirectory(newDir);
+        output = [];
+      } else {
+        const newPath = currentDirectory === '/' ? `/${newDir}` : `${currentDirectory}/${newDir}`;
+        setCurrentDirectory(newPath);
+        output = [];
+      }
     } else if (cmd === 'cat') {
       const file = args[0];
       if (file === 'README.md') {
@@ -461,8 +915,45 @@ const LiveTerminal = () => {
           "",
           "Based in Leeds, UK | Available for opportunities"
         ];
+      } else if (file === '.bashrc') {
+        output = [
+          "# ~/.bashrc",
+          "export PATH=$PATH:/usr/local/bin",
+          "export EDITOR=nano",
+          "alias ll='ls -alF'",
+          "alias la='ls -A'",
+          "alias l='ls -CF'",
+          "PS1='\\u@\\h:\\w\\$ '"
+        ];
       } else {
         output = [`cat: ${file}: No such file or directory`];
+      }
+    } else if (cmd === 'history') {
+      if (args[0] === '-c') {
+        setCommandHistory([]);
+        output = ["Command history cleared."];
+      } else {
+        output = commandHistory.slice(-10).map((cmd, idx) => `${String(commandHistory.length - 9 + idx).padStart(4, ' ')}  ${cmd.input || '(empty)'}`).concat(["", "Type 'history -c' to clear history"]);
+      }
+    } else if (cmd === 'man') {
+      const command = args[0];
+      if (command && availableCommands[command as keyof typeof availableCommands]) {
+        output = [
+          `Manual page for ${command}`,
+          "NAME",
+          `    ${command} - ${availableCommands[command as keyof typeof availableCommands].description}`,
+          "",
+          "SYNOPSIS",
+          `    ${command} [options]`,
+          "",
+          "DESCRIPTION",
+          `    ${availableCommands[command as keyof typeof availableCommands].description}`,
+          "",
+          "SEE ALSO",
+          "    help(1), man(1)"
+        ];
+      } else {
+        output = ["Usage: man [command]", "Available commands: help, pwd, ls, cd, ps, top, df, free, uptime, whoami, uname, history"];
       }
     } else if (availableCommands[cmd as keyof typeof availableCommands]) {
       output = availableCommands[cmd as keyof typeof availableCommands].output;
@@ -470,7 +961,7 @@ const LiveTerminal = () => {
       output = [];
     } else {
       output = [
-        `❌ Command not found: '${cmd}'`,
+        `bash: ${cmd}: command not found`,
         `💡 Type 'help' to see all available commands`,
         `🔍 Try these similar commands:`,
         ...Object.keys(availableCommands).filter(c => c.includes(cmd) || cmd.includes(c)).slice(0, 3).map(c => `   • ${c}`)
@@ -801,23 +1292,32 @@ const LiveTerminal = () => {
       case 'matrix':
         return {
           background: 'bg-black',
-          text: 'text-green-400',
-          border: 'border-green-500',
-          glow: 'shadow-green-500/50'
+          text: 'text-green-300',
+          prompt: 'text-green-400',
+          border: 'border-green-600',
+          glow: 'shadow-green-500/30',
+          header: 'bg-gray-900/95',
+          caret: 'caret-green-400',
         };
       case 'hacker':
         return {
           background: 'bg-gray-900',
           text: 'text-red-400',
+          prompt: 'text-red-400',
           border: 'border-red-500',
-          glow: 'shadow-red-500/50'
+          glow: 'shadow-red-500/50',
+          header: 'bg-gray-800/95',
+          caret: 'caret-red-400',
         };
       default:
         return {
           background: 'bg-terminal',
           text: 'text-terminal-text',
+          prompt: 'text-blue-400',
           border: 'border-terminal-border',
-          glow: 'cosmic-glow'
+          glow: 'cosmic-glow',
+          header: 'bg-slate-800/70',
+          caret: 'caret-blue-400',
         };
     }
   };
@@ -859,9 +1359,14 @@ const LiveTerminal = () => {
       // Focus with a slight delay for better UX
       setTimeout(() => {
         inputRef.current?.focus();
+        // Ensure cursor is at the end of input
+        if (inputRef.current) {
+          inputRef.current.selectionStart = inputRef.current.value.length;
+          inputRef.current.selectionEnd = inputRef.current.value.length;
+        }
       }, 100);
     }
-  }, [isOpen, isMinimized]);
+  }, [isOpen, isMinimized, currentInput]);
 
   // Close suggestions when clicking outside
   useEffect(() => {
@@ -916,6 +1421,14 @@ const LiveTerminal = () => {
       });
     }
   }, [commandHistory, isTyping]);
+
+  // Blinking cursor effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCursorVisible(prev => !prev);
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -977,10 +1490,10 @@ const LiveTerminal = () => {
             aria-labelledby="terminal-title"
             aria-describedby="terminal-description"
           >
-            <div className={`w-full h-full group backdrop-blur-md bg-slate-900/80 border border-white/10 shadow-2xl rounded-2xl overflow-visible transition-all duration-300 ${isDragging ? 'cursor-move shadow-blue-500/20' : ''} ${isResizing ? `cursor-${resizeDirection === 'bottom-right' ? 'se' : resizeDirection === 'bottom-left' ? 'sw' : resizeDirection === 'top-right' ? 'ne' : 'nw'}-resize` : ''} hover:shadow-blue-500/10`}>
+            <div className={`w-full h-full group backdrop-blur-md ${themeStyles.background} border ${themeStyles.border} shadow-2xl rounded-none overflow-hidden transition-all duration-300 ${isDragging ? 'cursor-move shadow-blue-500/20' : ''} ${isResizing ? `cursor-${resizeDirection === 'bottom-right' ? 'se' : resizeDirection === 'bottom-left' ? 'sw' : resizeDirection === 'top-right' ? 'ne' : 'nw'}-resize` : ''} hover:shadow-blue-500/10 ${themeStyles.glow}`}>
               {/* Terminal Header - Modern Glassmorphism Design */}
               <header
-                className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-slate-800/70 to-slate-900/70 backdrop-blur-sm border-b border-white/10 cursor-move select-none"
+                className={`flex items-center justify-between px-4 py-3 ${themeStyles.header} backdrop-blur-sm border-b ${themeStyles.border} cursor-move select-none`}
                 onMouseDown={handleMouseDown}
               >
                 <div className="flex items-center gap-3">
@@ -1021,8 +1534,8 @@ const LiveTerminal = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Terminal className="w-4 h-4 text-blue-400" />
-                    <h2 id="terminal-title" className="text-sm font-medium text-white/90 font-mono">
-                      Neural Terminal
+                    <h2 id="terminal-title" className={`text-sm font-medium ${themeStyles.text} font-mono`}>
+                      {terminalTheme === 'matrix' ? 'The Matrix Terminal' : `${userInfo.user}@${userInfo.host}:~`}
                     </h2>
                     <span className="sr-only">Theme: {terminalTheme}</span>
                     {matrixMode && <Sparkles className="w-4 h-4 text-green-400 animate-pulse" />}
@@ -1043,7 +1556,7 @@ const LiveTerminal = () => {
                       const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
                       autoScrollRef.current = nearBottom;
                     }}
-                    className="flex-1 p-4 pr-3 pb-6 font-mono text-[13px] md:text-sm overflow-y-auto overflow-x-hidden overscroll-contain bg-transparent min-h-0 text-white/90 leading-relaxed terminal-output"
+                    className={`flex-1 p-4 pr-3 pb-6 font-mono text-[13px] md:text-sm overflow-y-auto overflow-x-hidden overscroll-contain ${themeStyles.background} min-h-0 ${themeStyles.text} leading-relaxed terminal-output`}
                     style={{ scrollbarGutter: 'stable' }}
                     role="log"
                     aria-live="polite"
@@ -1051,28 +1564,48 @@ const LiveTerminal = () => {
                     aria-describedby="terminal-description"
                   >
                     {/* Welcome Message */}
-                    <div id="terminal-description" className="mb-3 text-blue-400 font-semibold">
-                      🚀 Neural Interface Terminal v2.1.0 - {terminalTheme.toUpperCase()} MODE
-                      {matrixMode && " 🕶️"}
+                    <div id="terminal-description" className={`mb-3 ${themeStyles.prompt} font-mono text-sm`}>
+                      {terminalTheme === 'matrix' ? (
+                        <>
+                          Wake up, Neo... The Matrix has you.
+                          <br />
+                          Neural Terminal v2.1.0 - MATRIX MODE 🕶️
+                        </>
+                      ) : (
+                        <>
+                          Welcome to Neural Linux (GNU/Linux 5.15.0-neural x86_64)
+                          Last login: {lastLogin.toLocaleString()} from 127.0.0.1
+                        </>
+                      )}
                     </div>
-                    <div className="mb-6 text-white/70 italic">
-                      💡 Type 'help' for available commands. Try 'fun' for extra features!
+                    <div className={`mb-6 ${themeStyles.text} italic font-mono text-sm opacity-70`}>
+                      * Type 'help' for available commands
+                      * Use ↑/↓ arrows to navigate command history
+                      * Press Tab for auto-completion
+                      {terminalTheme === 'matrix' && (
+                        <>
+                          <br />
+                          * Type 'theme default' to exit Matrix mode
+                        </>
+                      )}
                     </div>
 
                     {/* Command History */}
                     {commandHistory.map((cmd, index) => (
                       <div key={index} className="mb-4 group">
                         {cmd.input && (
-                          <div className="flex items-center gap-3 mb-1">
-                            <span className="text-blue-400 font-bold">$</span>
-                            <span className="text-white/90 font-medium">{cmd.input}</span>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className={`${themeStyles.prompt} font-mono text-sm`}>
+                              {userInfo.user}@{userInfo.host}:{currentDirectory.replace('/home/laxmikant', '~')}$
+                            </span>
+                            <span className={`${themeStyles.text} font-medium font-mono`}>{cmd.input}</span>
                           </div>
                         )}
                         <div className="ml-6 space-y-1">
                           {cmd.output.map((line, lineIndex) => (
                             <motion.div
                               key={lineIndex}
-                              className="text-white/80 leading-relaxed"
+                              className={`${themeStyles.text} leading-relaxed font-mono text-sm opacity-90`}
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{
@@ -1087,83 +1620,36 @@ const LiveTerminal = () => {
                         </div>
                       </div>
                     ))}
-                  </div>
 
-                  {/* Input Area - Modern Design */}
-                  <div className="flex-shrink-0 px-4 py-4 pb-6 bg-gradient-to-r from-slate-900/60 to-slate-900/30 border-t border-white/10 relative rounded-b-2xl min-h-[64px]" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)' }}>
-                    <div className="flex items-center gap-3" role="group" aria-label="Terminal command input">
-                      <span className="text-blue-400 font-bold text-lg">$</span>
-                      <div className="flex-1 relative">
-                        <input
-                          ref={inputRef}
-                          type="text"
-                          value={currentInput}
-                          onChange={handleInputChange}
-                          onKeyDown={handleKeyDown}
-                          className="w-full bg-transparent outline-none text-white/90 font-mono text-sm placeholder-white/50 focus:outline-none focus:ring-1 focus:ring-inset focus:ring-blue-400/60 focus:ring-offset-0 focus:bg-white/5 rounded-md px-3 py-2.5 transition-all duration-200"
-                          placeholder="Type a command…"
-                          disabled={isTyping}
-                          aria-label="Terminal command input"
-                          aria-describedby="terminal-instructions"
-                        />
-
-                        {/* Command Suggestions Dropdown */}
-                        {showSuggestions && suggestions.length > 0 && (
-                          <motion.div
-                            className="absolute bottom-full left-0 right-0 mb-2 bg-black/80 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl z-50 max-h-40 overflow-y-auto"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 10 }}
-                            transition={{ duration: 0.15 }}
-                          >
-                            {suggestions.map((suggestion, index) => (
-                              <button
-                                key={suggestion}
-                                onClick={() => {
-                                  setCurrentInput(suggestion);
-                                  setShowSuggestions(false);
-                                  setSelectedSuggestion(-1);
-                                  inputRef.current?.focus();
-                                }}
-                                className={`w-full text-left px-3 py-2 text-sm font-mono transition-colors ${
-                                  index === selectedSuggestion
-                                    ? 'bg-blue-500/30 text-blue-300'
-                                    : 'text-white/80 hover:bg-white/10 hover:text-white'
-                                }`}
-                              >
-                                <span className="text-blue-400">$</span> {suggestion}
-                              </button>
-                            ))}
-                          </motion.div>
-                        )}
+                    {/* Current Input Line - Inside Terminal Content */}
+                    {!isTyping && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`${themeStyles.prompt} font-mono text-sm`}>
+                          {userInfo.user}@{userInfo.host}:{currentDirectory.replace('/home/laxmikant', '~')}$
+                        </span>
+                        <div className="flex-1 relative">
+                          <input
+                            ref={inputRef}
+                            type="text"
+                            value={currentInput}
+                            onChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
+                            className={`w-full bg-transparent outline-none ${themeStyles.text} ${themeStyles.caret} font-mono text-sm placeholder-current/30 focus:outline-none`}
+                            placeholder=""
+                            disabled={isTyping}
+                            aria-label="Terminal command input"
+                            aria-describedby="terminal-instructions"
+                            autoFocus
+                            spellCheck={false}
+                            autoCorrect="off"
+                            autoCapitalize="off"
+                            autoComplete="off"
+                          />
+                        </div>
                       </div>
-
-                      {isTyping && (
-                        <motion.div
-                          className="flex items-center gap-2 text-blue-400"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <motion.span
-                            animate={{
-                              opacity: [1, 0.3, 1],
-                              scale: [1, 1.1, 1]
-                            }}
-                            transition={{
-                              duration: 0.8,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                            aria-label="Processing command"
-                          >
-                            {matrixMode ? '█' : '●'}
-                          </motion.span>
-                          <span className="text-xs text-white/60">Processing...</span>
-                        </motion.div>
-                      )}
-                    </div>
+                    )}
                   </div>
+
 
                   {/* Resize Grips */}
                   {/* Bottom-Right */}

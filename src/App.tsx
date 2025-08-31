@@ -292,7 +292,7 @@ const App = () => (
             </AnalyticsProvider>
             
             {/* Global Components */}
-            <VoiceCommandNavigation />
+            {/* <VoiceCommandNavigation /> */}
             <CosmicSoundEffects />
           </BrowserRouter>
         </TooltipProvider>
