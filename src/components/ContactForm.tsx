@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,6 +22,7 @@ import { Send, Loader2, FileText, History, BarChart3, Save, Download, Eye, EyeOf
 import { useEnhancedAnalytics } from "@/hooks/useAnalytics";
 
 const ContactForm = () => {
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lastSubmitTime, setLastSubmitTime] = useState<number>(0);
   const [showAnalytics, setShowAnalytics] = useState(false);
@@ -245,6 +247,11 @@ const ContactForm = () => {
         toast.success("Message sent successfully!");
         form.reset();
         setSelectedTemplate(null);
+
+        // Redirect to success page
+        setTimeout(() => {
+          navigate('/contact-success');
+        }, 1000);
       } else {
         throw new Error("Failed to send message");
       }

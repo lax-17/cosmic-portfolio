@@ -16,8 +16,11 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import CookieConsentBanner from "./components/CookieConsentBanner";
 import AnalyticsPage from "./pages/Analytics";
 import CosmicLab from "./pages/CosmicLab";
+import ContactSuccess from "./pages/ContactSuccess";
+import About from "./pages/About";
 import VoiceCommandNavigation from "./components/VoiceCommandNavigation";
 import CosmicSoundEffects from "./components/CosmicSoundEffects";
+import Footer from "./components/Footer";
 
 // Lazy load heavy components for code splitting
 const TerminalHero = lazy(() => import("./components/TerminalHero"));
@@ -207,6 +210,9 @@ const NeuralPortfolio = () => {
       </section>
     </main>
 
+    {/* Footer */}
+    <Footer />
+
     {/* Interactive Components */}
     <Suspense fallback={<CosmicLoader message="Loading live terminal..." />}>
       <LiveTerminal />
@@ -268,6 +274,8 @@ const App = () => (
                     <Route path="/" element={<PortfolioRenderer />} />
                     <Route path="/analytics" element={<AnalyticsPage />} />
                     <Route path="/lab" element={<CosmicLab />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact-success" element={<ContactSuccess />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </PageTransition>

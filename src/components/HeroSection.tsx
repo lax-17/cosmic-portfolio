@@ -79,13 +79,35 @@ const HeroSection = () => {
                   });
                 }
               }}
+              className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-4 sm:px-10 sm:py-5 text-lg sm:text-xl font-bold rounded-lg hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              🚀 Hire Me
+            </motion.button>
+
+            <motion.button
+              onClick={() => {
+                const element = document.getElementById('contact');
+                if (element) {
+                  // Scroll with offset to account for fixed navigation elements
+                  const offset = 80; // Adjust this value based on your fixed header height
+                  const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                  const offsetPosition = elementPosition - offset;
+
+                  window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                  });
+                }
+              }}
               className="glass-card px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold text-cosmic hover:scale-105 transition-all duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               Get In Touch
             </motion.button>
-            
+
             <motion.a
               href="#projects"
               className="glass-card px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold text-foreground hover:scale-105 transition-all duration-300"
