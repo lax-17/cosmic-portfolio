@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const TerminalHero = () => {
   const [currentLine, setCurrentLine] = useState(0);
@@ -80,100 +81,189 @@ const TerminalHero = () => {
                 <div className="text-primary">
                   Portfolio successfully loaded!
                 </div>
-                <div className="flex gap-4 flex-wrap">
+                <div className="mt-4 text-muted-foreground text-sm max-w-2xl">
+                  Passionate AI/ML Engineer specializing in computer vision and deep learning.
+                  With expertise in PyTorch, Transformers, and scalable ML solutions, I transform
+                  complex data into actionable insights. Let's build the future of AI together.
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
                   {/* Hire Me CTA Button - Prominent */}
-                  <motion.button
-                    onClick={() => {
-                      const element = document.getElementById('contact');
-                      if (element) {
-                        const offset = 80;
-                        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-                        const offsetPosition = elementPosition - offset;
-                        window.scrollTo({
-                          top: offsetPosition,
-                          behavior: 'smooth'
-                        });
-                      }
-                    }}
-                    className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-background"
-                    aria-label="Hire me for your project"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    🚀 Hire Me
-                  </motion.button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <motion.button
+                        onClick={() => {
+                          const element = document.getElementById('contact');
+                          if (element) {
+                            const offset = 80;
+                            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                            const offsetPosition = elementPosition - offset;
+                            window.scrollTo({
+                              top: offsetPosition,
+                              behavior: 'smooth'
+                            });
+                          }
+                        }}
+                        className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-background"
+                        aria-label="Hire me for your project"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        🚀 Hire Me
+                      </motion.button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Get in touch for collaboration opportunities</p>
+                    </TooltipContent>
+                  </Tooltip>
 
-                  <button
-                    onClick={() => {
-                      const element = document.getElementById('projects');
-                      if (element) {
-                        // Scroll with offset to account for fixed navigation elements
-                        const offset = 80; // Adjust this value based on your fixed header height
-                        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-                        const offsetPosition = elementPosition - offset;
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => {
+                          const element = document.getElementById('projects');
+                          if (element) {
+                            const offset = 80;
+                            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                            const offsetPosition = elementPosition - offset;
+                            window.scrollTo({
+                              top: offsetPosition,
+                              behavior: 'smooth'
+                            });
+                          }
+                        }}
+                        className="px-4 py-2 border border-primary text-primary hover:bg-primary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                        aria-label="Navigate to projects section"
+                      >
+                        ./projects --list
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>View my project portfolio and case studies</p>
+                    </TooltipContent>
+                  </Tooltip>
 
-                        window.scrollTo({
-                          top: offsetPosition,
-                          behavior: 'smooth'
-                        });
-                      }
-                    }}
-                    className="px-4 py-2 border border-primary text-primary hover:bg-primary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-                    aria-label="Navigate to projects section"
-                  >
-                    ./projects --list
-                  </button>
-                   <button
-                     onClick={() => {
-                       const element = document.getElementById('experience');
-                       if (element) {
-                         // Scroll with offset to account for fixed navigation elements
-                         const offset = 80; // Adjust this value based on your fixed header height
-                         const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-                         const offsetPosition = elementPosition - offset;
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => {
+                          const element = document.getElementById('experience');
+                          if (element) {
+                            const offset = 80;
+                            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                            const offsetPosition = elementPosition - offset;
+                            window.scrollTo({
+                              top: offsetPosition,
+                              behavior: 'smooth'
+                            });
+                          }
+                        }}
+                        className="px-4 py-2 border border-secondary text-secondary hover:bg-secondary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-background"
+                        aria-label="Navigate to experience section"
+                      >
+                        ./experience --timeline
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Explore my professional career timeline</p>
+                    </TooltipContent>
+                  </Tooltip>
 
-                         window.scrollTo({
-                           top: offsetPosition,
-                           behavior: 'smooth'
-                         });
-                       }
-                     }}
-                     className="px-4 py-2 border border-secondary text-secondary hover:bg-secondary hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-background"
-                     aria-label="Navigate to experience section"
-                   >
-                     ./experience --timeline
-                   </button>
-                   <button
-                     onClick={() => {
-                       const element = document.getElementById('contact');
-                       if (element) {
-                         // Scroll with offset to account for fixed navigation elements
-                         const offset = 80; // Adjust this value based on your fixed header height
-                         const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-                         const offsetPosition = elementPosition - offset;
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => {
+                          const element = document.getElementById('contact');
+                          if (element) {
+                            const offset = 80;
+                            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                            const offsetPosition = elementPosition - offset;
+                            window.scrollTo({
+                              top: offsetPosition,
+                              behavior: 'smooth'
+                            });
+                          }
+                        }}
+                        className="px-4 py-2 border border-accent text-accent hover:bg-accent hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background"
+                        aria-label="Navigate to contact section"
+                      >
+                        ./contact --info
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Find ways to get in touch with me</p>
+                    </TooltipContent>
+                  </Tooltip>
 
-                         window.scrollTo({
-                           top: offsetPosition,
-                           behavior: 'smooth'
-                         });
-                       }
-                     }}
-                     className="px-4 py-2 border border-accent text-accent hover:bg-accent hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background"
-                     aria-label="Navigate to contact section"
-                   >
-                     ./contact --info
-                   </button>
-                   <a
-                     href="/Laxmikant_Resume.pdf"
-                     download="Laxmikant's Resume.pdf"
-                     target="_blank"
-                     rel="noopener noreferrer"
-                     className="px-4 py-2 border border-terminal-border text-terminal-text hover:bg-terminal transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-                     aria-label="Download resume (PDF)"
-                   >
-                     ./resume --download
-                   </a>
-                 </div>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <a
+                        href="/Laxmikant_Resume.pdf"
+                        download="Laxmikant's Resume.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 border border-terminal-border text-terminal-text hover:bg-terminal transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                        aria-label="Download resume (PDF)"
+                      >
+                        ./resume --download
+                      </a>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Download my resume in PDF format</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+
+                {/* Social Media Links */}
+                <div className="mt-6 flex justify-center gap-6">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <a
+                        href="https://linkedin.com/in/laxmikant-nishad"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-2xl hover:text-blue-500 transition-colors"
+                        aria-label="LinkedIn profile"
+                      >
+                        💼
+                      </a>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Connect with me on LinkedIn</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <a
+                        href="https://github.com/laxmikant-nishad"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-2xl hover:text-gray-400 transition-colors"
+                        aria-label="GitHub profile"
+                      >
+                        🐙
+                      </a>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Check out my code on GitHub</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <a
+                        href="mailto:laxmikant@example.com"
+                        className="text-2xl hover:text-red-500 transition-colors"
+                        aria-label="Send email"
+                      >
+                        ✉️
+                      </a>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Send me an email</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
               </motion.div>
             )}
           </div>

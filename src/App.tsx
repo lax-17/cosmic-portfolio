@@ -45,6 +45,8 @@ const FAQSection = lazy(() => import("./components/FAQSection"));
 
 const queryClient = new QueryClient();
 
+const AchievementsSection = lazy(() => import("./components/AchievementsSection"));
+
 const NeuralPortfolio = () => {
   const {
     trackEnhancedScrollDepth,
@@ -153,7 +155,14 @@ const NeuralPortfolio = () => {
         <TerminalHero />
       </Suspense>
 
-      {/* Experience Section - Professional career first */}
+      {/* Skills Section - Technical expertise first */}
+      <section id="skills" aria-labelledby="skills-heading">
+        <Suspense fallback={<CosmicLoader message="Loading neural network visualization..." />}>
+          <NeuralSkillsGraph />
+        </Suspense>
+      </section>
+
+      {/* Experience Section - Professional career */}
       <section id="experience" aria-labelledby="experience-heading">
         <Suspense fallback={<CosmicLoader message="Loading career timeline..." />}>
           <GitCommitTimeline />
@@ -174,10 +183,10 @@ const NeuralPortfolio = () => {
         </Suspense>
       </section>
 
-      {/* Skills Section - Technical expertise */}
-      <section id="skills" aria-labelledby="skills-heading">
-        <Suspense fallback={<CosmicLoader message="Loading neural network visualization..." />}>
-          <NeuralSkillsGraph />
+      {/* Achievements Section */}
+      <section id="achievements" aria-labelledby="achievements-heading">
+        <Suspense fallback={<CosmicLoader message="Loading achievements..." />}>
+          <AchievementsSection />
         </Suspense>
       </section>
 

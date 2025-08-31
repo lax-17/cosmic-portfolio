@@ -8,13 +8,15 @@ const CommandLineNav = () => {
   const [currentSection, setCurrentSection] = useState("hero");
   const [command, setCommand] = useState("");
   const [showNav, setShowNav] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const sections = [
     { id: "hero", command: "cd ~/", label: "Home" },
+    { id: "skills", command: "cd ~/skills", label: "Skills" },
     { id: "experience", command: "cd ~/experience", label: "Experience" },
     { id: "education", command: "cd ~/education", label: "Education" },
     { id: "projects", command: "cd ~/projects", label: "Projects & Case Studies" },
-    { id: "skills", command: "cd ~/skills", label: "Skills" },
+    { id: "achievements", command: "cd ~/achievements", label: "Achievements" },
     { id: "faq", command: "cd ~/faq", label: "FAQ" },
     { id: "contact", command: "cd ~/contact", label: "Contact" },
     // Direct resume action
@@ -36,6 +38,11 @@ const CommandLineNav = () => {
           break;
         }
       }
+
+      // Calculate scroll progress
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (window.scrollY / totalHeight) * 100;
+      setScrollProgress(progress);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -119,8 +126,32 @@ const CommandLineNav = () => {
 
   const currentSectionData = sections.find(s => s.id === currentSection);
 
+  // Generate breadcrumb path
+  const getBreadcrumbPath = () => {
+    const currentIndex = sections.findIndex(s => s.id === currentSection);
+    if (currentIndex === -1) return ["Home"];
+
+    const path = ["Home"];
+    for (let i = 1; i <= currentIndex; i++) {
+      path.push(sections[i].label);
+    }
+    return path;
+  };
+
   return (
     <>
+      {/* Scroll Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-primary/20 z-50"
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: scrollProgress / 100 }}
+        transition={{ duration: 0.1 }}
+        style={{ transformOrigin: 'left' }}
+        aria-label="Page scroll progress"
+      >
+        <div className="h-full bg-gradient-to-r from-primary to-secondary"></div>
+      </motion.div>
+
       {/* Current Location Indicator - Hidden on mobile */}
       <motion.div
         className="fixed top-4 left-4 z-50 hidden md:flex items-center gap-2 text-xs font-mono"
@@ -135,9 +166,16 @@ const CommandLineNav = () => {
         <span className="text-muted-foreground">
           laxmikant@portfolio:
         </span>
-        <span className="text-primary" aria-current="page">
-          {currentSectionData?.command || "cd ~/"}
-        </span>
+        <nav aria-label="Breadcrumb" className="flex items-center">
+          {getBreadcrumbPath().map((crumb, index) => (
+            <span key={index} className="flex items-center">
+              {index > 0 && <ChevronRight size={10} className="text-muted-foreground mx-1" aria-hidden="true" />}
+              <span className={index === getBreadcrumbPath().length - 1 ? "text-primary" : "text-muted-foreground"}>
+                {crumb}
+              </span>
+            </span>
+          ))}
+        </nav>
         <span className="cursor text-primary" aria-hidden="true">█</span>
       </motion.div>
 
@@ -269,6 +307,34 @@ const CommandLineNav = () => {
           </div>
         </div>
       </motion.nav>
+
+      {/* Floating Action Button for Contact */}
+      <motion.button
+        onClick={() => {
+          const element = document.getElementById('contact');
+          if (element) {
+            const offset = 80;
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - offset;
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-background"
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{
+          opacity: scrollProgress > 10 ? 1 : 0,
+          scale: scrollProgress > 10 ? 1 : 0
+        }}
+        transition={{ duration: 0.3 }}
+        aria-label="Quick contact access"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <span className="text-xl" aria-hidden="true">💬</span>
+      </motion.button>
 
       {/* Remove redundant keyboard shortcut hint since we have the live terminal now */}
     </>
