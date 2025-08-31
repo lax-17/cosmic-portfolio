@@ -385,7 +385,7 @@ const CosmicSoundEffects: React.FC = () => {
     <>
       {/* Sound Control Toggle - Better mobile positioning */}
       <motion.button
-        className={`fixed bottom-20 right-20 md:bottom-32 md:right-6 z-50 p-2 md:p-3 rounded-full shadow-lg transition-all duration-300 ${
+        className={`fixed bottom-32 left-4 md:bottom-32 md:left-6 z-50 p-2 md:p-3 rounded-full shadow-lg transition-all duration-300 ${
           isEnabled
             ? 'bg-primary/20 text-primary border border-primary/50 cosmic-glow'
             : 'bg-muted/80 text-muted-foreground border border-border hover:bg-muted'
@@ -412,7 +412,7 @@ const CosmicSoundEffects: React.FC = () => {
       {/* Tooltip - Mobile responsive positioning */}
       {isEnabled && (
         <motion.div
-          className="fixed bottom-32 right-20 md:bottom-40 md:right-6 z-50 px-2 py-1 bg-background/90 backdrop-blur-sm border border-border rounded text-xs text-muted-foreground pointer-events-none"
+          className="fixed bottom-44 left-4 md:bottom-44 md:left-6 z-50 px-2 py-1 bg-background/90 backdrop-blur-sm border border-border rounded text-xs text-muted-foreground pointer-events-none"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 4, duration: 2 }}

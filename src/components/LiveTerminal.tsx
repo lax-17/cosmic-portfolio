@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Terminal, X, Maximize2, Minimize2, Move, Sparkles, Zap } from "lucide-react";
 import { useEnhancedAnalytics } from "@/hooks/useAnalytics";
 
@@ -16,28 +16,46 @@ const LiveTerminal = () => {
   const [commandHistory, setCommandHistory] = useState<Command[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isTyping, setIsTyping] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [size, setSize] = useState({ width: 384, height: 320 }); // w-96 = 384px, h-80 = 320px
+  const [terminalState, setTerminalState] = useState({
+    position: { x: 0, y: 0 },
+    size: { width: 520, height: 520 } // default larger size for better readability/proportions
+  });
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
+  const [resizeDirection, setResizeDirection] = useState<'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' | null>(null);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
+  const animationFrameRef = useRef<number>();
   const [matrixMode, setMatrixMode] = useState(false);
   const [terminalTheme, setTerminalTheme] = useState<'default' | 'matrix' | 'hacker'>('default');
+  const [gameNumber, setGameNumber] = useState<number | null>(null);
+  const [gameAttempts, setGameAttempts] = useState(0);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const currentSizeRef = useRef(terminalState.size);
+  const currentPositionRef = useRef(terminalState.position);
+  // Auto-scroll state: true = stick to bottom, false = preserve scroll position
+  const autoScrollRef = useRef(true);
   const { trackTerminalCommand } = useEnhancedAnalytics();
 
   const availableCommands = {
     help: {
       description: "Show available commands",
       output: [
-        "Available commands:",
+        "🚀 Available commands:",
+        "",
+        "📋 Portfolio Commands:",
         "  help          - Show this help message",
         "  whoami        - Display current user info",
         "  skills        - List technical skills",
         "  projects      - Show project portfolio",
         "  contact       - Display contact information",
+        "",
+        "🛠️  Utility Commands:",
         "  clear         - Clear terminal history",
         "  date          - Show current date/time",
         "  echo [text]   - Echo text to terminal",
@@ -45,35 +63,61 @@ const LiveTerminal = () => {
         "  ls            - List directory contents",
         "  cat [file]    - Display file contents",
         "  ping          - Test connection",
-        "  matrix        - Enter the matrix",
-        "  hack          - Simulate hacking sequence"
+        "",
+        "🎉 Fun Commands:",
+        "  matrix        - Enter the Matrix",
+        "  hack          - Simulate hacking sequence",
+        "  joke          - Tell a random joke",
+        "  fortune       - Get a fortune cookie message",
+        "  8ball         - Ask the magic 8-ball",
+        "  quote         - Get an inspirational quote",
+        "  ascii         - Show ASCII art",
+        "  game          - Play number guessing game",
+        "  guess [num]   - Make a guess in the game",
+        "",
+        "🎨 Customization:",
+        "  theme         - Change terminal theme",
+        "  fun           - Enable fun mode",
+        "",
+        "⌨️  Keyboard Shortcuts:",
+        "  ↑/↓           - Navigate command history",
+        "  Tab           - Auto-complete commands",
+        "  Ctrl+L        - Clear terminal",
+        "  Esc           - Close suggestions",
+        "",
+        "Type any command to get started! ✨"
       ]
     },
     whoami: {
       description: "Display current user info",
       output: [
-        "laxmikant@neural-interface:~$ whoami",
-        "laxmikant_nishad",
-        "Applied AI/ML Engineer | Leeds, UK",
-        "Specializing in LLMs, Transformers, and multi-modal systems",
-        "QLoRA fine-tuning • Structured JSON outputs • Docker/llama.cpp"
+        "🤖 laxmikant@neural-interface:~$ whoami",
+        "👨‍💻 laxmikant_nishad",
+        "🎯 Applied AI/ML Engineer | Leeds, UK",
+        "🧠 Specializing in LLMs, Transformers, and multi-modal systems",
+        "⚡ QLoRA fine-tuning • Structured JSON outputs • Docker/llama.cpp",
+        "",
+        "🌟 Passionate about building trustworthy AI systems that make a difference!",
+        "🚀 Always learning, always innovating, always coding!"
       ]
     },
     skills: {
       description: "List technical skills",
       output: [
-        "Core Technologies:",
-        "├── Machine Learning: PyTorch, Transformers, Hugging Face",
-        "├── Computer Vision: OpenCV, DINOv2, Image Processing",
-        "├── NLP: Llama 3, QLoRA, RAG, Text Processing",
-        "├── Tools: Python, Docker, Linux, CUDA, Git",
-        "└── Frameworks: React, TypeScript, Node.js",
+        "🚀 Core Technologies:",
+        "├── 🤖 Machine Learning: PyTorch, Transformers, Hugging Face",
+        "├── 👁️  Computer Vision: OpenCV, DINOv2, Image Processing",
+        "├── 💬 NLP: Llama 3, QLoRA, RAG, Text Processing",
+        "├── 🛠️  Tools: Python, Docker, Linux, CUDA, Git",
+        "└── ⚛️  Frameworks: React, TypeScript, Node.js",
         "",
-        "Proficiency Levels:",
-        "├── PyTorch: 90%",
-        "├── Computer Vision: 92%",
-        "├── Python: 95%",
-        "└── Linux: 91%"
+        "📊 Proficiency Levels:",
+        "├── 🔥 PyTorch: 90% (Expert Level)",
+        "├── 🎯 Computer Vision: 92% (Master Level)",
+        "├── 🐍 Python: 95% (Guru Level)",
+        "└── 🐧 Linux: 91% (Advanced Level)",
+        "",
+        "💡 Specialties: Multi-modal AI, LLM Fine-tuning, Production ML Pipelines"
       ]
     },
     projects: {
@@ -199,19 +243,149 @@ const LiveTerminal = () => {
         "Try these fun commands:",
         "  matrix  - Enter the Matrix",
         "  hack    - Simulate hacking",
+        "  joke    - Tell a random joke",
+        "  fortune - Get a fortune cookie",
+        "  8ball   - Ask the magic 8-ball",
+        "  quote   - Get an inspirational quote",
+        "  ascii   - Show ASCII art",
+        "  game    - Play a guessing game",
         "  theme   - Change appearance"
+      ]
+    },
+    joke: {
+      description: "Tell a random joke",
+      output: (() => {
+        const jokes = [
+          "Why did the computer go to therapy? It had too many bytes of emotional baggage! 🤖",
+          "Why did the programmer quit his job? Because he didn't get arrays! 💻",
+          "What do you call a computer that sings? A Dell! 🎵",
+          "Why was the JavaScript developer sad? Because he didn't know how to 'null' his feelings! 😢",
+          "Why did the AI go to school? To improve its learning algorithm! 🧠",
+          "What did the ocean say to the beach? Nothing, it just waved! 🌊"
+        ];
+        return [jokes[Math.floor(Math.random() * jokes.length)]];
+      })()
+    },
+    fortune: {
+      description: "Get a fortune cookie message",
+      output: (() => {
+        const fortunes = [
+          "🎭 You will discover a hidden talent for programming poetry.",
+          "🌟 A cosmic opportunity will present itself in your next project.",
+          "💡 Your innovative ideas will light up the digital world.",
+          "🚀 Prepare for liftoff - your career is about to reach new heights!",
+          "🎯 Your precision in code will lead to perfect execution in life.",
+          "🔮 The matrix has chosen you for greatness.",
+          "⚡ Your neural networks will fire with brilliant insights.",
+          "🌈 Debug your doubts and compile your dreams."
+        ];
+        return ["🍪 " + fortunes[Math.floor(Math.random() * fortunes.length)]];
+      })()
+    },
+    "8ball": {
+      description: "Ask the magic 8-ball a question",
+      output: (() => {
+        const answers = [
+          "🎱 It is certain",
+          "🎱 It is decidedly so",
+          "🎱 Without a doubt",
+          "🎱 Yes definitely",
+          "🎱 You may rely on it",
+          "🎱 As I see it, yes",
+          "🎱 Most likely",
+          "🎱 Outlook good",
+          "🎱 Yes",
+          "🎱 Signs point to yes",
+          "🎱 Reply hazy, try again",
+          "🎱 Ask again later",
+          "🎱 Better not tell you now",
+          "🎱 Cannot predict now",
+          "🎱 Concentrate and ask again",
+          "🎱 Don't count on it",
+          "🎱 My reply is no",
+          "🎱 My sources say no",
+          "🎱 Outlook not so good",
+          "🎱 Very doubtful"
+        ];
+        return [answers[Math.floor(Math.random() * answers.length)]];
+      })()
+    },
+    quote: {
+      description: "Get an inspirational quote",
+      output: (() => {
+        const quotes = [
+          "\"The best way to predict the future is to create it.\" - Peter Drucker",
+          "\"Code is poetry written in logic.\" - Unknown",
+          "\"Innovation distinguishes between a leader and a follower.\" - Steve Jobs",
+          "\"The only way to do great work is to love what you do.\" - Steve Jobs",
+          "\"Your most unhappy customers are your greatest source of learning.\" - Bill Gates",
+          "\"The future belongs to those who believe in the beauty of their dreams.\" - Eleanor Roosevelt"
+        ];
+        return [quotes[Math.floor(Math.random() * quotes.length)]];
+      })()
+    },
+    ascii: {
+      description: "Show ASCII art",
+      output: (() => {
+        const arts = [
+          [
+            "     .-\"\"\"\"\"-.",
+            "    /        \\",
+            "   |  Neural  |",
+            "    \\  Net   /",
+            "     '-....-'"
+          ],
+          [
+            "   _______",
+            "  /       \\",
+            " |  CODE   |",
+            "  \\_______/",
+            "     | |",
+            "     | |",
+            "     | |"
+          ],
+          [
+            "    .-~~~-.",
+            "   /       \\",
+            "  |  AI     |",
+            "   \\       /",
+            "    `-...-'"
+          ]
+        ];
+        return arts[Math.floor(Math.random() * arts.length)];
+      })()
+    },
+    game: {
+      description: "Play a number guessing game",
+      output: [
+        "🎮 Welcome to the Number Guessing Game!",
+        "I'm thinking of a number between 1 and 100.",
+        "Type 'guess [number]' to make a guess!",
+        "Type 'game' again to start over.",
+        "",
+        "Good luck! 🍀"
       ]
     }
   };
 
-  const executeCommand = async (command: string) => {
+  // Generate command suggestions
+  const generateSuggestions = useCallback((input: string) => {
+    if (!input.trim()) return [];
+
+    const commands = Object.keys(availableCommands);
+    return commands.filter(cmd =>
+      cmd.toLowerCase().startsWith(input.toLowerCase())
+    ).slice(0, 5); // Limit to 5 suggestions
+  }, [availableCommands]);
+
+  const executeCommand = useCallback(async (command: string) => {
     const trimmedCommand = command.trim().toLowerCase();
     const [cmd, ...args] = trimmedCommand.split(' ');
 
     setIsTyping(true);
 
-    // Simulate processing delay with fun animations
-    await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 700));
+    // Faster processing with minimal delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 150));
 
     let output: string[] = [];
 
@@ -236,6 +410,41 @@ const LiveTerminal = () => {
       } else {
         output = availableCommands.theme.output;
       }
+    } else if (cmd === 'guess') {
+      const guess = parseInt(args[0]);
+      if (gameNumber === null) {
+        output = ["🎮 No game in progress! Type 'game' to start a new game."];
+      } else if (isNaN(guess) || guess < 1 || guess > 100) {
+        output = ["🎯 Please guess a number between 1 and 100!"];
+      } else if (guess === gameNumber) {
+        output = [
+          `🎉 Congratulations! You guessed ${gameNumber} correctly!`,
+          `📊 It took you ${gameAttempts + 1} attempts.`,
+          "🏆 You're a mind reader!",
+          "",
+          "Type 'game' to play again!"
+        ];
+        setGameNumber(null);
+        setGameAttempts(0);
+      } else {
+        const hint = guess < gameNumber ? "📈 Too low!" : "📉 Too high!";
+        setGameAttempts(prev => prev + 1);
+        output = [
+          `${hint} Try again!`,
+          `Attempts: ${gameAttempts + 1}`
+        ];
+      }
+    } else if (cmd === 'game') {
+      const newNumber = Math.floor(Math.random() * 100) + 1;
+      setGameNumber(newNumber);
+      setGameAttempts(0);
+      output = [
+        "🎮 New game started!",
+        "I'm thinking of a number between 1 and 100.",
+        "Type 'guess [number]' to make a guess!",
+        "",
+        "Good luck! 🍀"
+      ];
     } else if (cmd === 'echo') {
       output = [args.join(' ')];
     } else if (cmd === 'cat') {
@@ -261,8 +470,10 @@ const LiveTerminal = () => {
       output = [];
     } else {
       output = [
-        `Command not found: ${cmd}`,
-        `Type 'help' for available commands.`
+        `❌ Command not found: '${cmd}'`,
+        `💡 Type 'help' to see all available commands`,
+        `🔍 Try these similar commands:`,
+        ...Object.keys(availableCommands).filter(c => c.includes(cmd) || cmd.includes(c)).slice(0, 3).map(c => `   • ${c}`)
       ];
     }
 
@@ -275,26 +486,78 @@ const LiveTerminal = () => {
     // Track terminal command usage
     trackTerminalCommand(command);
 
-    setCommandHistory(prev => [...prev, newCommand]);
+    setCommandHistory(prev => {
+      const newHistory = [...prev, newCommand];
+      // Limit history to last 50 commands for performance
+      return newHistory.length > 50 ? newHistory.slice(-50) : newHistory;
+    });
     setIsTyping(false);
-  };
+  }, [availableCommands, trackTerminalCommand]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCurrentInput(value);
+
+    if (value.trim()) {
+      const newSuggestions = generateSuggestions(value);
+      setSuggestions(newSuggestions);
+      setShowSuggestions(newSuggestions.length > 0);
+      setSelectedSuggestion(-1);
+    } else {
+      setShowSuggestions(false);
+      setSuggestions([]);
+    }
+  }, [generateSuggestions]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (showSuggestions && suggestions.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedSuggestion(prev =>
+          prev < suggestions.length - 1 ? prev + 1 : 0
+        );
+        return;
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedSuggestion(prev =>
+          prev > 0 ? prev - 1 : suggestions.length - 1
+        );
+        return;
+      } else if (e.key === 'Tab' || e.key === 'Enter') {
+        if (selectedSuggestion >= 0) {
+          e.preventDefault();
+          setCurrentInput(suggestions[selectedSuggestion]);
+          setShowSuggestions(false);
+          setSelectedSuggestion(-1);
+          return;
+        }
+      } else if (e.key === 'Escape') {
+        setShowSuggestions(false);
+        setSelectedSuggestion(-1);
+        return;
+      }
+    }
+
     if (e.key === 'Enter') {
       if (currentInput.trim()) {
         executeCommand(currentInput);
+        setShowSuggestions(false);
+        setSelectedSuggestion(-1);
       } else {
         // Track empty command
         trackTerminalCommand('');
-        setCommandHistory(prev => [...prev, {
-          input: '',
-          output: [],
-          timestamp: new Date()
-        }]);
+        setCommandHistory(prev => {
+          const newHistory = [...prev, {
+            input: '',
+            output: [],
+            timestamp: new Date()
+          }];
+          return newHistory.length > 50 ? newHistory.slice(-50) : newHistory;
+        });
       }
       setCurrentInput('');
       setHistoryIndex(-1);
-    } else if (e.key === 'ArrowUp') {
+    } else if (e.key === 'ArrowUp' && !showSuggestions) {
       e.preventDefault();
       const commands = commandHistory.filter(cmd => cmd.input.trim());
       if (commands.length > 0) {
@@ -302,7 +565,7 @@ const LiveTerminal = () => {
         setHistoryIndex(newIndex);
         setCurrentInput(commands[commands.length - 1 - newIndex].input);
       }
-    } else if (e.key === 'ArrowDown') {
+    } else if (e.key === 'ArrowDown' && !showSuggestions) {
       e.preventDefault();
       const commands = commandHistory.filter(cmd => cmd.input.trim());
       if (historyIndex > 0) {
@@ -313,7 +576,7 @@ const LiveTerminal = () => {
         setHistoryIndex(-1);
         setCurrentInput('');
       }
-    } else if (e.key === 'Tab') {
+    } else if (e.key === 'Tab' && !showSuggestions) {
       e.preventDefault();
       // Auto-complete functionality
       const commands = Object.keys(availableCommands);
@@ -321,78 +584,216 @@ const LiveTerminal = () => {
       if (match) {
         setCurrentInput(match);
       }
+    } else if (e.key === 'l' && e.ctrlKey) {
+      e.preventDefault();
+      // Ctrl+L to clear terminal
+      setCommandHistory([]);
+      setCurrentInput('');
+      setHistoryIndex(-1);
+      setShowSuggestions(false);
     }
-  };
+  }, [currentInput, commandHistory, historyIndex, executeCommand, trackTerminalCommand, showSuggestions, suggestions, selectedSuggestion]);
 
   // Drag functionality
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget || (e.target as Element).closest('.terminal-header')) {
-      setIsDragging(true);
-      setDragStart({
-        x: e.clientX - position.x,
-        y: e.clientY - position.y
-      });
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    // Only allow dragging from the header area, not from buttons or resize grips
+    const target = e.target as Element;
+    if (target.closest('button') || target.closest('.resize-grip')) {
+      return;
     }
-  };
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (isDragging) {
-      setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
-      });
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  // Resize functionality
-  const handleResizeMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
-    setIsResizing(true);
-    setDragStart({
-      x: e.clientX - size.width,
-      y: e.clientY - size.height
-    });
-  };
+    setIsDragging(true);
 
-  const handleResizeMouseMove = (e: MouseEvent) => {
-    if (isResizing) {
-      setSize({
-        width: Math.max(300, e.clientX - dragStart.x),
-        height: Math.max(200, e.clientY - dragStart.y)
-      });
-    }
-  };
-
-  const handleResizeMouseUp = () => {
-    setIsResizing(false);
-  };
-
-  // Global mouse event listeners
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
+    // Get the current terminal position relative to viewport
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (rect) {
+      dragOffsetRef.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
       };
     }
-  }, [isDragging, dragStart]);
+  }, []);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (isDragging && containerRef.current) {
+      // Cancel previous animation frame
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+
+      // Schedule update for next animation frame
+      animationFrameRef.current = requestAnimationFrame(() => {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        // Calculate new position based on cursor and initial grab offset
+        const newLeft = e.clientX - dragOffsetRef.current.x;
+        const newTop = e.clientY - dragOffsetRef.current.y;
+
+        // Constrain to viewport with 40px bottom margin for better spacing
+        const constrainedLeft = Math.max(24, Math.min(viewportWidth - currentSizeRef.current.width - 24, newLeft));
+        const constrainedTop = Math.max(
+          24,
+          Math.min(viewportHeight - (isMinimized ? 48 : currentSizeRef.current.height) - 40, newTop)
+        );
+
+        // Update DOM directly for smooth performance
+        if (containerRef.current) {
+          containerRef.current.style.transform = `translate(${constrainedLeft - currentPositionRef.current.x}px, ${constrainedTop - currentPositionRef.current.y}px)`;
+        }
+      });
+    }
+  }, [isDragging, isMinimized]);
+
+  const handleMouseUp = useCallback(() => {
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+
+    // Sync the actual position from transform back to state
+    if (containerRef.current && isDragging) {
+      const transform = containerRef.current.style.transform;
+      if (transform) {
+        const match = transform.match(/translate\(([^,]+)px,\s*([^)]+)px\)/);
+        if (match) {
+          const translateX = parseFloat(match[1]);
+          const translateY = parseFloat(match[2]);
+          const actualX = currentPositionRef.current.x + translateX;
+          const actualY = currentPositionRef.current.y + translateY;
+
+          // Update refs and state
+          currentPositionRef.current = { x: actualX, y: actualY };
+          setTerminalState(prev => ({
+            ...prev,
+            position: { x: actualX, y: actualY }
+          }));
+
+          // Reset transform
+          containerRef.current.style.transform = '';
+        }
+      }
+    }
+
+    setIsDragging(false);
+  }, [isDragging]);
+
+  // Resize functionality
+  const handleResizeMouseDown = useCallback((direction: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left') => (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsResizing(true);
+    setResizeDirection(direction);
+    setDragStart({
+      x: e.clientX,
+      y: e.clientY
+    });
+  }, []);
+
+  const handleResizeMouseMove = useCallback((e: MouseEvent) => {
+    if (isResizing && resizeDirection && containerRef.current) {
+      const deltaX = e.clientX - dragStart.x;
+      const deltaY = e.clientY - dragStart.y;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      let newWidth = currentSizeRef.current.width;
+      let newHeight = currentSizeRef.current.height;
+      let newX = currentPositionRef.current.x;
+      let newY = currentPositionRef.current.y;
+
+      switch (resizeDirection) {
+        case 'bottom-right':
+          newWidth = Math.max(300, Math.min(1200, currentSizeRef.current.width + deltaX));
+          newHeight = Math.max(200, Math.min(800, currentSizeRef.current.height + deltaY));
+          break;
+        case 'bottom-left':
+          newWidth = Math.max(300, Math.min(1200, currentSizeRef.current.width - deltaX));
+          newHeight = Math.max(200, Math.min(800, currentSizeRef.current.height + deltaY));
+          newX = Math.max(24, Math.min(viewportWidth - newWidth - 24, currentPositionRef.current.x + deltaX));
+          break;
+        case 'top-right':
+          newWidth = Math.max(300, Math.min(1200, currentSizeRef.current.width + deltaX));
+          newHeight = Math.max(200, Math.min(800, currentSizeRef.current.height - deltaY));
+          newY = Math.max(24, Math.min(viewportHeight - newHeight - 24, currentPositionRef.current.y + deltaY));
+          break;
+        case 'top-left':
+          newWidth = Math.max(300, Math.min(1200, currentSizeRef.current.width - deltaX));
+          newHeight = Math.max(200, Math.min(800, currentSizeRef.current.height - deltaY));
+          newX = Math.max(24, Math.min(viewportWidth - newWidth - 24, currentPositionRef.current.x + deltaX));
+          newY = Math.max(24, Math.min(viewportHeight - newHeight - 24, currentPositionRef.current.y + deltaY));
+          break;
+      }
+
+      // Update DOM directly for smooth performance
+      containerRef.current.style.width = `${newWidth}px`;
+      containerRef.current.style.height = `${newHeight}px`;
+      containerRef.current.style.left = `${newX}px`;
+      containerRef.current.style.top = `${newY}px`;
+
+      // Update refs
+      currentSizeRef.current = { width: newWidth, height: newHeight };
+      currentPositionRef.current = { x: newX, y: newY };
+
+      setDragStart({
+        x: e.clientX,
+        y: e.clientY
+      });
+    }
+  }, [isResizing, resizeDirection, dragStart.x, dragStart.y]);
+
+  const handleResizeMouseUp = useCallback(() => {
+    setIsResizing(false);
+    setResizeDirection(null);
+    // Sync state with refs
+    setTerminalState({
+      position: currentPositionRef.current,
+      size: currentSizeRef.current
+    });
+  }, []);
+
+  // Global mouse event listeners with proper cleanup
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove, { passive: false });
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'move';
+
+      return () => {
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+      };
+    }
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   useEffect(() => {
     if (isResizing) {
-      document.addEventListener('mousemove', handleResizeMouseMove);
+      const cursorMap = {
+        'bottom-right': 'se-resize',
+        'bottom-left': 'sw-resize',
+        'top-right': 'ne-resize',
+        'top-left': 'nw-resize'
+      };
+      document.addEventListener('mousemove', handleResizeMouseMove, { passive: false });
       document.addEventListener('mouseup', handleResizeMouseUp);
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = cursorMap[resizeDirection!] || 'se-resize';
+
       return () => {
         document.removeEventListener('mousemove', handleResizeMouseMove);
         document.removeEventListener('mouseup', handleResizeMouseUp);
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
       };
     }
-  }, [isResizing, dragStart]);
+  }, [isResizing, handleResizeMouseMove]);
 
   // Theme styles
   const getThemeStyles = () => {
@@ -423,24 +824,108 @@ const LiveTerminal = () => {
 
   const themeStyles = getThemeStyles();
 
+  // Initialize position to center on mount and keep within bounds on resize
+  useEffect(() => {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    setTerminalState(prev => ({
+      ...prev,
+      position: {
+        x: Math.max(24, Math.round((vw - prev.size.width) / 2)),
+        y: Math.max(24, Math.round((vh - (isMinimized ? 48 : prev.size.height) - 40) / 2))
+      }
+    }));
+
+    const onResize = () => {
+      const vw2 = window.innerWidth;
+      const vh2 = window.innerHeight;
+      setTerminalState(prev => ({
+        ...prev,
+        position: {
+          x: Math.max(24, Math.min(vw2 - prev.size.width - 24, prev.position.x)),
+          y: Math.max(24, Math.min(vh2 - (isMinimized ? 48 : prev.size.height) - 24, prev.position.y))
+        }
+      }));
+    };
+
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+    // Intentionally not depending on size/isMinimized to avoid jumping during user interaction
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (isOpen && !isMinimized && inputRef.current) {
-      inputRef.current.focus();
+      // Focus with a slight delay for better UX
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
   }, [isOpen, isMinimized]);
 
+  // Close suggestions when clicking outside
   useEffect(() => {
-    if (terminalRef.current) {
-      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+        setSelectedSuggestion(-1);
+      }
+    };
+
+    if (showSuggestions) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showSuggestions]);
+
+  // Global Escape key handling (close suggestions first, then terminal)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (showSuggestions) {
+          setShowSuggestions(false);
+          setSelectedSuggestion(-1);
+        } else if (isOpen) {
+          setIsOpen(false);
+        }
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isOpen, showSuggestions]);
+
+  // Sync refs with state
+  useEffect(() => {
+    currentSizeRef.current = terminalState.size;
+    currentPositionRef.current = terminalState.position;
+  }, [terminalState.size, terminalState.position]);
+
+  useEffect(() => {
+    const el = terminalRef.current;
+    if (!el) return;
+
+    // If user is near the bottom or autoScroll is enabled, keep pinned to bottom
+    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
+
+    if (autoScrollRef.current || nearBottom) {
+      requestAnimationFrame(() => {
+        el.scrollTo({
+          top: el.scrollHeight,
+          behavior: 'auto' // immediate to avoid jank
+        });
+      });
     }
   }, [commandHistory, isTyping]);
 
   return (
     <>
-      {/* Terminal Toggle Button - Enhanced with fun animations */}
+      {/* Terminal Toggle Button - Modern Glassmorphism Design */}
       <motion.button
-        className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background cosmic-glow"
-        whileHover={{ scale: 1.05, rotate: 5 }}
+        className="fixed bottom-6 right-6 z-50 p-4 rounded-2xl backdrop-blur-xl bg-white/10 border border-white/20 text-white shadow-2xl hover:bg-white/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:ring-offset-2 focus:ring-offset-transparent"
+        whileHover={{
+          scale: 1.05,
+          boxShadow: "0 0 30px rgba(59, 130, 246, 0.3)"
+        }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         initial={{ opacity: 0, y: 20 }}
@@ -449,18 +934,21 @@ const LiveTerminal = () => {
           y: 0,
           rotate: isOpen ? 180 : 0
         }}
-        transition={{ delay: 1 }}
+        transition={{
+          delay: 0.5,
+          duration: 0.4,
+          ease: "easeOut"
+        }}
         aria-label={isOpen ? "Close interactive terminal" : "Open interactive terminal"}
         aria-expanded={isOpen}
       >
-        <Terminal size={20} aria-hidden="true" />
-        {matrixMode && (
+        <Terminal size={22} aria-hidden="true" />
+        {isOpen && (
           <motion.div
-            className="absolute inset-0 rounded-full"
-            animate={{
-              boxShadow: ['0 0 0 0 rgba(34, 197, 94, 0.7)', '0 0 0 10px rgba(34, 197, 94, 0)', '0 0 0 0 rgba(34, 197, 94, 0)']
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/20 to-purple-500/20"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
           />
         )}
       </motion.button>
@@ -472,148 +960,246 @@ const LiveTerminal = () => {
             ref={containerRef}
             className="fixed z-50 select-none"
             style={{
-              bottom: `${24 + position.y}px`,
-              right: `${24 + position.x}px`,
-              width: `${size.width}px`,
-              height: isMinimized ? '48px' : `${size.height}px`
+              left: `${terminalState.position.x}px`,
+              top: `${terminalState.position.y}px`,
+              width: `${terminalState.size.width}px`,
+              height: isMinimized ? '48px' : `${terminalState.size.height}px`
             }}
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{
+              duration: 0.15,
+              ease: "easeOut"
+            }}
             role="dialog"
             aria-modal="true"
             aria-labelledby="terminal-title"
             aria-describedby="terminal-description"
-            onMouseDown={handleMouseDown}
           >
-            <div className={`w-full h-full border ${themeStyles.border} shadow-2xl ${themeStyles.glow} ${themeStyles.background} rounded-lg overflow-hidden ${isDragging ? 'cursor-move' : ''}`}>
-              {/* Terminal Header - Draggable */}
-              <header className={`terminal-header flex items-center justify-between px-3 py-2 border-b ${themeStyles.border} bg-panel cursor-move`}>
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1" aria-label="Terminal window controls">
-                    <div className="w-3 h-3 rounded-full bg-red-500" aria-label="Close terminal"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-500" aria-label="Minimize terminal"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-500" aria-label="Maximize terminal"></div>
+            <div className={`w-full h-full group backdrop-blur-md bg-slate-900/80 border border-white/10 shadow-2xl rounded-2xl overflow-visible transition-all duration-300 ${isDragging ? 'cursor-move shadow-blue-500/20' : ''} ${isResizing ? `cursor-${resizeDirection === 'bottom-right' ? 'se' : resizeDirection === 'bottom-left' ? 'sw' : resizeDirection === 'top-right' ? 'ne' : 'nw'}-resize` : ''} hover:shadow-blue-500/10`}>
+              {/* Terminal Header - Modern Glassmorphism Design */}
+              <header
+                className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-slate-800/70 to-slate-900/70 backdrop-blur-sm border-b border-white/10 cursor-move select-none"
+                onMouseDown={handleMouseDown}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-2" aria-label="Terminal window controls">
+                    <button
+                      onClick={() => setIsOpen(false)}
+                      className="w-3 h-3 rounded-full bg-red-500/80 hover:bg-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-red-400/50"
+                      aria-label="Close terminal"
+                      title="Close"
+                    />
+                    <button
+                      onClick={() => setIsMinimized(!isMinimized)}
+                      className="w-3 h-3 rounded-full bg-yellow-500/80 hover:bg-yellow-500 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400/50"
+                      aria-label={isMinimized ? "Restore terminal" : "Minimize terminal"}
+                      title={isMinimized ? "Restore" : "Minimize"}
+                    />
+                    <button
+                      onClick={() => {
+                        // Simple maximize/restore toggle with centering
+                        const vw = window.innerWidth;
+                        const vh = window.innerHeight;
+                        const maxWidth = Math.min(720, vw - 48);
+                        const maxHeight = Math.min(540, vh - 64);
+                        setIsMinimized(false);
+                        setTerminalState(prev => ({
+                          ...prev,
+                          size: { width: maxWidth, height: maxHeight },
+                          position: {
+                            x: Math.max(24, Math.round((vw - maxWidth) / 2)),
+                            y: Math.max(24, Math.round((vh - maxHeight - 40) / 2)),
+                          }
+                        }));
+                      }}
+                      className="w-3 h-3 rounded-full bg-green-500/80 hover:bg-green-500 transition-colors focus:outline-none focus:ring-2 focus:ring-green-400/50"
+                      aria-label="Maximize and center"
+                      title="Maximize"
+                    />
                   </div>
-                  <Move className="w-3 h-3 text-muted-foreground" />
-                  <h2 id="terminal-title" className="text-xs text-muted-foreground font-mono sr-only">
-                    Neural Terminal
-                  </h2>
-                  <span className={`text-xs font-mono ${themeStyles.text}`} aria-hidden="true">
-                    neural-terminal-{terminalTheme}
-                  </span>
-                  {matrixMode && <Sparkles className="w-3 h-3 text-green-400 animate-pulse" />}
+                  <div className="flex items-center gap-2">
+                    <Terminal className="w-4 h-4 text-blue-400" />
+                    <h2 id="terminal-title" className="text-sm font-medium text-white/90 font-mono">
+                      Neural Terminal
+                    </h2>
+                    <span className="sr-only">Theme: {terminalTheme}</span>
+                    {matrixMode && <Sparkles className="w-4 h-4 text-green-400 animate-pulse" />}
+                  </div>
                 </div>
-                <div className="flex items-center gap-1" role="group" aria-label="Terminal controls">
-                  <button
-                    onClick={() => setIsMinimized(!isMinimized)}
-                    className="p-1 hover:bg-muted/50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-                    aria-label={isMinimized ? "Maximize terminal" : "Minimize terminal"}
-                  >
-                    {isMinimized ? <Maximize2 size={12} aria-hidden="true" /> : <Minimize2 size={12} aria-hidden="true" />}
-                  </button>
-                  <button
-                    onClick={() => setIsOpen(false)}
-                    className="p-1 hover:bg-muted/50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-                    aria-label="Close terminal"
-                  >
-                    <X size={12} aria-hidden="true" />
-                  </button>
+                <div className="flex items-center gap-2" role="group" aria-label="Terminal controls">
                 </div>
               </header>
 
               {/* Terminal Content */}
               {!isMinimized && (
                 <div className="h-full flex flex-col relative">
-                  {/* Output Area */}
+                  {/* Output Area - Modern Design */}
                   <div
                     ref={terminalRef}
-                    className={`flex-1 p-3 font-mono text-sm overflow-y-auto ${themeStyles.background} min-h-0 ${themeStyles.text}`}
+                    onScroll={(e) => {
+                      const el = e.currentTarget;
+                      const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
+                      autoScrollRef.current = nearBottom;
+                    }}
+                    className="flex-1 p-4 pr-3 pb-6 font-mono text-[13px] md:text-sm overflow-y-auto overflow-x-hidden overscroll-contain bg-transparent min-h-0 text-white/90 leading-relaxed terminal-output"
+                    style={{ scrollbarGutter: 'stable' }}
                     role="log"
                     aria-live="polite"
                     aria-label="Terminal output"
                     aria-describedby="terminal-description"
                   >
                     {/* Welcome Message */}
-                    <div id="terminal-description" className={`mb-2 cosmic-text ${themeStyles.text}`}>
-                      Neural Interface Terminal v2.1.0 - {terminalTheme.toUpperCase()} MODE
+                    <div id="terminal-description" className="mb-3 text-blue-400 font-semibold">
+                      🚀 Neural Interface Terminal v2.1.0 - {terminalTheme.toUpperCase()} MODE
                       {matrixMode && " 🕶️"}
                     </div>
-                    <div className={`mb-4 ${themeStyles.text}`}>
-                      Type 'help' for available commands. Try 'fun' for extra features!
+                    <div className="mb-6 text-white/70 italic">
+                      💡 Type 'help' for available commands. Try 'fun' for extra features!
                     </div>
 
                     {/* Command History */}
                     {commandHistory.map((cmd, index) => (
-                      <div key={index} className="mb-2">
+                      <div key={index} className="mb-4 group">
                         {cmd.input && (
-                          <div className="flex items-center gap-2">
-                            <span className={`cosmic-text ${terminalTheme === 'matrix' ? 'text-green-400' : terminalTheme === 'hacker' ? 'text-red-400' : 'text-primary'}`}>$</span>
-                            <span className={themeStyles.text}>{cmd.input}</span>
+                          <div className="flex items-center gap-3 mb-1">
+                            <span className="text-blue-400 font-bold">$</span>
+                            <span className="text-white/90 font-medium">{cmd.input}</span>
                           </div>
                         )}
-                        {cmd.output.map((line, lineIndex) => (
-                          <motion.div
-                            key={lineIndex}
-                            className={`${themeStyles.text} ml-4`}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: lineIndex * 0.05 }}
-                          >
-                            {line}
-                          </motion.div>
-                        ))}
+                        <div className="ml-6 space-y-1">
+                          {cmd.output.map((line, lineIndex) => (
+                            <motion.div
+                              key={lineIndex}
+                              className="text-white/80 leading-relaxed"
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{
+                                delay: lineIndex * 0.008,
+                                duration: 0.15,
+                                ease: "easeOut"
+                              }}
+                            >
+                              {line}
+                            </motion.div>
+                          ))}
+                        </div>
                       </div>
                     ))}
+                  </div>
 
-                    {/* Current Input */}
-                    <div className="flex items-center gap-2" role="group" aria-label="Terminal command input">
-                      <span className={`cosmic-text ${terminalTheme === 'matrix' ? 'text-green-400' : terminalTheme === 'hacker' ? 'text-red-400' : 'text-primary'}`} aria-hidden="true">$</span>
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        value={currentInput}
-                        onChange={(e) => setCurrentInput(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        className={`flex-1 bg-transparent outline-none ${themeStyles.text} font-mono focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background`}
-                        placeholder="Type a command..."
-                        disabled={isTyping}
-                        aria-label="Terminal command input"
-                        aria-describedby="terminal-instructions"
-                      />
+                  {/* Input Area - Modern Design */}
+                  <div className="flex-shrink-0 px-4 py-4 pb-6 bg-gradient-to-r from-slate-900/60 to-slate-900/30 border-t border-white/10 relative rounded-b-2xl min-h-[64px]" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)' }}>
+                    <div className="flex items-center gap-3" role="group" aria-label="Terminal command input">
+                      <span className="text-blue-400 font-bold text-lg">$</span>
+                      <div className="flex-1 relative">
+                        <input
+                          ref={inputRef}
+                          type="text"
+                          value={currentInput}
+                          onChange={handleInputChange}
+                          onKeyDown={handleKeyDown}
+                          className="w-full bg-transparent outline-none text-white/90 font-mono text-sm placeholder-white/50 focus:outline-none focus:ring-1 focus:ring-inset focus:ring-blue-400/60 focus:ring-offset-0 focus:bg-white/5 rounded-md px-3 py-2.5 transition-all duration-200"
+                          placeholder="Type a command…"
+                          disabled={isTyping}
+                          aria-label="Terminal command input"
+                          aria-describedby="terminal-instructions"
+                        />
+
+                        {/* Command Suggestions Dropdown */}
+                        {showSuggestions && suggestions.length > 0 && (
+                          <motion.div
+                            className="absolute bottom-full left-0 right-0 mb-2 bg-black/80 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl z-50 max-h-40 overflow-y-auto"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 0.15 }}
+                          >
+                            {suggestions.map((suggestion, index) => (
+                              <button
+                                key={suggestion}
+                                onClick={() => {
+                                  setCurrentInput(suggestion);
+                                  setShowSuggestions(false);
+                                  setSelectedSuggestion(-1);
+                                  inputRef.current?.focus();
+                                }}
+                                className={`w-full text-left px-3 py-2 text-sm font-mono transition-colors ${
+                                  index === selectedSuggestion
+                                    ? 'bg-blue-500/30 text-blue-300'
+                                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                                }`}
+                              >
+                                <span className="text-blue-400">$</span> {suggestion}
+                              </button>
+                            ))}
+                          </motion.div>
+                        )}
+                      </div>
+
                       {isTyping && (
-                        <motion.span
-                          className={`cosmic-glow ${terminalTheme === 'matrix' ? 'text-green-400' : terminalTheme === 'hacker' ? 'text-red-400' : 'text-primary'}`}
-                          animate={{ opacity: [1, 0] }}
-                          transition={{ duration: 0.5, repeat: Infinity }}
-                          aria-label="Processing command"
+                        <motion.div
+                          className="flex items-center gap-2 text-blue-400"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.2 }}
                         >
-                          {matrixMode ? '█' : '▶'}
-                        </motion.span>
+                          <motion.span
+                            animate={{
+                              opacity: [1, 0.3, 1],
+                              scale: [1, 1.1, 1]
+                            }}
+                            transition={{
+                              duration: 0.8,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                            aria-label="Processing command"
+                          >
+                            {matrixMode ? '█' : '●'}
+                          </motion.span>
+                          <span className="text-xs text-white/60">Processing...</span>
+                        </motion.div>
                       )}
                     </div>
                   </div>
 
-                  {/* Resize Handle */}
+                  {/* Resize Grips */}
+                  {/* Bottom-Right */}
                   <div
-                    className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-muted/50 hover:bg-muted transition-colors"
-                    onMouseDown={handleResizeMouseDown}
-                    title="Drag to resize"
+                    className="resize-grip absolute bottom-0 right-0 w-12 h-12 cursor-se-resize opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 flex items-end justify-end rounded-tl-md"
+                    onMouseDown={handleResizeMouseDown('bottom-right')}
+                    title="Drag to resize from bottom-right"
                   >
-                    <div className="absolute bottom-1 right-1 w-2 h-2 border-r-2 border-b-2 border-muted-foreground"></div>
+                    <div className="w-6 h-6 border-r-2 border-b-2 border-white/30 rounded-tl-md"></div>
+                  </div>
+                  {/* Bottom-Left */}
+                  <div
+                    className="resize-grip absolute bottom-0 left-0 w-12 h-12 cursor-sw-resize opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 flex items-end justify-start rounded-tr-md"
+                    onMouseDown={handleResizeMouseDown('bottom-left')}
+                    title="Drag to resize from bottom-left"
+                  >
+                    <div className="w-6 h-6 border-l-2 border-b-2 border-white/30 rounded-tr-md"></div>
+                  </div>
+                  {/* Top-Right */}
+                  <div
+                    className="resize-grip absolute top-0 right-0 w-12 h-12 cursor-ne-resize opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 flex items-start justify-end rounded-bl-md"
+                    onMouseDown={handleResizeMouseDown('top-right')}
+                    title="Drag to resize from top-right"
+                  >
+                    <div className="w-6 h-6 border-r-2 border-t-2 border-white/30 rounded-bl-md"></div>
+                  </div>
+                  {/* Top-Left */}
+                  <div
+                    className="resize-grip absolute top-0 left-0 w-12 h-12 cursor-nw-resize opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 flex items-start justify-start rounded-br-md"
+                    onMouseDown={handleResizeMouseDown('top-left')}
+                    title="Drag to resize from top-left"
+                  >
+                    <div className="w-6 h-6 border-l-2 border-t-2 border-white/30 rounded-br-md"></div>
                   </div>
 
-                  {/* Status Bar */}
-                  <div className={`px-3 py-1 border-t ${themeStyles.border} bg-panel text-xs text-muted-foreground font-mono`} role="status" aria-live="polite" aria-label="Terminal status">
-                    <div className="flex justify-between items-center">
-                      <span>Status: Connected {matrixMode && '🔴'}</span>
-                      <div className="flex items-center gap-2">
-                        <span>Commands: {Object.keys(availableCommands).length}</span>
-                        {terminalTheme !== 'default' && <Zap className="w-3 h-3" />}
-                      </div>
-                    </div>
-                  </div>
+                  {/* Status bar removed to keep layout symmetric and avoid input clipping */}
                 </div>
               )}
             </div>
