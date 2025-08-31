@@ -15,6 +15,9 @@ import { useErrorTracking } from "./hooks/useErrorTracking";
 import ErrorBoundary from "./components/ErrorBoundary";
 import CookieConsentBanner from "./components/CookieConsentBanner";
 import AnalyticsPage from "./pages/Analytics";
+import CosmicLab from "./pages/CosmicLab";
+import VoiceCommandNavigation from "./components/VoiceCommandNavigation";
+import CosmicSoundEffects from "./components/CosmicSoundEffects";
 
 // Lazy load heavy components for code splitting
 const TerminalHero = lazy(() => import("./components/TerminalHero"));
@@ -31,6 +34,11 @@ const BasicPortfolio = lazy(() => import("./components/BasicPortfolio"));
 const KeyboardShortcuts = lazy(() => import("./components/KeyboardShortcuts"));
 const PageTransition = lazy(() => import("./components/PageTransition"));
 const MobileNavigation = lazy(() => import("./components/MobileNavigation"));
+const EducationSection = lazy(() => import("./components/EducationSection"));
+const CaseStudiesSection = lazy(() => import("./components/CaseStudiesSection"));
+// const BlogSection = lazy(() => import("./components/BlogSection"));
+// const TestimonialsSection = lazy(() => import("./components/TestimonialsSection"));
+const FAQSection = lazy(() => import("./components/FAQSection"));
 
 const queryClient = new QueryClient();
 
@@ -142,24 +150,52 @@ const NeuralPortfolio = () => {
         <TerminalHero />
       </Suspense>
 
-      {/* Projects Section */}
-      <section id="projects" aria-labelledby="projects-heading">
-        <Suspense fallback={<CosmicLoader message="Loading project repository..." />}>
-          <ProjectRepository />
+      {/* Experience Section - Professional career first */}
+      <section id="experience" aria-labelledby="experience-heading">
+        <Suspense fallback={<CosmicLoader message="Loading career timeline..." />}>
+          <GitCommitTimeline />
         </Suspense>
       </section>
 
-      {/* Skills Section */}
+      {/* Education Section - Academic background */}
+      <section id="education" aria-labelledby="education-heading">
+        <Suspense fallback={<CosmicLoader message="Loading education & certifications..." />}>
+          <EducationSection />
+        </Suspense>
+      </section>
+
+      {/* Projects & Case Studies Section - Combined comprehensive showcase */}
+      <section id="projects" aria-labelledby="projects-heading">
+        <Suspense fallback={<CosmicLoader message="Loading projects & case studies..." />}>
+          <CaseStudiesSection />
+        </Suspense>
+      </section>
+
+      {/* Skills Section - Technical expertise */}
       <section id="skills" aria-labelledby="skills-heading">
         <Suspense fallback={<CosmicLoader message="Loading neural network visualization..." />}>
           <NeuralSkillsGraph />
         </Suspense>
       </section>
 
-      {/* Experience Section */}
-      <section id="experience" aria-labelledby="experience-heading">
-        <Suspense fallback={<CosmicLoader message="Loading career timeline..." />}>
-          <GitCommitTimeline />
+      {/* Blog Section - Hidden */}
+      {/* <section id="blog" aria-labelledby="blog-heading">
+        <Suspense fallback={<CosmicLoader message="Loading articles & insights..." />}>
+          <BlogSection />
+        </Suspense>
+      </section> */}
+
+      {/* Testimonials Section - Hidden */}
+      {/* <section id="testimonials" aria-labelledby="testimonials-heading">
+        <Suspense fallback={<CosmicLoader message="Loading testimonials..." />}>
+          <TestimonialsSection />
+        </Suspense>
+      </section> */}
+
+      {/* FAQ Section */}
+      <section id="faq" aria-labelledby="faq-heading">
+        <Suspense fallback={<CosmicLoader message="Loading FAQ..." />}>
+          <FAQSection />
         </Suspense>
       </section>
 
@@ -231,11 +267,16 @@ const App = () => (
                   <Routes>
                     <Route path="/" element={<PortfolioRenderer />} />
                     <Route path="/analytics" element={<AnalyticsPage />} />
+                    <Route path="/lab" element={<CosmicLab />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </PageTransition>
               </Suspense>
             </AnalyticsProvider>
+            
+            {/* Global Components */}
+            <VoiceCommandNavigation />
+            <CosmicSoundEffects />
           </BrowserRouter>
         </TooltipProvider>
       </PortfolioModeProvider>

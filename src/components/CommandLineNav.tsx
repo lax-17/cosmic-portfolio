@@ -11,9 +11,11 @@ const CommandLineNav = () => {
 
   const sections = [
     { id: "hero", command: "cd ~/", label: "Home" },
-    { id: "projects", command: "cd ~/projects", label: "Projects" },
-    { id: "skills", command: "cd ~/skills", label: "Skills" },
     { id: "experience", command: "cd ~/experience", label: "Experience" },
+    { id: "education", command: "cd ~/education", label: "Education" },
+    { id: "projects", command: "cd ~/projects", label: "Projects & Case Studies" },
+    { id: "skills", command: "cd ~/skills", label: "Skills" },
+    { id: "faq", command: "cd ~/faq", label: "FAQ" },
     { id: "contact", command: "cd ~/contact", label: "Contact" },
     // Direct resume action
     { id: "resume", command: "open ~/resume.pdf", label: "Resume", href: "/Laxmikant_Resume.pdf" },
@@ -44,10 +46,18 @@ const CommandLineNav = () => {
     const section = sections.find(s => s.command === cmd || s.id === cmd.replace("cd ~/", ""));
     if (!section) return;
 
-    // Special handling for resume (open PDF)
-    if (section.id === "resume" || (section as any).href) {
+    // Special handling for external links (resume, lab)
+    if (section.id === "resume" || section.id === "lab" || (section as any).href) {
       const href = (section as any).href as string;
-      if (href) window.open(href, "_blank");
+      if (href) {
+        if (href.startsWith('/')) {
+          // Internal route
+          window.location.href = href;
+        } else {
+          // External link
+          window.open(href, "_blank");
+        }
+      }
       setCommand("");
       setShowNav(false);
       return;

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, Home, Briefcase, Brain, GitBranch, Mail } from "lucide-react";
+import { Menu, X, Home, Briefcase, Brain, GitBranch, Mail, GraduationCap, FileText, BookOpen, Users, HelpCircle } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import BackgroundModeToggle from "./BackgroundModeToggle";
 
@@ -14,9 +14,11 @@ const MobileNavigation = () => {
 
   const navItems = [
     { id: "hero", label: "Home", icon: Home, command: "./" },
-    { id: "projects", label: "Projects", icon: Briefcase, command: "./projects" },
-    { id: "skills", label: "Skills", icon: Brain, command: "./skills" },
     { id: "experience", label: "Experience", icon: GitBranch, command: "./experience" },
+    { id: "education", label: "Education", icon: GraduationCap, command: "./education" },
+    { id: "projects", label: "Projects & Case Studies", icon: Briefcase, command: "./projects" },
+    { id: "skills", label: "Skills", icon: Brain, command: "./skills" },
+    { id: "faq", label: "FAQ", icon: HelpCircle, command: "./faq" },
     { id: "contact", label: "Contact", icon: Mail, command: "./contact" }
   ];
 
