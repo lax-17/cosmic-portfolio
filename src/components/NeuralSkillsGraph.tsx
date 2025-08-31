@@ -286,7 +286,7 @@ const NeuralSkillsGraph = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
             {/* Network Visualization */}
             <div className="lg:col-span-2 min-w-0">
-              <div className="code-panel h-[350px] sm:h-[400px] md:h-[500px] lg:h-[540px] cosmic-border overflow-hidden">
+              <div className="code-panel h-[300px] xs:h-[350px] sm:h-[400px] md:h-[500px] lg:h-[540px] cosmic-border overflow-hidden">
                 <div className="code-header flex justify-between items-center overflow-hidden">
                   <div className="min-w-0 flex-1">
                     <span className="text-xs cosmic-text">
@@ -363,7 +363,7 @@ const NeuralSkillsGraph = () => {
                     <svg
                       ref={svgRef}
                       className="w-full h-full"
-                      viewBox={`0 0 ${Math.max(dimensions.width, 320)} ${Math.max(dimensions.height, 240)}`}
+                      viewBox={`0 0 ${Math.max(dimensions.width, 640)} ${Math.max(dimensions.height, 480)}`}
                       preserveAspectRatio="xMidYMid meet"
                       style={{
                         transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
@@ -442,17 +442,17 @@ const NeuralSkillsGraph = () => {
                               />
                             )}
 
-                            {/* Node Circle */}
+                            {/* Node Circle - Responsive sizing */}
                             <motion.circle
                               cx={node.x}
                               cy={node.y}
-                              r={Math.max(5, node.level / 10)}
+                              r={Math.max(dimensions.width < 480 ? 4 : 5, node.level / (dimensions.width < 480 ? 12 : 10))}
                               fill={categoryColors[node.category as keyof typeof categoryColors]}
                               fillOpacity={isHighlighted ? 0.9 : 0.7}
                               stroke={isSelected ? "hsl(var(--primary))" : categoryColors[node.category as keyof typeof categoryColors]}
-                              strokeWidth={isSelected ? 3 : 2}
+                              strokeWidth={isSelected ? (dimensions.width < 480 ? 2 : 3) : (dimensions.width < 480 ? 1 : 2)}
                               className="cursor-pointer transition-all duration-200"
-                              whileHover={{ scale: 1.1 }}
+                              whileHover={{ scale: dimensions.width < 480 ? 1.05 : 1.1 }}
                               whileTap={{ scale: 0.95 }}
                               onClick={() => setSelectedNode(isSelected ? null : node.id)}
                               onMouseEnter={() => setHoveredNode(node.id)}
@@ -470,31 +470,33 @@ const NeuralSkillsGraph = () => {
                               }}
                             />
 
-                            {/* Node Label - Responsive font size */}
+                            {/* Node Label - Responsive font size and positioning */}
                             <text
                               x={node.x}
-                              y={node.y - 18}
+                              y={node.y - (dimensions.width < 480 ? 12 : 18)}
                               textAnchor="middle"
                               fill="hsl(var(--foreground))"
-                              fontSize={dimensions.width < 480 ? "8" : "10"}
+                              fontSize={dimensions.width < 375 ? "7" : dimensions.width < 480 ? "8" : "10"}
                               fontFamily="JetBrains Mono"
-                              className="pointer-events-none"
+                              className="pointer-events-none select-none"
                               opacity={isHighlighted || hoveredNode === null ? 1 : 0.6}
                             >
-                              {dimensions.width < 480 && node.name.length > 8
+                              {dimensions.width < 375 && node.name.length > 6
+                                ? node.name.substring(0, 6) + '...'
+                                : dimensions.width < 480 && node.name.length > 8
                                 ? node.name.substring(0, 8) + '...'
                                 : node.name}
                             </text>
 
-                            {/* Skill Level - Responsive font size */}
+                            {/* Skill Level - Responsive font size and positioning */}
                             <text
                               x={node.x}
-                              y={node.y + 20}
+                              y={node.y + (dimensions.width < 480 ? 15 : 20)}
                               textAnchor="middle"
                               fill="hsl(var(--muted-foreground))"
-                              fontSize={dimensions.width < 480 ? "7" : "8"}
+                              fontSize={dimensions.width < 375 ? "6" : dimensions.width < 480 ? "7" : "8"}
                               fontFamily="JetBrains Mono"
-                              className="pointer-events-none"
+                              className="pointer-events-none select-none"
                               opacity={isHighlighted ? 1 : 0}
                             >
                               {node.level}%
