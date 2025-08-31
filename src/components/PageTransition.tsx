@@ -20,6 +20,13 @@ const PageTransition = ({ children }: PageTransitionProps) => {
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
+  // Ensure we start at top after route transition completes
+  useEffect(() => {
+    if (!isLoading) {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  }, [isLoading]);
+
   const getRouteName = (pathname: string) => {
     switch (pathname) {
       case '/basic': return 'Basic Portfolio';

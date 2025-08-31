@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 import { ChevronRight, Terminal, Download } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import BackgroundModeToggle from "./BackgroundModeToggle";
+import { useNavigate } from "react-router-dom";
 
 const CommandLineNav = () => {
   const [currentSection, setCurrentSection] = useState("hero");
   const [command, setCommand] = useState("");
   const [showNav, setShowNav] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const navigate = useNavigate();
 
   const sections = [
     { id: "hero", command: "cd ~/", label: "Home" },
@@ -53,16 +55,21 @@ const CommandLineNav = () => {
     const section = sections.find(s => s.command === cmd || s.id === cmd.replace("cd ~/", ""));
     if (!section) return;
 
-    // Special handling for external links (resume, lab)
+    // Special handling for links (resume, lab)
     if (section.id === "resume" || section.id === "lab" || (section as any).href) {
       const href = (section as any).href as string;
       if (href) {
         if (href.startsWith('/')) {
-          // Internal route
-          window.location.href = href;
+          // Internal path: use SPA navigation unless it's a file (pdf/html)
+          const lower = href.toLowerCase();
+          if (lower.endsWith('.pdf') || lower.endsWith('.html')) {
+            window.open(href, "_blank", "noopener,noreferrer");
+          } else {
+            navigate(href);
+          }
         } else {
           // External link
-          window.open(href, "_blank");
+          window.open(href, "_blank", "noopener,noreferrer");
         }
       }
       setCommand("");

@@ -16,11 +16,9 @@ import { usePerformanceMonitoring } from "./hooks/usePerformanceMonitoring";
 import { useErrorTracking } from "./hooks/useErrorTracking";
 import ErrorBoundary from "./components/ErrorBoundary";
 import CookieConsentBanner from "./components/CookieConsentBanner";
-import AnalyticsPage from "./pages/Analytics";
 import CosmicLab from "./pages/CosmicLab";
 import ContactSuccess from "./pages/ContactSuccess";
 import About from "./pages/About";
-import VoiceCommandNavigation from "./components/VoiceCommandNavigation";
 import CosmicSoundEffects from "./components/CosmicSoundEffects";
 import Footer from "./components/Footer";
 
@@ -85,6 +83,8 @@ const SocialShare = () => {
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Share portfolio"
+        aria-expanded={isOpen}
+        aria-controls="share-menu"
       >
         <Share2 size={18} className="text-primary" />
       </motion.button>
@@ -97,6 +97,8 @@ const SocialShare = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: -10 }}
             transition={{ duration: 0.2 }}
+            role="menu"
+            id="share-menu"
           >
             <div className="space-y-3">
               <h4 className="text-sm font-medium text-foreground">Share Portfolio</h4>
@@ -110,6 +112,7 @@ const SocialShare = () => {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   aria-label="Share on Twitter"
+                  role="menuitem"
                 >
                   <Twitter size={16} className="text-blue-500" />
                 </motion.a>
@@ -122,6 +125,7 @@ const SocialShare = () => {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   aria-label="Share on Facebook"
+                  role="menuitem"
                 >
                   <Facebook size={16} className="text-blue-600" />
                 </motion.a>
@@ -134,6 +138,7 @@ const SocialShare = () => {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   aria-label="Share on LinkedIn"
+                  role="menuitem"
                 >
                   <Linkedin size={16} className="text-blue-700" />
                 </motion.a>
@@ -144,6 +149,7 @@ const SocialShare = () => {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   aria-label="Copy link"
+                  role="menuitem"
                 >
                   {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} className="text-muted-foreground" />}
                 </motion.button>
@@ -164,8 +170,6 @@ const GitCommitTimeline = lazy(() => import("./components/GitCommitTimeline"));
 const DataContactPanel = lazy(() => import("./components/DataContactPanel"));
 const CommandLineNav = lazy(() => import("./components/CommandLineNav"));
 const LiveTerminal = lazy(() => import("./components/LiveTerminal"));
-const CosmicShaderBackground = lazy(() => import("./components/CosmicShaderBackground"));
-const NormalBackground = lazy(() => import("./components/NormalBackground"));
 const BackgroundRenderer = lazy(() => import("./components/BackgroundRenderer"));
 const BasicPortfolio = lazy(() => import("./components/BasicPortfolio"));
 const KeyboardShortcuts = lazy(() => import("./components/KeyboardShortcuts"));
@@ -248,17 +252,24 @@ const NeuralPortfolio = () => {
     };
   }, [trackEnhancedEvent]);
 
-  // Track hover events
+  // Track hover events (throttled)
   useEffect(() => {
+    let last = 0;
+    const THROTTLE_MS = 200;
+
     const handleMouseOver = (e: MouseEvent) => {
+      const now = Date.now();
+      if (now - last < THROTTLE_MS) return;
+      last = now;
+
       const target = e.target as Element;
       const interactiveElement = target.closest('button, a, input, textarea, select');
       if (interactiveElement) {
         trackEnhancedEvent('hover', {
           event_category: interactiveElement.tagName.toLowerCase(),
-          event_label: interactiveElement.textContent || interactiveElement.ariaLabel || 'unnamed_element',
-          element_id: interactiveElement.id || 'no_id',
-          element_class: interactiveElement.className || 'no_class'
+          event_label: interactiveElement.textContent || (interactiveElement as HTMLElement).ariaLabel || 'unnamed_element',
+          element_id: (interactiveElement as HTMLElement).id || 'no_id',
+          element_class: (interactiveElement as HTMLElement).className || 'no_class'
         });
       }
     };
@@ -443,6 +454,24 @@ const PageMeta = () => {
     if (ogDescription) ogDescription.setAttribute('content', meta.description);
     if (ogUrl) ogUrl.setAttribute('content', window.location.href);
 
+    // Update canonical link
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', window.location.origin + location.pathname);
+
+    // Robots meta (noindex unfinished routes)
+    let robots = document.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
+    if (!robots) {
+      robots = document.createElement('meta');
+      robots.setAttribute('name', 'robots');
+      document.head.appendChild(robots);
+    }
+    robots.setAttribute('content', location.pathname === '/analytics' ? 'noindex, nofollow' : 'index, follow');
+
   }, [location.pathname]);
 
   return null;
@@ -513,7 +542,7 @@ const App = () => (
                     <Route path="/basic" element={<BasicRoute />} />
                     <Route path="/cosmic" element={<CosmicRoute />} />
                     <Route path="/normal-bg" element={<NormalBgRoute />} />
-                    <Route path="/analytics" element={<AnalyticsPage />} />
+                    {/* <Route path="/analytics" element={<AnalyticsPage />} /> */}
                     <Route path="/lab" element={<CosmicLab />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/contact-success" element={<ContactSuccess />} />

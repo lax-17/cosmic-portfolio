@@ -55,12 +55,20 @@ const KeyboardShortcuts = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore shortcuts when typing in input-like elements
+      const t = e.target as HTMLElement | null;
+      if (t && (t.closest('input, textarea, select, [contenteditable="true"]'))) {
+        return;
+      }
+
       // Help modal shortcuts
       if (e.key === '?' || (e.shiftKey && e.key === '/')) {
         e.preventDefault();
         setIsOpen(!isOpen);
+        return;
       } else if (e.key === 'Escape' && isOpen) {
         setIsOpen(false);
+        return;
       }
 
       // Portfolio mode switching shortcuts
@@ -74,7 +82,7 @@ const KeyboardShortcuts = () => {
         } else if (e.key === '3') {
           e.preventDefault();
           navigate('/normal-bg');
-        } else if (e.ctrlKey && e.shiftKey && e.key === 'M') {
+        } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'M' || e.key === 'm')) {
           e.preventDefault();
           // Toggle between modes - get current location and navigate to next
           const currentPath = window.location.pathname;

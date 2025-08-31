@@ -19,15 +19,19 @@ export const PortfolioModeProvider: React.FC<PortfolioModeProviderProps> = ({ ch
 
   // Initialize portfolio mode from localStorage
   useEffect(() => {
-    const savedMode = localStorage.getItem('portfolioMode') as PortfolioMode | null;
-    if (savedMode && (savedMode === 'cosmic' || savedMode === 'normal-bg' || savedMode === 'basic')) {
-      setPortfolioMode(savedMode);
+    if (typeof window !== 'undefined') {
+      const savedMode = localStorage.getItem('portfolioMode') as PortfolioMode | null;
+      if (savedMode && (savedMode === 'cosmic' || savedMode === 'normal-bg' || savedMode === 'basic')) {
+        setPortfolioMode(savedMode);
+      }
     }
   }, []);
 
   // Save to localStorage when mode changes
   useEffect(() => {
-    localStorage.setItem('portfolioMode', portfolioMode);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('portfolioMode', portfolioMode);
+    }
   }, [portfolioMode]);
 
   const togglePortfolioMode = () => {

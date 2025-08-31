@@ -55,6 +55,7 @@ const BackgroundModeToggle = () => {
       whileTap={{ scale: 0.95 }}
       aria-label={getAriaLabel()}
       role="switch"
+      aria-checked={portfolioMode !== 'cosmic'}
     >
       <motion.div
         className="absolute w-4 h-4 rounded-full bg-primary"
