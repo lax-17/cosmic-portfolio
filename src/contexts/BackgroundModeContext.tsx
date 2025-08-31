@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-type PortfolioMode = 'cosmic' | 'normal-bg' | 'basic';
+type PortfolioMode = 'cosmic' | 'professional' | 'basic';
 
 interface PortfolioModeContextType {
   portfolioMode: PortfolioMode;
@@ -17,11 +17,18 @@ interface PortfolioModeProviderProps {
 export const PortfolioModeProvider: React.FC<PortfolioModeProviderProps> = ({ children }) => {
   const [portfolioMode, setPortfolioMode] = useState<PortfolioMode>('cosmic');
 
-  // Initialize portfolio mode from localStorage
+  // Initialize portfolio mode from localStorage (+ migrate old key values)
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedMode = localStorage.getItem('portfolioMode') as PortfolioMode | null;
-      if (savedMode && (savedMode === 'cosmic' || savedMode === 'normal-bg' || savedMode === 'basic')) {
+      const raw = localStorage.getItem('portfolioMode');
+      // Migrate legacy 'normal-bg' to 'professional'
+      if (raw === 'normal-bg') {
+        localStorage.setItem('portfolioMode', 'professional');
+        setPortfolioMode('professional');
+        return;
+      }
+      const savedMode = raw as PortfolioMode | null;
+      if (savedMode && (savedMode === 'cosmic' || savedMode === 'professional' || savedMode === 'basic')) {
         setPortfolioMode(savedMode);
       }
     }
@@ -37,8 +44,8 @@ export const PortfolioModeProvider: React.FC<PortfolioModeProviderProps> = ({ ch
   const togglePortfolioMode = () => {
     setPortfolioMode(prevMode => {
       switch (prevMode) {
-        case 'cosmic': return 'normal-bg';
-        case 'normal-bg': return 'basic';
+        case 'cosmic': return 'professional';
+        case 'professional': return 'basic';
         case 'basic': return 'cosmic';
         default: return 'cosmic';
       }
@@ -67,6 +74,6 @@ export const usePortfolioMode = (): PortfolioModeContextType => {
 };
 
 // Legacy exports for backward compatibility
-export type BackgroundMode = 'cosmic' | 'normal-bg';
+export type BackgroundMode = 'cosmic' | 'professional';
 export const useBackgroundMode = usePortfolioMode;
 export const BackgroundModeProvider = PortfolioModeProvider;

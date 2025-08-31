@@ -10,9 +10,9 @@ const BackgroundModeToggle = () => {
   const handleToggle = () => {
     switch (portfolioMode) {
       case 'cosmic':
-        navigate('/normal-bg');
+        navigate('/professional');
         break;
-      case 'normal-bg':
+      case 'professional':
         navigate('/basic');
         break;
       case 'basic':
@@ -26,7 +26,7 @@ const BackgroundModeToggle = () => {
   const getIcon = () => {
     switch (portfolioMode) {
       case 'cosmic': return <Sparkles size={16} className="text-primary-foreground" />;
-      case 'normal-bg': return <Image size={16} className="text-primary-foreground" />;
+      case 'professional': return <Image size={16} className="text-primary-foreground" />;
       case 'basic': return <User size={16} className="text-primary-foreground" />;
     }
   };
@@ -34,15 +34,15 @@ const BackgroundModeToggle = () => {
   const getPosition = () => {
     switch (portfolioMode) {
       case 'cosmic': return 12;
-      case 'normal-bg': return 0;
+      case 'professional': return 0;
       case 'basic': return -12;
     }
   };
 
   const getAriaLabel = () => {
     switch (portfolioMode) {
-      case 'cosmic': return "Switch to normal background";
-      case 'normal-bg': return "Switch to basic portfolio";
+      case 'cosmic': return "Switch to professional background";
+      case 'professional': return "Switch to basic portfolio";
       case 'basic': return "Switch to cosmic portfolio";
     }
   };

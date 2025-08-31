@@ -32,7 +32,7 @@ const ModeIndicator = () => {
         return { label: 'Basic', color: 'bg-blue-500', icon: '📄' };
       case 'cosmic':
         return { label: 'Cosmic', color: 'bg-purple-500', icon: '🌌' };
-      case 'normal-bg':
+      case 'professional':
         return { label: 'Professional', color: 'bg-green-500', icon: '💼' };
       default:
         return { label: 'Default', color: 'bg-gray-500', icon: '🎯' };
@@ -413,7 +413,7 @@ const PageMeta = () => {
             title: 'Laxmikant Nishad - Cosmic Portfolio',
             description: 'Immersive cosmic-themed portfolio featuring interactive visualizations and advanced UI effects.'
           };
-        case '/normal-bg':
+        case '/professional':
           return {
             title: 'Laxmikant Nishad - Professional Portfolio',
             description: 'Professional portfolio with clean design showcasing my expertise in full-stack development.'
@@ -502,7 +502,7 @@ const NormalBgRoute = () => {
   const { setPortfolioMode } = usePortfolioMode();
 
   useEffect(() => {
-    setPortfolioMode('normal-bg');
+    setPortfolioMode('professional');
   }, [setPortfolioMode]);
 
   return <NeuralPortfolio />;
@@ -515,7 +515,7 @@ const PortfolioRenderer = () => {
     case 'basic':
       return <BasicPortfolioWrapper />;
     case 'cosmic':
-    case 'normal-bg':
+    case 'professional':
     default:
       return <NeuralPortfolio />;
   }
@@ -541,7 +541,7 @@ const App = () => (
                     <Route path="/" element={<PortfolioRenderer />} />
                     <Route path="/basic" element={<BasicRoute />} />
                     <Route path="/cosmic" element={<CosmicRoute />} />
-                    <Route path="/normal-bg" element={<NormalBgRoute />} />
+                    <Route path="/professional" element={<NormalBgRoute />} />
                     {/* <Route path="/analytics" element={<AnalyticsPage />} /> */}
                     <Route path="/lab" element={<CosmicLab />} />
                     <Route path="/about" element={<About />} />

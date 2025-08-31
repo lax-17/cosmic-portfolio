@@ -31,7 +31,7 @@ const PageTransition = ({ children }: PageTransitionProps) => {
     switch (pathname) {
       case '/basic': return 'Basic Portfolio';
       case '/cosmic': return 'Cosmic Portfolio';
-      case '/normal-bg': return 'Professional Portfolio';
+      case '/professional': return 'Professional Portfolio';
       case '/about': return 'About Page';
       case '/lab': return 'Cosmic Lab';
       case '/analytics': return 'Analytics Dashboard';

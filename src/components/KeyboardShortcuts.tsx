@@ -41,7 +41,7 @@ const KeyboardShortcuts = () => {
     // Portfolio Mode Switching
     { key: "1", description: "Switch to basic portfolio mode", category: "Portfolio" },
     { key: "2", description: "Switch to cosmic portfolio mode", category: "Portfolio" },
-    { key: "3", description: "Switch to normal background mode", category: "Portfolio" },
+    { key: "3", description: "Switch to professional background mode", category: "Portfolio" },
     { key: "Ctrl+Shift+M", description: "Toggle between portfolio modes", category: "Portfolio" },
 
     // Special Commands
@@ -81,7 +81,7 @@ const KeyboardShortcuts = () => {
           navigate('/cosmic');
         } else if (e.key === '3') {
           e.preventDefault();
-          navigate('/normal-bg');
+          navigate('/professional');
         } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'M' || e.key === 'm')) {
           e.preventDefault();
           // Toggle between modes - get current location and navigate to next
@@ -91,9 +91,9 @@ const KeyboardShortcuts = () => {
               navigate('/cosmic');
               break;
             case '/cosmic':
-              navigate('/normal-bg');
+              navigate('/professional');
               break;
-            case '/normal-bg':
+            case '/professional':
               navigate('/basic');
               break;
             default:
