@@ -11,6 +11,7 @@ const PageTransition = ({ children }: PageTransitionProps) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     // Simulate loading time for smooth transitions
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -18,6 +19,19 @@ const PageTransition = ({ children }: PageTransitionProps) => {
 
     return () => clearTimeout(timer);
   }, [location.pathname]);
+
+  const getRouteName = (pathname: string) => {
+    switch (pathname) {
+      case '/basic': return 'Basic Portfolio';
+      case '/cosmic': return 'Cosmic Portfolio';
+      case '/normal-bg': return 'Professional Portfolio';
+      case '/about': return 'About Page';
+      case '/lab': return 'Cosmic Lab';
+      case '/analytics': return 'Analytics Dashboard';
+      case '/contact-success': return 'Contact Success';
+      default: return 'Portfolio Home';
+    }
+  };
 
   const pageVariants = {
     initial: {
@@ -94,7 +108,7 @@ const PageTransition = ({ children }: PageTransitionProps) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              Initializing neural interface...
+              Loading {getRouteName(location.pathname)}...
             </motion.div>
 
             <motion.div

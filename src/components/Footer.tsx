@@ -80,7 +80,6 @@ const Footer = () => {
           <a href="/#projects" className="hover:text-slate-300 transition-colors">Projects</a>
           <a href="/#skills" className="hover:text-slate-300 transition-colors">Skills</a>
           <a href="/#contact" className="hover:text-slate-300 transition-colors">Contact</a>
-          <a href="/analytics" className="hover:text-slate-300 transition-colors">Analytics</a>
           <a href="/lab" className="hover:text-slate-300 transition-colors">Lab</a>
         </motion.div>
       </div>

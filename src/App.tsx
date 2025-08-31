@@ -1,9 +1,11 @@
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { Share2, Twitter, Facebook, Linkedin, Copy, Check } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import NotFound from "./pages/NotFound";
 import CosmicLoader from "./components/CosmicLoader";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -21,6 +23,138 @@ import About from "./pages/About";
 import VoiceCommandNavigation from "./components/VoiceCommandNavigation";
 import CosmicSoundEffects from "./components/CosmicSoundEffects";
 import Footer from "./components/Footer";
+
+// Mode Indicator Component
+const ModeIndicator = () => {
+  const { portfolioMode } = usePortfolioMode();
+
+  const getModeInfo = (mode: string) => {
+    switch (mode) {
+      case 'basic':
+        return { label: 'Basic', color: 'bg-blue-500', icon: '📄' };
+      case 'cosmic':
+        return { label: 'Cosmic', color: 'bg-purple-500', icon: '🌌' };
+      case 'normal-bg':
+        return { label: 'Professional', color: 'bg-green-500', icon: '💼' };
+      default:
+        return { label: 'Default', color: 'bg-gray-500', icon: '🎯' };
+    }
+  };
+
+  const modeInfo = getModeInfo(portfolioMode);
+
+  return (
+    <div className="fixed top-20 right-4 z-40 flex items-center gap-2 px-3 py-2 rounded-full bg-panel/80 backdrop-blur-sm border border-panel-border shadow-lg">
+      <span className="text-sm">{modeInfo.icon}</span>
+      <span className="text-sm font-medium text-foreground">{modeInfo.label}</span>
+      <div className={`w-2 h-2 rounded-full ${modeInfo.color} animate-pulse`}></div>
+    </div>
+  );
+};
+
+// Social Share Component
+const SocialShare = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const location = useLocation();
+
+  const currentUrl = window.location.origin + location.pathname;
+  const shareText = `Check out this amazing ${location.pathname.slice(1) || 'cosmic'} portfolio by Laxmikant Nishad! 🚀`;
+
+  const shareLinks = {
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(currentUrl)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(currentUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  return (
+    <div className="fixed top-32 right-4 z-40">
+      <motion.button
+        className="p-3 rounded-full bg-panel/80 backdrop-blur-sm border border-panel-border shadow-lg hover:shadow-xl transition-all duration-200"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Share portfolio"
+      >
+        <Share2 size={18} className="text-primary" />
+      </motion.button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="absolute top-12 right-0 mt-2 p-4 bg-panel/95 backdrop-blur-sm border border-panel-border rounded-lg shadow-xl min-w-48"
+            initial={{ opacity: 0, scale: 0.9, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-foreground">Share Portfolio</h4>
+
+              <div className="flex gap-2">
+                <motion.a
+                  href={shareLinks.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded hover:bg-muted/50 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  aria-label="Share on Twitter"
+                >
+                  <Twitter size={16} className="text-blue-500" />
+                </motion.a>
+
+                <motion.a
+                  href={shareLinks.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded hover:bg-muted/50 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  aria-label="Share on Facebook"
+                >
+                  <Facebook size={16} className="text-blue-600" />
+                </motion.a>
+
+                <motion.a
+                  href={shareLinks.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded hover:bg-muted/50 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  aria-label="Share on LinkedIn"
+                >
+                  <Linkedin size={16} className="text-blue-700" />
+                </motion.a>
+
+                <motion.button
+                  onClick={copyToClipboard}
+                  className="p-2 rounded hover:bg-muted/50 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  aria-label="Copy link"
+                >
+                  {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} className="text-muted-foreground" />}
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 // Lazy load heavy components for code splitting
 const TerminalHero = lazy(() => import("./components/TerminalHero"));
@@ -251,6 +385,100 @@ const BasicPortfolioWrapper = () => {
   );
 };
 
+// Page Meta Component for SEO
+const PageMeta = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const getMetaData = (pathname: string) => {
+      switch (pathname) {
+        case '/basic':
+          return {
+            title: 'Laxmikant Nishad - Basic Portfolio',
+            description: 'Clean and simple portfolio showcasing my skills and projects in web development.'
+          };
+        case '/cosmic':
+          return {
+            title: 'Laxmikant Nishad - Cosmic Portfolio',
+            description: 'Immersive cosmic-themed portfolio featuring interactive visualizations and advanced UI effects.'
+          };
+        case '/normal-bg':
+          return {
+            title: 'Laxmikant Nishad - Professional Portfolio',
+            description: 'Professional portfolio with clean design showcasing my expertise in full-stack development.'
+          };
+        case '/about':
+          return {
+            title: 'About - Laxmikant Nishad',
+            description: 'Learn more about Laxmikant Nishad, a passionate full-stack developer and technology enthusiast.'
+          };
+        case '/lab':
+          return {
+            title: 'Cosmic Lab - Interactive Experiments',
+            description: 'Explore interactive coding experiments and technological demonstrations.'
+          };
+        default:
+          return {
+            title: 'Laxmikant Nishad - Full Stack Developer',
+            description: 'Portfolio of Laxmikant Nishad, showcasing expertise in React, Node.js, and modern web technologies.'
+          };
+      }
+    };
+
+    const meta = getMetaData(location.pathname);
+    document.title = meta.title;
+
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', meta.description);
+    }
+
+    // Update Open Graph tags for social sharing
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+
+    if (ogTitle) ogTitle.setAttribute('content', meta.title);
+    if (ogDescription) ogDescription.setAttribute('content', meta.description);
+    if (ogUrl) ogUrl.setAttribute('content', window.location.href);
+
+  }, [location.pathname]);
+
+  return null;
+};
+
+// Route Components for different modes
+const BasicRoute = () => {
+  const { setPortfolioMode } = usePortfolioMode();
+
+  useEffect(() => {
+    setPortfolioMode('basic');
+  }, [setPortfolioMode]);
+
+  return <BasicPortfolioWrapper />;
+};
+
+const CosmicRoute = () => {
+  const { setPortfolioMode } = usePortfolioMode();
+
+  useEffect(() => {
+    setPortfolioMode('cosmic');
+  }, [setPortfolioMode]);
+
+  return <NeuralPortfolio />;
+};
+
+const NormalBgRoute = () => {
+  const { setPortfolioMode } = usePortfolioMode();
+
+  useEffect(() => {
+    setPortfolioMode('normal-bg');
+  }, [setPortfolioMode]);
+
+  return <NeuralPortfolio />;
+};
+
 const PortfolioRenderer = () => {
   const { portfolioMode } = usePortfolioMode();
 
@@ -276,11 +504,15 @@ const App = () => (
             <BackgroundRenderer />
           </Suspense>
           <BrowserRouter>
+            <PageMeta />
             <AnalyticsProvider>
               <Suspense fallback={<CosmicLoader message="Loading page transition..." />}>
                 <PageTransition>
                   <Routes>
                     <Route path="/" element={<PortfolioRenderer />} />
+                    <Route path="/basic" element={<BasicRoute />} />
+                    <Route path="/cosmic" element={<CosmicRoute />} />
+                    <Route path="/normal-bg" element={<NormalBgRoute />} />
                     <Route path="/analytics" element={<AnalyticsPage />} />
                     <Route path="/lab" element={<CosmicLab />} />
                     <Route path="/about" element={<About />} />
@@ -292,6 +524,8 @@ const App = () => (
             </AnalyticsProvider>
             
             {/* Global Components */}
+            <ModeIndicator />
+            <SocialShare />
             {/* <VoiceCommandNavigation /> */}
             <CosmicSoundEffects />
           </BrowserRouter>

@@ -1,9 +1,27 @@
 import { motion } from "framer-motion";
 import { Sparkles, Image, User } from "lucide-react";
 import { usePortfolioMode } from "@/contexts/BackgroundModeContext";
+import { useNavigate } from "react-router-dom";
 
 const BackgroundModeToggle = () => {
-  const { portfolioMode, togglePortfolioMode } = usePortfolioMode();
+  const { portfolioMode } = usePortfolioMode();
+  const navigate = useNavigate();
+
+  const handleToggle = () => {
+    switch (portfolioMode) {
+      case 'cosmic':
+        navigate('/normal-bg');
+        break;
+      case 'normal-bg':
+        navigate('/basic');
+        break;
+      case 'basic':
+        navigate('/cosmic');
+        break;
+      default:
+        navigate('/cosmic');
+    }
+  };
 
   const getIcon = () => {
     switch (portfolioMode) {
@@ -31,7 +49,7 @@ const BackgroundModeToggle = () => {
 
   return (
     <motion.button
-      onClick={togglePortfolioMode}
+      onClick={handleToggle}
       className="relative flex items-center justify-center w-16 h-6 rounded-full bg-panel border border-panel-border cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}

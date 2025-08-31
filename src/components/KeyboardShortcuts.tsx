@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Keyboard, X, HelpCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Shortcut {
   key: string;
@@ -10,6 +11,7 @@ interface Shortcut {
 
 const KeyboardShortcuts = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const shortcuts: Shortcut[] = [
     // Navigation
@@ -36,6 +38,12 @@ const KeyboardShortcuts = () => {
     { key: "date", description: "Show current date/time", category: "Terminal" },
     { key: "ping", description: "Test connection", category: "Terminal" },
 
+    // Portfolio Mode Switching
+    { key: "1", description: "Switch to basic portfolio mode", category: "Portfolio" },
+    { key: "2", description: "Switch to cosmic portfolio mode", category: "Portfolio" },
+    { key: "3", description: "Switch to normal background mode", category: "Portfolio" },
+    { key: "Ctrl+Shift+M", description: "Toggle between portfolio modes", category: "Portfolio" },
+
     // Special Commands
     { key: "matrix", description: "Enter the matrix simulation", category: "Fun" },
     { key: "hack", description: "Simulate hacking sequence", category: "Fun" },
@@ -47,17 +55,49 @@ const KeyboardShortcuts = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Help modal shortcuts
       if (e.key === '?' || (e.shiftKey && e.key === '/')) {
         e.preventDefault();
         setIsOpen(!isOpen);
       } else if (e.key === 'Escape' && isOpen) {
         setIsOpen(false);
       }
+
+      // Portfolio mode switching shortcuts
+      if (!isOpen) { // Only handle mode switching when modal is closed
+        if (e.key === '1') {
+          e.preventDefault();
+          navigate('/basic');
+        } else if (e.key === '2') {
+          e.preventDefault();
+          navigate('/cosmic');
+        } else if (e.key === '3') {
+          e.preventDefault();
+          navigate('/normal-bg');
+        } else if (e.ctrlKey && e.shiftKey && e.key === 'M') {
+          e.preventDefault();
+          // Toggle between modes - get current location and navigate to next
+          const currentPath = window.location.pathname;
+          switch (currentPath) {
+            case '/basic':
+              navigate('/cosmic');
+              break;
+            case '/cosmic':
+              navigate('/normal-bg');
+              break;
+            case '/normal-bg':
+              navigate('/basic');
+              break;
+            default:
+              navigate('/cosmic');
+          }
+        }
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, navigate]);
 
   return (
     <>
