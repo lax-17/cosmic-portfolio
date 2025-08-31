@@ -282,7 +282,7 @@ const NeuralPortfolio = () => {
   }, [trackEnhancedEvent]);
 
   return (
-  <div className="relative">
+  <div className="relative z-10">
     {/* Error Boundary */}
     <ErrorBoundary>
 
@@ -386,7 +386,7 @@ const NeuralPortfolio = () => {
 // Basic Portfolio Component
 const BasicPortfolioWrapper = () => {
   return (
-    <div className="relative">
+    <div className="relative z-10">
       <ErrorBoundary>
         <Suspense fallback={<div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center"><div className="text-xl">Loading...</div></div>}>
           <BasicPortfolio />
