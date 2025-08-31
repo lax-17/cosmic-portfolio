@@ -340,11 +340,11 @@ const VoiceCommandNavigation: React.FC = () => {
 
   return (
     <>
-      {/* Voice Control Toggle Button */}
+      {/* Voice Control Toggle Button - Better mobile positioning */}
       <motion.button
-        className={`fixed bottom-20 left-6 z-50 p-3 rounded-full shadow-lg transition-all duration-300 ${
-          isEnabled 
-            ? 'bg-primary text-primary-foreground cosmic-glow' 
+        className={`fixed bottom-20 left-4 md:bottom-20 md:left-6 z-50 p-2 md:p-3 rounded-full shadow-lg transition-all duration-300 ${
+          isEnabled
+            ? 'bg-primary text-primary-foreground cosmic-glow'
             : 'bg-muted text-muted-foreground hover:bg-muted/80'
         }`}
         whileHover={{ scale: 1.05 }}
@@ -382,7 +382,7 @@ const VoiceCommandNavigation: React.FC = () => {
       <AnimatePresence>
         {isEnabled && (
           <motion.div
-            className="fixed bottom-32 left-6 z-50 w-80 bg-background/90 backdrop-blur-sm border border-primary/30 rounded-lg shadow-xl cosmic-glow"
+            className="fixed bottom-32 left-4 md:left-6 z-50 w-72 md:w-80 bg-background/90 backdrop-blur-sm border border-primary/30 rounded-lg shadow-xl cosmic-glow"
             initial={{ opacity: 0, x: -20, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: -20, scale: 0.9 }}

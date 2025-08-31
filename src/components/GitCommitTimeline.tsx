@@ -211,87 +211,92 @@ const GitCommitTimeline = () => {
             ~/career $ git log --oneline --graph
           </div>
 
-          {/* Controls Bar */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6 p-4 bg-muted/50 rounded-lg cosmic-border">
-            {/* Search */}
-            <div className="relative flex-1">
+          {/* Controls Bar - Mobile Responsive */}
+          <div className="flex flex-col gap-3 mb-6 p-3 md:p-4 bg-muted/50 rounded-lg cosmic-border overflow-hidden">
+            {/* Search - Full width on mobile */}
+            <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search commits, companies, tags..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm min-w-0"
               />
             </div>
 
-            {/* Branch Filter */}
-            <div className="relative">
-              <GitBranch className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <select
-                value={selectedBranch || ""}
-                onChange={(e) => setSelectedBranch(e.target.value || null)}
-                className="pl-10 pr-8 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm appearance-none"
-              >
-                <option value="">All Branches</option>
-                {branches.map(branch => (
-                  <option key={branch} value={branch}>{branch}</option>
-                ))}
-              </select>
+            {/* Filters Row - Responsive layout */}
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              {/* Branch Filter */}
+              <div className="relative flex-1 min-w-0">
+                <GitBranch className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <select
+                  value={selectedBranch || ""}
+                  onChange={(e) => setSelectedBranch(e.target.value || null)}
+                  className="w-full pl-10 pr-8 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm appearance-none min-w-0"
+                >
+                  <option value="">All Branches</option>
+                  {branches.map(branch => (
+                    <option key={branch} value={branch}>{branch}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Type Filter */}
+              <div className="relative flex-1 min-w-0">
+                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <select
+                  value={selectedType || ""}
+                  onChange={(e) => setSelectedType(e.target.value || null)}
+                  className="w-full pl-10 pr-8 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm appearance-none min-w-0"
+                >
+                  <option value="">All Types</option>
+                  {types.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Sort Options */}
+              <div className="flex gap-2 flex-shrink-0">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="px-2 md:px-3 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm min-w-0"
+                >
+                  <option value="date">Date</option>
+                  <option value="type">Type</option>
+                  <option value="company">Company</option>
+                </select>
+                <button
+                  onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                  className="p-2 bg-background border border-border rounded-lg hover:bg-muted transition-colors flex-shrink-0"
+                  title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                >
+                  {sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
-            {/* Type Filter */}
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <select
-                value={selectedType || ""}
-                onChange={(e) => setSelectedType(e.target.value || null)}
-                className="pl-10 pr-8 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm appearance-none"
-              >
-                <option value="">All Types</option>
-                {types.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Sort Options */}
-            <div className="flex gap-2">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-3 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
-              >
-                <option value="date">Sort by Date</option>
-                <option value="type">Sort by Type</option>
-                <option value="company">Sort by Company</option>
-              </select>
-              <button
-                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className="p-2 bg-background border border-border rounded-lg hover:bg-muted transition-colors"
-                title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
-              >
-                {sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-              </button>
-            </div>
-
-            {/* Export Buttons */}
-            <div className="flex gap-2">
+            {/* Export Buttons - Mobile responsive */}
+            <div className="flex gap-2 justify-center sm:justify-start">
               <button
                 onClick={() => exportTimeline('json')}
-                className="px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm"
+                className="flex items-center gap-1 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm flex-shrink-0"
                 title="Export as JSON"
               >
-                <Download className="w-4 h-4 mr-1" />
-                JSON
+                <Download className="w-4 h-4" />
+                <span className="hidden xs:inline">JSON</span>
+                <span className="xs:hidden">J</span>
               </button>
               <button
                 onClick={() => exportTimeline('csv')}
-                className="px-3 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors text-sm"
+                className="flex items-center gap-1 px-3 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors text-sm flex-shrink-0"
                 title="Export as CSV"
               >
-                <Download className="w-4 h-4 mr-1" />
-                CSV
+                <Download className="w-4 h-4" />
+                <span className="hidden xs:inline">CSV</span>
+                <span className="xs:hidden">C</span>
               </button>
             </div>
           </div>
