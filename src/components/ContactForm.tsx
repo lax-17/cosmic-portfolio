@@ -208,12 +208,35 @@ const ContactForm = () => {
       const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
       const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
       const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
+    
+      // Debug: Log environment variables
+      console.log('EmailJS Environment Variables:', {
+        serviceId,
+        templateId,
+        publicKey: publicKey ? '***' + publicKey.slice(-4) : null
+      });
+    
       if (!serviceId || !templateId || !publicKey) {
+        console.error("EmailJS environment variables are missing:", {
+          serviceId: !!serviceId,
+          templateId: !!templateId,
+          publicKey: !!publicKey
+        });
         throw new Error("EmailJS environment variables are not set");
       }
 
       // Send email using EmailJS
+      console.log('Sending email with EmailJS:', {
+        serviceId,
+        templateId,
+        data: {
+          from_name: sanitizedData.name,
+          from_email: sanitizedData.email,
+          subject: sanitizedData.subject,
+          message: sanitizedData.message,
+        }
+      });
+
       const result = await emailjs.send(
         serviceId,
         templateId,
@@ -225,6 +248,8 @@ const ContactForm = () => {
         },
         publicKey
       );
+
+      console.log('EmailJS result:', result);
 
       if (result.status === 200) {
         // Update last submit time
@@ -257,6 +282,12 @@ const ContactForm = () => {
       }
     } catch (error) {
       console.error("Form submission error:", error);
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
+
       // Track form error
       trackFormInteraction('contact_form', 'error');
 
@@ -271,7 +302,7 @@ const ContactForm = () => {
       };
       setFormSubmissions(prev => [failedSubmission, ...prev]);
 
-      toast.error("Failed to send message. Please try again.");
+      toast.error(`Failed to send message: ${error.message || 'Please try again.'}`);
     } finally {
       setIsSubmitting(false);
     }
