@@ -4,23 +4,33 @@ import { usePortfolioMode } from "@/contexts/BackgroundModeContext";
 import { useNavigate } from "react-router-dom";
 
 const BackgroundModeToggle = () => {
-  const { portfolioMode } = usePortfolioMode();
+  const { portfolioMode, setPortfolioMode } = usePortfolioMode();
   const navigate = useNavigate();
 
   const handleToggle = () => {
+    let nextMode: 'cosmic' | 'professional' | 'basic';
+    let nextRoute: string;
+
     switch (portfolioMode) {
       case 'cosmic':
-        navigate('/professional');
+        nextMode = 'professional';
+        nextRoute = '/professional';
         break;
       case 'professional':
-        navigate('/basic');
+        nextMode = 'basic';
+        nextRoute = '/basic';
         break;
       case 'basic':
-        navigate('/cosmic');
-        break;
       default:
-        navigate('/cosmic');
+        nextMode = 'cosmic';
+        nextRoute = '/cosmic';
+        break;
     }
+
+    // Update context immediately
+    setPortfolioMode(nextMode);
+    // Then navigate
+    navigate(nextRoute);
   };
 
   const getIcon = () => {
