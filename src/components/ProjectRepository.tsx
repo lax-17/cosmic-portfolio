@@ -143,62 +143,87 @@ class PIDController:
       id: "fmri-reconstruction",
       name: "fmri_image_reconstruction/",
       type: "folder",
-      description: "GAN‑based brain imaging reconstruction: StyleGAN2 + U‑Net hybrid stabilized with LSGAN objective. Achieved SSIM 0.87 and PSNR 28.4 dB; analyzed domain mismatch and instability factors.",
+      description: "Supervised fMRI-to-image reconstruction using U-Net decoder. Maps N=1024 left-hemisphere fMRI PCA components to 64x64 target images with L1 loss minimization and Adam optimization.",
       files: [
-        { name: "models.py", type: "python", content: `# fMRI Image Reconstruction using GANs
-# Benchmarked StyleGAN2 and U-Net architectures
+        { name: "models.py", type: "python", content: `# fMRI Image Reconstruction using Supervised U-Net
+# Experiment 5: Supervised U-Net Decoder (N=1024 PCA)
 
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-class StyleGAN2Generator(nn.Module):
-    """StyleGAN2 generator for high-quality fMRI reconstruction"""
+class SupervisedUNetDecoder(nn.Module):
+    """Supervised U-Net decoder for fMRI-to-image reconstruction"""
 
-    def __init__(self, latent_dim=512, img_size=256):
+    def __init__(self, input_dim=1024, output_size=64):
         super().__init__()
-        self.latent_dim = latent_dim
-        self.img_size = img_size
+        self.input_dim = input_dim
+        self.output_size = output_size
 
-        # Mapping network
-        self.mapping = nn.Sequential(
-            nn.Linear(latent_dim, 512),
-            nn.LeakyReLU(0.2),
-            nn.Linear(512, 512),
-            nn.LeakyReLU(0.2),
-            nn.Linear(512, 512)
+        # Initial projection from PCA components to feature space
+        self.input_projection = nn.Sequential(
+            nn.Linear(input_dim, 512),
+            nn.ReLU(),
+            nn.Linear(512, 256),
+            nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.ReLU()
         )
 
-        # Synthesis network with progressive upsampling
-        self.synthesis = SynthesisNetwork(img_size)
+        # Reshape to spatial dimensions for U-Net
+        self.spatial_reshape = nn.Sequential(
+            nn.Linear(128, 256 * 4 * 4),  # 4x4 feature map
+            nn.ReLU()
+        )
 
-    def forward(self, z, noise=None):
-        w = self.mapping(z)
-        return self.synthesis(w, noise)
-
-class UNetReconstructor(nn.Module):
-    """U-Net architecture for fMRI reconstruction"""
-
-    def __init__(self, in_channels=1, out_channels=1):
-        super().__init__()
-
-        # Encoder
-        self.encoder = nn.ModuleList([
-            self._conv_block(in_channels, 64),
-            self._conv_block(64, 128),
-            self._conv_block(128, 256),
-            self._conv_block(256, 512)
+        # U-Net decoder architecture
+        self.decoder = nn.ModuleList([
+            # Up-convolution blocks
+            self._upconv_block(256, 128),  # 4x4 -> 8x8
+            self._upconv_block(128, 64),   # 8x8 -> 16x16
+            self._upconv_block(64, 32),    # 16x16 -> 32x32
+            self._upconv_block(32, 16),    # 32x32 -> 64x64
+            nn.Conv2d(16, 3, 1)            # Final output: 64x64x3
         ])
 
-        # Decoder
-        self.decoder = nn.ModuleList([
-            self._upconv_block(512, 256),
-            self._upconv_block(256, 128),
-            self._upconv_block(128, 64),
-            nn.Conv2d(64, out_channels, 1)
-        ])` }
+    def _upconv_block(self, in_channels, out_channels):
+        """U-Net up-convolution block"""
+        return nn.Sequential(
+            nn.ConvTranspose2d(in_channels, out_channels, 2, stride=2),
+            nn.BatchNorm2d(out_channels),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(out_channels, out_channels, 3, padding=1),
+            nn.BatchNorm2d(out_channels),
+            nn.ReLU(inplace=True)
+        )
+
+    def forward(self, pca_components):
+        # Project PCA components to feature space
+        features = self.input_projection(pca_components)
+
+        # Reshape to spatial dimensions
+        spatial_features = self.spatial_reshape(features)
+        spatial_features = spatial_features.view(-1, 256, 4, 4)
+
+        # Decode through U-Net layers
+        x = spatial_features
+        for layer in self.decoder:
+            x = layer(x)
+
+        return x
+
+# Training configuration
+training_config = {
+    'loss_function': 'L1 Loss (Mean Absolute Error)',
+    'optimizer': 'Adam',
+    'learning_rate': 1e-4,
+    'epochs': 2550,
+    'input_dim': 1024,  # N=1024 PCA components
+    'output_size': 64,  # 64x64 target images
+    'batch_size': 32
+}` }
       ],
-      tech: ["StyleGAN2", "U‑Net", "PyTorch", "LSGAN", "Medical Imaging"]
+      tech: ["U-Net", "PyTorch", "Adam Optimizer", "L1 Loss", "PCA", "fMRI"]
     }
   ];
 
@@ -251,16 +276,19 @@ class UNetReconstructor(nn.Module):
         "✅ Object tracking active!"
       ],
       "fmri-reconstruction": [
-        ">>> Initializing fMRI Reconstruction...",
-        "Loading StyleGAN2 generator...",
-        "Setting up U-Net architecture...",
-        "Processing brain imaging data...",
-        "Generating high-resolution reconstruction...",
-        "SSIM Score: 0.87",
-        "PSNR: 28.4 dB",
+        ">>> Initializing Supervised U-Net fMRI Reconstruction...",
+        "Loading N=1024 PCA components...",
+        "Setting up U-Net decoder architecture...",
+        "Initializing Adam optimizer (LR=1e-4)...",
+        "Training with L1 loss minimization...",
+        "Epoch 1/2550 - Loss: 0.0894",
+        "Epoch 1000/2550 - Loss: 0.0678",
+        "Epoch 2550/2550 - Loss: 0.0647",
+        "Training completed! Final L1 Loss: 0.0647",
+        "Generating 64x64 reconstructions...",
         "Reconstruction completed! 🧠",
         "",
-        "✅ Medical imaging reconstruction successful!"
+        "✅ Supervised fMRI-to-image reconstruction successful!"
       ]
     };
 

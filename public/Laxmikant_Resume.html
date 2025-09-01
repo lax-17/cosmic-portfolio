@@ -134,9 +134,9 @@
       </div>
       <div>
         <h3>fMRI Image Reconstruction (Medical AI)</h3>
-        <div class="muted small">StyleGAN2 • U‑Net • PyTorch • LSGAN</div>
+        <div class="muted small">U-Net • PyTorch • Adam Optimizer • L1 Loss • PCA</div>
         <ul class="bullets">
-          <li>SSIM 0.87 / PSNR 28.4 dB; stabilized training with LSGAN; analyzed domain mismatch & instability.</li>
+          <li>Supervised U-Net decoder mapping N=1024 PCA components to 64x64 images; L1 loss minimization with Adam (LR=1e-4); stable training convergence to 0.0647 final loss.</li>
         </ul>
       </div>
     </div>

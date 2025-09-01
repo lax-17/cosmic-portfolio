@@ -183,7 +183,6 @@ const FAQSection = lazy(() => import("./components/FAQSection"));
 
 const queryClient = new QueryClient();
 
-const AchievementsSection = lazy(() => import("./components/AchievementsSection"));
 
 const NeuralPortfolio = () => {
   const {
@@ -328,12 +327,6 @@ const NeuralPortfolio = () => {
         </Suspense>
       </section>
 
-      {/* Achievements Section */}
-      <section id="achievements" aria-labelledby="achievements-heading">
-        <Suspense fallback={<CosmicLoader message="Loading achievements..." />}>
-          <AchievementsSection />
-        </Suspense>
-      </section>
 
       {/* Blog Section - Hidden */}
       {/* <section id="blog" aria-labelledby="blog-heading">

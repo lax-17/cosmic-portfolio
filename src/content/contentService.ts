@@ -65,10 +65,10 @@ class ContentStorage {
       {
         id: "fmri-reconstruction",
         title: "fMRI Image Reconstruction",
-        description: "Benchmarked GAN architectures for brain imaging reconstruction. Developed novel approaches for high-quality medical image generation and analysis.",
+        description: "Supervised fMRI-to-image reconstruction using U-Net decoder. Maps N=1024 left-hemisphere fMRI PCA components to 64x64 target images with L1 loss minimization and Adam optimization.",
         category: "Medical AI",
-        tech: ["StyleGAN2", "U-Net", "PyTorch", "Deep Learning"],
-        highlights: ["Medical Imaging", "GAN Architecture", "Research Impact"],
+        tech: ["U-Net", "PyTorch", "Adam Optimizer", "L1 Loss", "PCA", "fMRI"],
+        highlights: ["Supervised Learning", "Stable Training", "L1 Loss Minimization"],
         featured: true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

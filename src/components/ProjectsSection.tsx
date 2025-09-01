@@ -42,7 +42,8 @@ const ProjectsSection = () => {
         duration: "3 months",
         complexity: "Advanced",
         collaborators: 4,
-        impact: "High"
+        impact: "High",
+        images: ["/hernia-model-art.png", "/hernia-report.png"]
       },
       {
         id: "drone-navigation",
@@ -65,19 +66,20 @@ const ProjectsSection = () => {
         duration: "2 months",
         complexity: "Expert",
         collaborators: 1,
-        impact: "High"
+        impact: "High",
+        images: ["/drone-main.jpeg", "/drone-car.png", "/drone-carRecog.jpeg"]
       },
       {
         id: "fmri-reconstruction",
         title: "fMRI Image Reconstruction",
-        tech: ["StyleGAN2", "U‑Net", "PyTorch", "LSGAN", "Deep Learning"],
-        description: "GAN‑based brain imaging reconstruction on Algonauts‑style data. Achieved SSIM 0.87 and PSNR 28.4 dB with StyleGAN2 + U‑Net hybrid; stabilized training via LSGAN objective and careful normalization; analyzed domain mismatch and instability factors.",
+        tech: ["U-Net", "PyTorch", "Adam Optimizer", "L1 Loss", "PCA", "fMRI"],
+        description: "Supervised fMRI-to-image reconstruction using U-Net decoder. Maps N=1024 left-hemisphere fMRI PCA components to 64x64 target images with L1 loss minimization and Adam optimization for stable training convergence.",
         highlights: [
-          "StyleGAN2 + U‑Net hybrid",
-          "SSIM 0.87 / PSNR 28.4 dB",
-          "Stable training via LSGAN",
-          "Normalization & EMA tuning",
-          "Domain mismatch analysis"
+          "Supervised U-Net decoder",
+          "N=1024 PCA components",
+          "L1 loss minimization",
+          "Adam optimizer (LR=1e-4)",
+          "Stable training convergence"
         ],
         category: "Medical AI",
         status: "research",
@@ -88,7 +90,8 @@ const ProjectsSection = () => {
         duration: "3 months",
         complexity: "Expert",
         collaborators: 1,
-        impact: "Very High"
+        impact: "Very High",
+        images: ["/fmri-image.png"]
       }
     ];
 
@@ -372,6 +375,17 @@ const ProjectsSection = () => {
                       )}
                     </div>
 
+                    {/* Project Image Preview */}
+                    {project.images && project.images.length > 0 && (
+                      <div className="mb-4 overflow-hidden rounded-lg">
+                        <img
+                          src={project.images[0]}
+                          alt={`${project.title} preview`}
+                          className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+
                     {/* Title */}
                     <h3 className="text-xl font-bold text-cosmic mb-2 group-hover:text-primary transition-colors duration-300">
                       {project.title}
@@ -544,11 +558,23 @@ const ProjectsSection = () => {
                       <div className="flex flex-col lg:flex-row">
                         {/* Project Image/Visual */}
                         <div className="lg:w-1/2 bg-gradient-to-br from-primary/20 to-secondary/20 p-8 flex items-center justify-center">
-                          <div className="text-center">
-                            <Box className="w-24 h-24 mx-auto mb-4 text-primary opacity-50" />
-                            <h3 className="text-2xl font-bold text-cosmic mb-2">{project.title}</h3>
-                            <p className="text-muted-foreground">{project.category}</p>
-                          </div>
+                          {project.images && project.images.length > 0 ? (
+                            <div className="text-center">
+                              <img
+                                src={project.images[0]}
+                                alt={`${project.title} preview`}
+                                className="w-full max-w-sm h-auto rounded-lg shadow-lg mb-4 object-cover"
+                              />
+                              <h3 className="text-2xl font-bold text-cosmic mb-2">{project.title}</h3>
+                              <p className="text-muted-foreground">{project.category}</p>
+                            </div>
+                          ) : (
+                            <div className="text-center">
+                              <Box className="w-24 h-24 mx-auto mb-4 text-primary opacity-50" />
+                              <h3 className="text-2xl font-bold text-cosmic mb-2">{project.title}</h3>
+                              <p className="text-muted-foreground">{project.category}</p>
+                            </div>
+                          )}
                         </div>
 
                         {/* Project Details */}

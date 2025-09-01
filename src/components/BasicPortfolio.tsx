@@ -279,20 +279,20 @@ const BasicPortfolio = () => {
                   fMRI Image Reconstruction
                 </h3>
                 <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-3 md:mb-4">
-                  GAN-based brain imaging reconstruction using StyleGAN2 + U-Net hybrid with LSGAN objective
+                  Supervised fMRI-to-image reconstruction using U-Net decoder with L1 loss minimization and Adam optimization
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">
-                    StyleGAN2
-                  </span>
-                  <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs rounded">
                     U-Net
                   </span>
-                  <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs rounded">
+                  <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs rounded">
                     PyTorch
                   </span>
+                  <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs rounded">
+                    Adam Optimizer
+                  </span>
                   <span className="px-2 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-xs rounded">
-                    LSGAN
+                    L1 Loss
                   </span>
                 </div>
                 <div className="flex space-x-4">

@@ -18,7 +18,6 @@ const CommandLineNav = () => {
     { id: "experience", command: "cd ~/experience", label: "Experience" },
     { id: "education", command: "cd ~/education", label: "Education" },
     { id: "projects", command: "cd ~/projects", label: "Projects & Case Studies" },
-    { id: "achievements", command: "cd ~/achievements", label: "Achievements" },
     { id: "faq", command: "cd ~/faq", label: "FAQ" },
     { id: "contact", command: "cd ~/contact", label: "Contact" },
     // Direct resume action

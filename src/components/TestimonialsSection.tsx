@@ -67,7 +67,7 @@ const TestimonialsSection = () => {
       company: "DeepMind",
       image: "/api/placeholder/80/80",
       rating: 5,
-      testimonial: "I've rarely seen such a comprehensive understanding of both theoretical concepts and practical implementation in a young researcher. Laxmikant's work on GANs for medical imaging reconstruction showed remarkable innovation and technical rigor. His SSIM scores of 0.87 speak for themselves.",
+      testimonial: "I've rarely seen such a comprehensive understanding of both theoretical concepts and practical implementation in a young researcher. Laxmikant's work on GANs for medical imaging reconstruction showed remarkable innovation and technical rigor.",
       project: "fMRI Reconstruction Review",
       relationship: "Industry Reviewer",
       linkedin: "https://linkedin.com/in/alex-thompson-deepmind"

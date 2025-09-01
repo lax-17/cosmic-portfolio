@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import {
   Target,
@@ -15,9 +15,12 @@ import {
   ArrowRight,
   Zap,
   Brain,
-  Eye
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+  X
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const CaseStudiesSection = () => {
   const { ref, inView } = useInView({
@@ -26,6 +29,36 @@ const CaseStudiesSection = () => {
   });
 
   const [selectedCase, setSelectedCase] = useState<string | null>(null);
+  const [lightbox, setLightbox] = useState<{ open: boolean; images: string[]; index: number }>({
+    open: false,
+    images: [],
+    index: 0
+  });
+
+  const openLightbox = (images: string[], index = 0) => {
+    setLightbox({ open: true, images, index });
+  };
+
+  const closeLightbox = () => setLightbox({ open: false, images: [], index: 0 });
+
+  useEffect(() => {
+    if (!lightbox.open) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowRight') setLightbox(lb => ({ ...lb, index: (lb.index + 1) % lb.images.length }));
+      if (e.key === 'ArrowLeft') setLightbox(lb => ({ ...lb, index: (lb.index - 1 + lb.images.length) % lb.images.length }));
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [lightbox.open]);
+
+  // Map case study IDs to their images in /public
+  const imageMap: Record<string, string[]> = {
+    "clinical-narrative": ["/hernia-model-art.png", "/hernia-report.png"],
+    "drone-navigation": ["/drone-main.jpeg", "/drone-car.png", "/drone-carRecog.jpeg"],
+    "fmri-reconstruction": ["/fmri-image.png"],
+    // "multimodal-transformer": [] // no images provided
+  };
 
   const caseStudies = [
     {
@@ -100,6 +133,7 @@ const CaseStudiesSection = () => {
       },
 
       github: "https://github.com/laxmikant-nishad/clinical-narrative",
+      huggingface: "https://huggingface.co/Laxmikant17/Llama-3-8B-Hernia-Analyst-600-Patients-8k",
       demo: "https://clinical-narrative-demo.vercel.app",
       featured: true
     },
@@ -182,77 +216,77 @@ const CaseStudiesSection = () => {
 
     {
       id: "fmri-reconstruction",
-      title: "fMRI Image Reconstruction using GANs",
-      subtitle: "StyleGAN2 + U-Net Hybrid Architecture",
+      title: "fMRI Image Reconstruction using Supervised U-Net",
+      subtitle: "Experiment 5: Supervised U-Net Decoder (N=1024 PCA)",
       category: "Medical AI",
       duration: "3 months",
       team: "1 researcher",
 
       problem: {
         title: "The Challenge",
-        description: "Brain imaging reconstruction from fMRI data required generating high-quality images while maintaining anatomical accuracy and dealing with domain mismatch issues.",
+        description: "Brain imaging reconstruction from fMRI data faced persistent stability challenges with adversarial training approaches. Traditional GAN methods suffered from training instability, mode collapse, and difficulty in learning the complex mapping from fMRI PCA components to visual stimuli.",
         painPoints: [
-          "Low-quality fMRI data reconstruction",
-          "Domain mismatch between training and test data",
-          "Training instability with traditional GANs",
-          "Need for high-fidelity brain image generation",
-          "Balancing generation quality with anatomical accuracy"
+          "Persistent stability challenges with adversarial training",
+          "Training instability and mode collapse in GAN approaches",
+          "Complex mapping from N=1024 fMRI PCA components to 64x64 images",
+          "Need for reliable and consistent image reconstruction",
+          "Balancing reconstruction quality with training stability"
         ]
       },
 
       solution: {
         title: "The Solution",
-        description: "Developed a hybrid GAN architecture combining StyleGAN2 with U-Net, using LSGAN objective for stable training and careful normalization strategies.",
+        description: "Implemented a direct supervised approach using a U-Net style decoder network trained to map N=1024 left-hemisphere fMRI PCA components directly to target 64x64 images, addressing the stability issues of adversarial methods.",
         approach: [
           {
-            phase: "Architecture Design",
-            details: "Combined StyleGAN2 generator with U-Net discriminator for better feature learning and stability"
+            phase: "Supervised U-Net Implementation",
+            details: "Developed U-Net style decoder network to map N=1024 fMRI PCA components to 64x64 target images"
           },
           {
-            phase: "Training Stabilization",
-            details: "Implemented LSGAN objective and careful normalization to address training instability"
+            phase: "Training Optimization",
+            details: "Minimized Mean Absolute Error (L1 loss) using Adam optimizer (LR=1e-4) for 2550 epochs"
           },
           {
-            phase: "Domain Analysis",
-            details: "Analyzed domain mismatch factors and implemented strategies to improve generalization"
+            phase: "Stability Analysis",
+            details: "Compared supervised approach against unstable GAN training methods"
           },
           {
-            phase: "Evaluation Metrics",
-            details: "Used SSIM and PSNR metrics to evaluate reconstruction quality and fidelity"
+            phase: "Quality Assessment",
+            details: "Evaluated reconstruction quality focusing on structural coherence and image sharpness trade-offs"
           }
         ],
-        technologies: ["StyleGAN2", "U-Net", "LSGAN", "PyTorch", "SSIM", "PSNR"]
+        technologies: ["U-Net", "PyTorch", "Adam Optimizer", "L1 Loss", "PCA", "fMRI"]
       },
 
       results: {
         title: "Results & Impact",
         metrics: [
-          { label: "SSIM Score", value: "0.87", description: "Structural similarity index" },
-          { label: "PSNR", value: "28.4 dB", description: "Peak signal-to-noise ratio" },
-          { label: "Training Stability", value: "✓", description: "Achieved with LSGAN" },
-          { label: "Domain Analysis", value: "✓", description: "Mismatch factors identified" }
+          { label: "Training Stability", value: "Highly Stable", description: "Consistent convergence" },
+          { label: "Final L1 Loss", value: "0.0647", description: "Mean Absolute Error" },
+          { label: "Training Epochs", value: "2,550", description: "Complete convergence" },
+          { label: "Image Quality", value: "Structural Coherence", description: "Better shape/layout preservation" }
         ],
         outcomes: [
-          "Achieved high-quality brain image reconstruction with SSIM 0.87",
-          "Maintained good signal quality with PSNR 28.4 dB",
-          "Successfully stabilized GAN training using LSGAN objective",
-          "Identified and analyzed key domain mismatch factors",
-          "Created robust pipeline for medical image reconstruction"
+          "Achieved highly stable training with consistent L1 loss decrease to 0.0647",
+          "Generated images with better structural coherence and clearer correspondence to real stimuli shapes",
+          "Demonstrated robustness of supervised approach for learning basic fMRI-to-image mapping",
+          "Identified trade-off between image sharpness and structural accuracy",
+          "Established reliable baseline for future adversarial training improvements"
         ]
       },
 
       lessons: {
         title: "Key Learnings",
         insights: [
-          "Hybrid architectures can combine strengths of different GAN approaches",
-          "LSGAN objective significantly improves training stability",
-          "Domain mismatch analysis is crucial for medical imaging applications",
-          "Careful normalization strategies are essential for consistent results",
-          "Medical imaging requires specialized evaluation metrics beyond standard GAN metrics"
+          "Supervised approaches provide stable alternative to adversarial training for complex mappings",
+          "L1 loss minimization leads to blurry images but preserves structural information",
+          "U-Net architecture effectively captures spatial relationships in fMRI reconstruction",
+          "Training stability is crucial for reliable medical imaging applications",
+          "Structural coherence often more valuable than pixel-perfect sharpness in medical contexts"
         ]
       },
 
-      github: "https://github.com/laxmikant-nishad/fmri-reconstruction",
+      github: "https://github.com/lax-17/Fmri-to-image",
       demo: null,
       featured: true
     },
@@ -329,7 +363,7 @@ const CaseStudiesSection = () => {
         ]
       },
 
-      github: "https://github.com/laxmikant-nishad/drone-navigation",
+      github: "https://github.com/lax-17/drone-mavic",
       demo: "https://drone-navigation-demo.vercel.app",
       featured: false
     }
@@ -408,6 +442,18 @@ const CaseStudiesSection = () => {
                   )}
                 </div>
 
+                {/* Image Preview */}
+                {imageMap[study.id]?.length ? (
+                  <div className="mb-4 overflow-hidden rounded-lg">
+                    <img
+                      src={imageMap[study.id][0]}
+                      alt={`${study.title} preview`}
+                      className="w-full h-40 object-cover cursor-zoom-in"
+                      onClick={(e) => { e.stopPropagation(); openLightbox(imageMap[study.id], 0); }}
+                    />
+                  </div>
+                ) : null}
+
                 <h3 className="text-xl font-bold text-cosmic mb-2">{study.title}</h3>
                 <p className="text-primary font-medium mb-3">{study.subtitle}</p>
 
@@ -440,8 +486,22 @@ const CaseStudiesSection = () => {
                           window.open(study.github, '_blank');
                         }}
                         className="p-2 glass-card hover:bg-primary/20 transition-colors"
+                        aria-label="Open GitHub"
                       >
                         <Github size={16} />
+                      </button>
+                    )}
+                    {(study as any).huggingface && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open((study as any).huggingface, '_blank');
+                        }}
+                        className="px-2 py-1 glass-card hover:bg-primary/20 transition-colors text-sm"
+                        aria-label="Open Hugging Face"
+                        title="Hugging Face"
+                      >
+                        <span className="text-lg leading-none">🤗</span>
                       </button>
                     )}
                     {study.demo && (
@@ -451,6 +511,7 @@ const CaseStudiesSection = () => {
                           window.open(study.demo, '_blank');
                         }}
                         className="p-2 glass-card hover:bg-primary/20 transition-colors"
+                        aria-label="Open Demo"
                       >
                         <ExternalLink size={16} />
                       </button>
@@ -466,6 +527,32 @@ const CaseStudiesSection = () => {
                     exit={{ opacity: 0, height: 0 }}
                     className="mt-6 pt-6 border-t border-glass-border space-y-8"
                   >
+                    {/* Visuals */}
+                    {imageMap[study.id]?.length ? (
+                      <div className="mb-6">
+                        {imageMap[study.id].length === 1 ? (
+                          <img
+                            src={imageMap[study.id][0]}
+                            alt={`${study.title} visual`}
+                            className="w-full h-64 object-cover rounded-lg cursor-zoom-in"
+                            onClick={() => openLightbox(imageMap[study.id], 0)}
+                          />
+                        ) : (
+                          <div className="grid grid-cols-3 gap-2">
+                            {imageMap[study.id].map((src, idx) => (
+                              <img
+                                key={idx}
+                                src={src}
+                                alt={`${study.title} visual ${idx + 1}`}
+                                className="w-full h-24 object-cover rounded-md cursor-zoom-in"
+                                onClick={() => openLightbox(imageMap[study.id], idx)}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : null}
+
                     {/* Problem Section */}
                     <div>
                       <h4 className="text-lg font-bold text-cosmic mb-3 flex items-center gap-2">
@@ -600,6 +687,87 @@ const CaseStudiesSection = () => {
           </motion.div>
         </motion.div>
       </div>
+      {/* Lightbox for images */}
+      <AnimatePresence>
+        {lightbox.open && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={closeLightbox}
+          >
+            <motion.div
+              initial={{ scale: 0.98 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.98 }}
+              className="relative w-full h-full max-w-6xl max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={lightbox.images[lightbox.index]}
+                alt={`Project visual ${lightbox.index + 1}`}
+                className="w-full h-full object-contain rounded-lg shadow-2xl"
+              />
+
+              {/* Close */}
+              <button
+                aria-label="Close"
+                className="absolute top-4 right-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white"
+                onClick={closeLightbox}
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {lightbox.images.length > 1 && (
+                <>
+                  {/* Prev */}
+                  <button
+                    aria-label="Previous image"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white"
+                    onClick={() =>
+                      setLightbox((lb) => ({
+                        ...lb,
+                        index: (lb.index - 1 + lb.images.length) % lb.images.length,
+                      }))
+                    }
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+
+                  {/* Next */}
+                  <button
+                    aria-label="Next image"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white"
+                    onClick={() =>
+                      setLightbox((lb) => ({
+                        ...lb,
+                        index: (lb.index + 1) % lb.images.length,
+                      }))
+                    }
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+
+                  {/* Thumbnails */}
+                  <div className="absolute left-0 right-0 bottom-2 mx-auto flex gap-2 overflow-x-auto px-4 py-2">
+                    {lightbox.images.map((thumb, idx) => (
+                      <button
+                        key={idx}
+                        className={`h-14 w-20 rounded border ${idx === lightbox.index ? 'border-primary' : 'border-white/20'} overflow-hidden`}
+                        onClick={() => setLightbox((lb) => ({ ...lb, index: idx }))}
+                        aria-label={`Go to image ${idx + 1}`}
+                      >
+                        <img src={thumb} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

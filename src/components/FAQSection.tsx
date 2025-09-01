@@ -54,7 +54,7 @@ const FAQSection = () => {
       id: 7,
       category: "Technical",
       question: "What's your experience with computer vision?",
-      answer: "I have strong experience in computer vision, including multi-modal transformer architectures that fuse DINOv2 embeddings with MediaPipe features. I've worked on emotion recognition achieving 0.350 macro-F1 on 7-class datasets, real-time object tracking for drone navigation at 30 FPS, and medical imaging reconstruction using GANs with SSIM scores of 0.87."
+      answer: "I have strong experience in computer vision, including multi-modal transformer architectures that fuse DINOv2 embeddings with MediaPipe features. I've worked on emotion recognition achieving 0.350 macro-F1 on 7-class datasets, real-time object tracking for drone navigation at 30 FPS, and medical imaging reconstruction using GANs."
     },
     {
       id: 8,
@@ -78,7 +78,7 @@ const FAQSection = () => {
       id: 11,
       category: "Technical",
       question: "What's your approach to model evaluation and validation?",
-      answer: "I use comprehensive evaluation strategies including quantitative metrics (macro-F1, SSIM, PSNR), qualitative assessment by domain experts, regression testing, and safety validation. For healthcare applications, I ensure clinician validation of outputs. I also implement techniques like EMA, threshold calibration, and light test-time augmentation for robust evaluation."
+      answer: "I use comprehensive evaluation strategies including quantitative metrics (macro-F1, accuracy, precision), qualitative assessment by domain experts, regression testing, and safety validation. For healthcare applications, I ensure clinician validation of outputs. I also implement techniques like EMA, threshold calibration, and light test-time augmentation for robust evaluation."
     },
     {
       id: 12,
