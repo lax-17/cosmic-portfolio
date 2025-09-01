@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { 
-  Target, 
-  Lightbulb, 
-  Cog, 
-  TrendingUp, 
-  CheckCircle, 
-  AlertCircle, 
-  BarChart3, 
-  Users, 
+import {
+  Target,
+  Lightbulb,
+  Cog,
+  TrendingUp,
+  CheckCircle,
+  AlertCircle,
+  BarChart3,
+  Users,
   Calendar,
   ExternalLink,
   Github,
@@ -33,9 +33,9 @@ const CaseStudiesSection = () => {
       title: "Clinical Narrative Assistant",
       subtitle: "End-to-End Healthcare LLM System",
       category: "Healthcare AI",
-      duration: "6 months",
-      team: "2 researchers + clinical advisors",
-      
+      duration: "3 months",
+      team: "4 researchers",
+
       problem: {
         title: "The Challenge",
         description: "Healthcare systems needed an AI solution to process and structure clinical narratives for Electronic Health Records (EHR) and Retrieval-Augmented Generation (RAG) workflows. The challenge was creating a system that could understand complex medical language while ensuring safety and accuracy.",
@@ -109,9 +109,9 @@ const CaseStudiesSection = () => {
       title: "Multi-modal Transformer for Emotion Recognition",
       subtitle: "Hybrid Conv1D + Transformer Architecture",
       category: "Computer Vision",
-      duration: "6 months",
+      duration: "3 months",
       team: "Solo research project",
-      
+
       problem: {
         title: "The Challenge",
         description: "Emotion recognition from visual data required combining multiple modalities (facial features, pose, context) to achieve robust performance across diverse scenarios and populations.",
@@ -185,9 +185,9 @@ const CaseStudiesSection = () => {
       title: "fMRI Image Reconstruction using GANs",
       subtitle: "StyleGAN2 + U-Net Hybrid Architecture",
       category: "Medical AI",
-      duration: "4 months",
-      team: "3 researchers",
-      
+      duration: "3 months",
+      team: "1 researcher",
+
       problem: {
         title: "The Challenge",
         description: "Brain imaging reconstruction from fMRI data required generating high-quality images while maintaining anatomical accuracy and dealing with domain mismatch issues.",
@@ -262,9 +262,9 @@ const CaseStudiesSection = () => {
       title: "Object-Tracking Drone Navigation",
       subtitle: "Real-time Pursuit with PID Control",
       category: "Robotics",
-      duration: "5 months",
+      duration: "2 months",
       team: "Solo project",
-      
+
       problem: {
         title: "The Challenge",
         description: "Autonomous drone navigation required robust object tracking capabilities with real-time performance, handling occlusions, and maintaining stable flight control.",

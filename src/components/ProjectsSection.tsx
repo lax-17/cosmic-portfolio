@@ -17,7 +17,7 @@ const ProjectsSection = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  
+
     const projects = [
       {
         id: "clinical-narrative",
@@ -39,8 +39,9 @@ const ProjectsSection = () => {
         github: "https://github.com/laxmikant-nishad/clinical-narrative",
         demo: "https://clinical-narrative-demo.vercel.app",
         date: "2025",
+        duration: "3 months",
         complexity: "Advanced",
-        collaborators: 2,
+        collaborators: 4,
         impact: "High"
       },
       {
@@ -61,6 +62,7 @@ const ProjectsSection = () => {
         github: "https://github.com/laxmikant-nishad/drone-navigation",
         demo: "https://drone-navigation-demo.vercel.app",
         date: "2023",
+        duration: "2 months",
         complexity: "Expert",
         collaborators: 1,
         impact: "High"
@@ -83,10 +85,11 @@ const ProjectsSection = () => {
         github: "https://github.com/laxmikant-nishad/fmri-reconstruction",
         demo: null,
         date: "2024",
+        duration: "3 months",
         complexity: "Expert",
-        collaborators: 3,
+        collaborators: 1,
         impact: "Very High"
-      },
+      }
     ];
 
     // Filtered and sorted projects
@@ -387,6 +390,11 @@ const ProjectsSection = () => {
                         <Calendar className="w-3 h-3" />
                         {project.date}
                       </span>
+                      {project.duration && (
+                        <span className="px-2 py-1 bg-primary/10 text-primary rounded-full">
+                          {project.duration}
+                        </span>
+                      )}
                     </div>
 
                     {/* Description */}
@@ -571,6 +579,11 @@ const ProjectsSection = () => {
                               <Calendar className="w-3 h-3" />
                               {project.date}
                             </span>
+                            {project.duration && (
+                              <span className="px-3 py-1 bg-secondary/20 text-secondary rounded-full text-sm">
+                                {project.duration}
+                              </span>
+                            )}
                           </div>
 
                           {/* Description */}

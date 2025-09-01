@@ -21,14 +21,14 @@ const ProjectRepository = () => {
       id: "clinical-assistant",
       name: "clinical_narrative_assistant/",
       type: "folder",
-      description: "End‑to‑end healthcare LLM: QLoRA fine‑tuning (Llama 3 8B, 8192‑token context), schema‑faithful JSON outputs, safety/hallucination checks, and Docker + llama.cpp packaging for offline inference.",
+      description: "End‑to‑end healthcare LLM: QLoRA fine‑tuning (Llama 3 8B, 8192‑token context), schema‑faithful JSON outputs for EHR/RAG, safety & hallucination checks, and Docker + llama.cpp packaging for offline inference.",
       files: [
         { name: "model.py", type: "python", content: `# Clinical Narrative Assistant
 # Fine-tuned Llama 3 with QLoRA for medical data
 
 import torch
 from transformers import (
-    AutoTokenizer, 
+    AutoTokenizer,
     AutoModelForCausalLM,
     BitsAndBytesConfig
 )
@@ -41,13 +41,13 @@ class ClinicalNarrativeAssistant:
             bnb_4bit_quant_type="nf4",
             bnb_4bit_compute_dtype=torch.float16
         )
-        
+
         self.model = AutoModelForCausalLM.from_pretrained(
             model_path,
             quantization_config=self.config,
             device_map="auto"
         )
-        
+
         # QLoRA Configuration
         lora_config = LoraConfig(
             r=16,
@@ -57,9 +57,9 @@ class ClinicalNarrativeAssistant:
             bias="none",
             task_type="CAUSAL_LM"
         )
-        
+
         self.model = get_peft_model(self.model, lora_config)
-        
+
     def process_narrative(self, text: str) -> dict:
         """Process clinical narrative and extract structured data"""
         # 600+ structured patient profiles processed
@@ -108,24 +108,24 @@ class DroneObjectTracker:
         self.pid_controller = PIDController(
             kp=0.5, ki=0.1, kd=0.2
         )
-        
+
     def initialize_tracking(self, frame, bbox):
         """Initialize object tracking with bounding box"""
         return self.tracker.init(frame, bbox)
-        
+
     def update_tracking(self, frame):
         """Update tracking and return new position"""
         success, bbox = self.tracker.update(frame)
-        
+
         if success:
             # Calculate control signals
             center_x = bbox[0] + bbox[2] / 2
             center_y = bbox[1] + bbox[3] / 2
-            
+
             # PID control for smooth tracking
             control_x = self.pid_controller.update_x(center_x)
             control_y = self.pid_controller.update_y(center_y)
-            
+
             return control_x, control_y, bbox
         return None, None, None
 
@@ -154,12 +154,12 @@ from torch.nn import functional as F
 
 class StyleGAN2Generator(nn.Module):
     """StyleGAN2 generator for high-quality fMRI reconstruction"""
-    
+
     def __init__(self, latent_dim=512, img_size=256):
         super().__init__()
         self.latent_dim = latent_dim
         self.img_size = img_size
-        
+
         # Mapping network
         self.mapping = nn.Sequential(
             nn.Linear(latent_dim, 512),
@@ -168,20 +168,20 @@ class StyleGAN2Generator(nn.Module):
             nn.LeakyReLU(0.2),
             nn.Linear(512, 512)
         )
-        
+
         # Synthesis network with progressive upsampling
         self.synthesis = SynthesisNetwork(img_size)
-        
+
     def forward(self, z, noise=None):
         w = self.mapping(z)
         return self.synthesis(w, noise)
 
 class UNetReconstructor(nn.Module):
     """U-Net architecture for fMRI reconstruction"""
-    
+
     def __init__(self, in_channels=1, out_channels=1):
         super().__init__()
-        
+
         # Encoder
         self.encoder = nn.ModuleList([
             self._conv_block(in_channels, 64),
@@ -189,7 +189,7 @@ class UNetReconstructor(nn.Module):
             self._conv_block(128, 256),
             self._conv_block(256, 512)
         ])
-        
+
         # Decoder
         self.decoder = nn.ModuleList([
             self._upconv_block(512, 256),

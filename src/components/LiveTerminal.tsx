@@ -72,68 +72,6 @@ const LiveTerminal = () => {
 
   const availableCommands = {
     help: {
-      description: "Show available commands",
-      output: [
-        terminalTheme === 'matrix'
-          ? "The Matrix Terminal - Reality is a simulation"
-          : "GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)",
-        terminalTheme === 'matrix'
-          ? "Welcome to the Matrix. Commands are your path to enlightenment."
-          : "These shell commands are defined internally. Type 'help' to see this list.",
-        "",
-        "📋 Available Command Categories:",
-        "",
-        "🎯 Portfolio Commands:",
-        "  whoami, skills, projects, contact",
-        "",
-        "🗂️  File System:",
-        "  pwd, ls, cd, mkdir, rmdir, touch, rm, cp, mv, cat",
-        "",
-        "🔍 Text Processing:",
-        "  grep, find, wc, head, tail, sort, uniq",
-        "",
-        "🖥️  System Info:",
-        "  ps, top, df, free, uptime, uname, hostname, id, env",
-        "",
-        "🌐 Network:",
-        "  ping, nslookup, traceroute, ifconfig",
-        "",
-        "⚙️  Process Management:",
-        "  kill, jobs, fg, bg",
-        "",
-        "📦 Package Managers:",
-        "  apt, npm, pip",
-        "",
-        "🛠️  Development Tools:",
-        "  git, make, gcc, python, node",
-        "",
-        "🛠️  Utilities:",
-        "  clear, date, echo, history, man, alias, export, crontab, screen",
-        "",
-        "🎉 Fun & Games:",
-        "  matrix, hack, joke, fortune, 8ball, quote, ascii, game",
-        "",
-        "🎨 Customization:",
-        "  theme, fun",
-        "",
-        "📖 For detailed help on a category:",
-        "  help file     - File system commands",
-        "  help system   - System information commands",
-        "  help network  - Network commands",
-        "  help dev      - Development tools",
-        "  help all      - Show all commands",
-        "",
-        "⌨️  Keyboard Shortcuts:",
-        "  ↑/↓           - Navigate command history",
-        "  Tab           - Auto-complete commands",
-        "  Ctrl+L        - Clear terminal",
-        "  Esc           - Close suggestions",
-        "",
-        "Type any command to get started! ✨"
-      ]
-    },
-    // Old whoami removed - using the new one below
-    skills: {
       description: "List technical skills",
       output: [
         "🚀 Core Technologies:",
@@ -159,14 +97,17 @@ const LiveTerminal = () => {
         "├── clinical_narrative_assistant/",
         "│   ├── Fine-tuned Llama 3 with QLoRA",
         "│   ├── Processed 600+ patient profiles",
+        "│   ├── 3 months with 4 researchers",
         "│   └── Medical NLP pipeline",
         "├── object_tracking_drone/",
         "│   ├── Real-time pursuit with PID control",
         "│   ├── OpenCV + GPS fusion",
+        "│   ├── 2 months",
         "│   └── Autonomous navigation system",
         "└── fmri_image_reconstruction/",
         "    ├── GAN-based brain imaging",
         "    ├── StyleGAN2 + U-Net architectures",
+        "    ├── 3 months solo project",
         "    └── Medical imaging reconstruction"
       ]
     },
@@ -288,30 +229,12 @@ const LiveTerminal = () => {
       description: "Clear command history",
       output: ["Command history cleared."]
     },
-    mkdir: {
-      description: "Create directory",
-      output: ["Usage: mkdir [directory]"]
-    },
-    rmdir: {
-      description: "Remove empty directory",
-      output: ["Usage: rmdir [directory]"]
-    },
-    touch: {
-      description: "Create empty file or update timestamp",
-      output: ["Usage: touch [filename]"]
-    },
-    rm: {
-      description: "Remove files or directories",
-      output: ["Usage: rm [options] [file/directory]", "Options:", "  -r    Remove directories and their contents recursively", "  -f    Force removal without confirmation"]
-    },
-    cp: {
-      description: "Copy files and directories",
-      output: ["Usage: cp [options] source destination", "Options:", "  -r    Copy directories recursively", "  -i    Prompt before overwrite"]
-    },
-    mv: {
-      description: "Move or rename files and directories",
-      output: ["Usage: mv [options] source destination", "Options:", "  -i    Prompt before overwrite"]
-    },
+    
+    
+    
+    
+    
+    
     grep: {
       description: "Search for patterns in files",
       output: ["Usage: grep [options] pattern [file...]", "Options:", "  -i    Ignore case", "  -n    Show line numbers", "  -r    Recursive search"]
@@ -332,14 +255,8 @@ const LiveTerminal = () => {
       description: "Output the last part of files",
       output: ["Usage: tail [options] [file...]", "Options:", "  -n N    Print last N lines (default 10)", "  -f      Follow file changes"]
     },
-    sort: {
-      description: "Sort lines of text files",
-      output: ["Usage: sort [options] [file...]", "Options:", "  -n    Numeric sort", "  -r    Reverse order", "  -u    Unique lines only"]
-    },
-    uniq: {
-      description: "Report or omit repeated lines",
-      output: ["Usage: uniq [options] [input [output]]", "Options:", "  -c    Prefix lines with occurrence count", "  -d    Only print duplicate lines", "  -u    Only print unique lines"]
-    },
+    
+    
     hostname: {
       description: "Show or set system hostname",
       output: [userInfo.host]
@@ -373,30 +290,12 @@ const LiveTerminal = () => {
       description: "Determine file type",
       output: ["Usage: file [filename]"]
     },
-    kill: {
-      description: "Send signal to process",
-      output: ["Usage: kill [signal] pid", "Common signals:", "  -9    SIGKILL (force kill)", "  -15   SIGTERM (terminate)", "  -2    SIGINT (interrupt)"]
-    },
-    jobs: {
-      description: "List active jobs",
-      output: ["[1]+  Running                 sleep 100 &"]
-    },
-    fg: {
-      description: "Bring job to foreground",
-      output: ["Usage: fg [job_spec]"]
-    },
-    bg: {
-      description: "Send job to background",
-      output: ["Usage: bg [job_spec]"]
-    },
-    alias: {
-      description: "Create command aliases",
-      output: ["Usage: alias [name='value']", "Current aliases:", "  alias ll='ls -alF'", "  alias la='ls -A'", "  alias l='ls -CF'"]
-    },
-    export: {
-      description: "Set environment variable",
-      output: ["Usage: export VARIABLE=value"]
-    },
+    
+    
+    
+    
+    
+    
     nslookup: {
       description: "Query DNS name servers",
       output: ["Usage: nslookup [domain]"]
@@ -427,49 +326,19 @@ const LiveTerminal = () => {
         "        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0"
       ]
     },
-    apt: {
-      description: "Package management command",
-      output: ["Usage: apt [options] command", "Commands:", "  install    Install packages", "  remove     Remove packages", "  update     Update package list", "  upgrade    Upgrade packages", "  search     Search for packages"]
-    },
-    npm: {
-      description: "Node Package Manager",
-      output: ["Usage: npm <command>", "Commands:", "  install     Install packages", "  uninstall   Remove packages", "  update      Update packages", "  list        List installed packages", "  run         Run package scripts"]
-    },
-    pip: {
-      description: "Python package installer",
-      output: ["Usage: pip <command> [options]", "Commands:", "  install     Install packages", "  uninstall   Remove packages", "  list        List installed packages", "  show        Show package info", "  freeze      Output installed packages in requirements format"]
-    },
-    git: {
-      description: "Version control system",
-      output: ["Usage: git <command> [options]", "Common commands:", "  status      Show working tree status", "  add         Add file contents to index", "  commit      Record changes to repository", "  push        Update remote refs", "  pull        Fetch and merge changes", "  clone       Clone repository", "  branch      List or create branches", "  checkout    Switch branches or restore files"]
-    },
-    make: {
-      description: "GNU make utility",
-      output: ["Usage: make [options] [target] ...", "Options:", "  -f FILE    Read FILE as a makefile", "  -j JOBS    Allow JOBS jobs at once", "  -k         Keep going when some targets can't be made"]
-    },
-    gcc: {
-      description: "GNU C Compiler",
-      output: ["Usage: gcc [options] file...", "Common options:", "  -o file    Place output in file", "  -c         Compile and assemble, but do not link", "  -g         Generate debugging information", "  -O2        Optimize for speed", "  -Wall      Enable all warnings"]
-    },
-    python: {
-      description: "Python interpreter",
-      output: ["Python 3.9.7 (default, Sep 10 2021, 14:59:43)", "[GCC 11.2.0] on linux", "Type \"help\", \"copyright\", \"credits\" or \"license\" for more information.", ">>> "]
-    },
-    node: {
-      description: "Node.js JavaScript runtime",
-      output: ["Welcome to Node.js v16.14.0.", "Type \".help\" for more information.", "> "]
-    },
-    crontab: {
-      description: "Maintain crontab files",
-      output: ["Usage: crontab [options]", "Options:", "  -l    List current crontab", "  -e    Edit current crontab", "  -r    Remove current crontab"]
-    },
-    screen: {
-      description: "Screen manager with VT100/ANSI terminal emulation",
-      output: ["Usage: screen [options] [command [args]]", "Options:", "  -S name    Name session", "  -r         Reattach to session", "  -ls        List sessions", "  -d         Detach session"]
-    },
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     man: {
       description: "Display manual page",
-      output: ["Usage: man [command]", "Available commands: help, pwd, ls, cd, ps, top, df, free, uptime, whoami, uname, history, mkdir, rmdir, touch, rm, cp, mv, grep, find, wc, head, tail, sort, uniq, hostname, id, env, which, type, file, kill, jobs, fg, bg, alias, export, nslookup, traceroute, ifconfig, apt, npm, pip, git, make, gcc, python, node, crontab, screen"]
+      output: ["Usage: man [command]", "Available commands: help, pwd, ls, cd, ps, top, df, free, uptime, whoami, uname, history, grep, find, wc, head, tail, hostname, id, env, which, type, file, nslookup, traceroute, ifconfig, date, echo, ping, cat, clear"]
     },
     clear: {
       description: "Clear terminal history",
@@ -491,44 +360,9 @@ const LiveTerminal = () => {
         "round-trip min/avg/max/stddev = 0.039/0.041/0.042/0.001 ms"
       ]
     },
-    matrix: {
-      description: "Enter the matrix",
-      output: [
-        "Wake up, Neo...",
-        "The Matrix has you...",
-        "Follow the white rabbit.",
-        "Knock, knock, Neo.",
-        "",
-        "💊 Red pill or blue pill?",
-        "",
-        "Type 'red' or 'blue' to choose your path..."
-      ]
-    },
-    hack: {
-      description: "Simulate hacking sequence",
-      output: [
-        "Initializing neural interface...",
-        "Bypassing security protocols...",
-        "Accessing mainframe...",
-        "Decrypting data streams...",
-        "WARNING: Unauthorized access detected!",
-        "Deploying countermeasures...",
-        "Connection terminated.",
-        "",
-        "Just kidding! This is a simulation. 😄"
-      ]
-    },
-    theme: {
-      description: "Change terminal theme",
-      output: [
-        "Available themes:",
-        "  default - Standard neural interface",
-        "  matrix  - Enter the Matrix",
-        "  hacker  - Elite hacker mode",
-        "",
-        "Usage: theme [default|matrix|hacker]"
-      ]
-    },
+    
+    
+    
     resize: {
       description: "Resize terminal window",
       output: [
@@ -537,139 +371,13 @@ const LiveTerminal = () => {
         "Or drag the title bar to move the terminal"
       ]
     },
-    fun: {
-      description: "Enable fun mode",
-      output: [
-        "🎉 Fun mode activated!",
-        "✨ Terminal is now extra sparkly!",
-        "🚀 Ready for cosmic adventures!",
-        "",
-        "Try these fun commands:",
-        "  matrix  - Enter the Matrix",
-        "  hack    - Simulate hacking",
-        "  joke    - Tell a random joke",
-        "  fortune - Get a fortune cookie",
-        "  8ball   - Ask the magic 8-ball",
-        "  quote   - Get an inspirational quote",
-        "  ascii   - Show ASCII art",
-        "  game    - Play a guessing game",
-        "  theme   - Change appearance"
-      ]
-    },
-    joke: {
-      description: "Tell a random joke",
-      output: (() => {
-        const jokes = [
-          "Why did the computer go to therapy? It had too many bytes of emotional baggage! 🤖",
-          "Why did the programmer quit his job? Because he didn't get arrays! 💻",
-          "What do you call a computer that sings? A Dell! 🎵",
-          "Why was the JavaScript developer sad? Because he didn't know how to 'null' his feelings! 😢",
-          "Why did the AI go to school? To improve its learning algorithm! 🧠",
-          "What did the ocean say to the beach? Nothing, it just waved! 🌊"
-        ];
-        return [jokes[Math.floor(Math.random() * jokes.length)]];
-      })()
-    },
-    fortune: {
-      description: "Get a fortune cookie message",
-      output: (() => {
-        const fortunes = [
-          "🎭 You will discover a hidden talent for programming poetry.",
-          "🌟 A cosmic opportunity will present itself in your next project.",
-          "💡 Your innovative ideas will light up the digital world.",
-          "🚀 Prepare for liftoff - your career is about to reach new heights!",
-          "🎯 Your precision in code will lead to perfect execution in life.",
-          "🔮 The matrix has chosen you for greatness.",
-          "⚡ Your neural networks will fire with brilliant insights.",
-          "🌈 Debug your doubts and compile your dreams."
-        ];
-        return ["🍪 " + fortunes[Math.floor(Math.random() * fortunes.length)]];
-      })()
-    },
-    "8ball": {
-      description: "Ask the magic 8-ball a question",
-      output: (() => {
-        const answers = [
-          "🎱 It is certain",
-          "🎱 It is decidedly so",
-          "🎱 Without a doubt",
-          "🎱 Yes definitely",
-          "🎱 You may rely on it",
-          "🎱 As I see it, yes",
-          "🎱 Most likely",
-          "🎱 Outlook good",
-          "🎱 Yes",
-          "🎱 Signs point to yes",
-          "🎱 Reply hazy, try again",
-          "🎱 Ask again later",
-          "🎱 Better not tell you now",
-          "🎱 Cannot predict now",
-          "🎱 Concentrate and ask again",
-          "🎱 Don't count on it",
-          "🎱 My reply is no",
-          "🎱 My sources say no",
-          "🎱 Outlook not so good",
-          "🎱 Very doubtful"
-        ];
-        return [answers[Math.floor(Math.random() * answers.length)]];
-      })()
-    },
-    quote: {
-      description: "Get an inspirational quote",
-      output: (() => {
-        const quotes = [
-          "\"The best way to predict the future is to create it.\" - Peter Drucker",
-          "\"Code is poetry written in logic.\" - Unknown",
-          "\"Innovation distinguishes between a leader and a follower.\" - Steve Jobs",
-          "\"The only way to do great work is to love what you do.\" - Steve Jobs",
-          "\"Your most unhappy customers are your greatest source of learning.\" - Bill Gates",
-          "\"The future belongs to those who believe in the beauty of their dreams.\" - Eleanor Roosevelt"
-        ];
-        return [quotes[Math.floor(Math.random() * quotes.length)]];
-      })()
-    },
-    ascii: {
-      description: "Show ASCII art",
-      output: (() => {
-        const arts = [
-          [
-            "     .-\"\"\"\"\"-.",
-            "    /        \\",
-            "   |  Neural  |",
-            "    \\  Net   /",
-            "     '-....-'"
-          ],
-          [
-            "   _______",
-            "  /       \\",
-            " |  CODE   |",
-            "  \\_______/",
-            "     | |",
-            "     | |",
-            "     | |"
-          ],
-          [
-            "    .-~~~-.",
-            "   /       \\",
-            "  |  AI     |",
-            "   \\       /",
-            "    `-...-'"
-          ]
-        ];
-        return arts[Math.floor(Math.random() * arts.length)];
-      })()
-    },
-    game: {
-      description: "Play a number guessing game",
-      output: [
-        "🎮 Welcome to the Number Guessing Game!",
-        "I'm thinking of a number between 1 and 100.",
-        "Type 'guess [number]' to make a guess!",
-        "Type 'game' again to start over.",
-        "",
-        "Good luck! 🍀"
-      ]
-    },
+    
+    
+    
+    
+    
+    
+    
     "help file": {
       description: "Show file system commands",
       output: [
@@ -737,25 +445,7 @@ const LiveTerminal = () => {
         "  ifconfig            - Show network interface information"
       ]
     },
-    "help dev": {
-      description: "Show development tools",
-      output: [
-        "🛠️  Development Tools:",
-        "",
-        "  git [cmd]     - Version control system",
-        "  make [target] - GNU make utility",
-        "  gcc [file]    - GNU C Compiler",
-        "  python        - Python interpreter",
-        "  node          - Node.js JavaScript runtime",
-        "",
-        "Examples:",
-        "  git status        - Show git status",
-        "  make all          - Build all targets",
-        "  gcc hello.c -o hello - Compile C program",
-        "  python --version  - Show Python version",
-        "  node -v           - Show Node.js version"
-      ]
-    },
+    
     "help all": {
       description: "Show all available commands",
       output: [
@@ -765,10 +455,10 @@ const LiveTerminal = () => {
         "  help, whoami, skills, projects, contact",
         "",
         "🗂️  File System:",
-        "  pwd, ls, cd, mkdir, rmdir, touch, rm, cp, mv, cat",
+        "  pwd, ls, cd, cat",
         "",
         "🔍 Text Processing:",
-        "  grep, find, wc, head, tail, sort, uniq",
+        "  grep, find, wc, head, tail",
         "",
         "🖥️  System Info:",
         "  ps, top, df, free, uptime, uname, hostname, id, env, which, type, file, history, man",
@@ -776,17 +466,29 @@ const LiveTerminal = () => {
         "🌐 Network:",
         "  ping, nslookup, traceroute, ifconfig",
         "",
-        "⚙️  Process Management:",
-        "  kill, jobs, fg, bg",
+        "🛠️  Utilities:",
+        "  clear, date, echo",
         "",
-        "📦 Package Managers:",
-        "  apt, npm, pip",
+        "📖 Help Commands:",
+        "  help file, help system, help network, help all",
         "",
-        "🛠️  Development Tools:",
-        "  git, make, gcc, python, node",
+        "🎯 Portfolio Commands:",
+        "  help, whoami, skills, projects, contact",
+        "",
+        "🗂️  File System:",
+        "  pwd, ls, cd, cat",
+        "",
+        "🔍 Text Processing:",
+        "  grep, find, wc, head, tail",
+        "",
+        "🖥️  System Info:",
+        "  ps, top, df, free, uptime, uname, hostname, id, env, which, type, file, history, man",
+        "",
+        "🌐 Network:",
+        "  ping, nslookup, traceroute, ifconfig",
         "",
         "🛠️  Utilities:",
-        "  clear, date, echo, alias, export, crontab, screen",
+        "  clear, date, echo",
         "",
         "🎉 Fun & Games:",
         "  matrix, hack, joke, fortune, 8ball, quote, ascii, game, guess",
@@ -830,22 +532,7 @@ const LiveTerminal = () => {
       return;
     }
 
-    // Special theme command
-    if (cmd === 'theme') {
-      const theme = args[0] as 'default' | 'matrix' | 'hacker';
-      if (['default', 'matrix', 'hacker'].includes(theme)) {
-        setTerminalTheme(theme);
-        setMatrixMode(theme === 'matrix');
-        output = [`Theme changed to: ${theme}`];
-        if (theme === 'matrix') {
-          output.push("Welcome to the Matrix... 🕶️");
-        } else if (theme === 'hacker') {
-          output.push("Elite hacker mode activated! 💀");
-        }
-      } else {
-        output = availableCommands.theme.output;
-      }
-    } else if (cmd === 'guess') {
+    if (cmd === 'guess') {
       const guess = parseInt(args[0]);
       if (gameNumber === null) {
         output = ["🎮 No game in progress! Type 'game' to start a new game."];
