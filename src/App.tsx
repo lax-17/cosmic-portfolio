@@ -416,12 +416,12 @@ const PageMeta = () => {
         case '/professional':
           return {
             title: 'Laxmikant Nishad - Professional Portfolio',
-            description: 'Professional portfolio with clean design showcasing my expertise in full-stack development.'
+            description: 'Professional portfolio with clean design showcasing my expertise in AI engineering.'
           };
         case '/about':
           return {
             title: 'About - Laxmikant Nishad',
-            description: 'Learn more about Laxmikant Nishad, a passionate full-stack developer and technology enthusiast.'
+            description: 'Learn more about Laxmikant Nishad, a passionate AI engineer and technology enthusiast.'
           };
         case '/lab':
           return {
@@ -430,7 +430,7 @@ const PageMeta = () => {
           };
         default:
           return {
-            title: 'Laxmikant Nishad - Full Stack Developer',
+            title: 'Laxmikant Nishad - AI Engineer',
             description: 'Portfolio of Laxmikant Nishad, showcasing expertise in React, Node.js, and modern web technologies.'
           };
       }
