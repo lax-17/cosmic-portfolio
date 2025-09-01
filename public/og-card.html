@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OG Card - Laxmikant Nishad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-from: #0b1220;
+      --bg-to: #0f2a52;
+      --accent: #60a5fa;
+      --accent-2: #22d3ee;
+      --text: #e5f0ff;
+      --muted: #b6c7e7;
+      --card-w: 1200px;
+      --card-h: 630px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: black;
+    }
+    /* Canvas size = 1200x630 (LinkedIn recommended) */
+    .card {
+      position: relative;
+      width: var(--card-w);
+      height: var(--card-h);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(1200px 630px at 80% 20%, rgba(34,211,238,0.20) 0%, rgba(34,211,238,0.05) 35%, transparent 60%),
+        radial-gradient(1000px 500px at 20% 80%, rgba(96,165,250,0.25) 0%, rgba(96,165,250,0.06) 40%, transparent 70%),
+        linear-gradient(135deg, var(--bg-from), var(--bg-to));
+      border-radius: 24px;
+    }
+    /* Soft grid overlay */
+    .grid {
+      position: absolute;
+      inset: -2px;
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 48px 48px, 48px 48px;
+      mask-image: radial-gradient(60% 60% at 50% 50%, black 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      padding: 72px 96px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
+    }
+    .left {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 760px;
+    }
+    .kicker {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .title {
+      font-size: 72px;
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      text-shadow: 0 8px 32px rgba(34,211,238,0.25), 0 4px 16px rgba(96,165,250,0.2);
+    }
+    .subtitle {
+      margin-top: 10px;
+      font-size: 34px;
+      font-weight: 600;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .tagline {
+      margin-top: 8px;
+      font-size: 24px;
+      color: var(--muted);
+      max-width: 720px;
+    }
+    .right {
+      flex: 0 0 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .orb {
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background:
+        radial-gradient(closest-side, rgba(34,211,238,0.95), rgba(34,211,238,0.25) 60%, transparent 65%),
+        radial-gradient(closest-side, rgba(96,165,250,0.9), rgba(96,165,250,0.15) 60%, transparent 65%);
+      filter: blur(0.2px);
+      box-shadow:
+        0 0 80px rgba(34,211,238,0.45),
+        0 0 160px rgba(96,165,250,0.35),
+        inset 0 0 60px rgba(11,18,32,0.6);
+    }
+    .footer {
+      position: absolute;
+      left: 96px;
+      right: 96px;
+      bottom: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 22px;
+    }
+    .domain {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      color: var(--text);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .chips {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(146, 176, 220, 0.35);
+      background: rgba(12, 20, 36, 0.35);
+      color: var(--muted);
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="img" aria-label="Laxmikant Nishad — AI/ML Engineer Portfolio">
+    <div class="grid"></div>
+    <div class="content">
+      <div class="left">
+        <div class="kicker">Applied AI / ML Engineer</div>
+        <div class="title">Laxmikant Nishad</div>
+        <div class="subtitle">LLMs • Multi‑Modal • Computer Vision</div>
+        <div class="tagline">Healthcare LLM apps • QLoRA fine‑tuning • Safety & structured JSON • Docker / llama.cpp deployment</div>
+      </div>
+      <div class="right">
+        <div class="orb"></div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="domain">laxmikantnishad.com</div>
+      <div class="chips">
+        <div class="chip">Transformers</div>
+        <div class="chip">RAG</div>
+        <div class="chip">PyTorch</div>
+        <div class="chip">Docker</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
